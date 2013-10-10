@@ -1,4 +1,3 @@
-composer.json
 {
     "require": {
         "phptal/phptal": "dev-master"
