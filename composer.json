@@ -1,5 +1,20 @@
 {
+	"name": "NAONAOx1126/Vizualizer",
+	"description": "Visual Framework in PHP",
+	"keywords": ["PHP", "Framework", "MySQL"],
+	"type": "framework",
+	"license": "Apache v2",
+	"homepage": "https://github.com/NAONAOx1126/Vizualizer",
+	"authors": [
+		{
+			"name": "NAONAOx1126",
+			"email": "info@sweetberry.jp"
+		}
+	],
     "require": {
         "phptal/phptal": "dev-master"
+    },
+    "autoload": {
+    	"psr-0": { "Vizualizer": "src" }
     }
 }
