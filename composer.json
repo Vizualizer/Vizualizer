@@ -11,6 +11,27 @@
 			"email": "info@sweetberry.jp"
 		}
 	],
+   "repositories": [
+        { 
+            "type": "package",
+            "package": {
+                "name": "phptal/phptal",
+                "version": "1.2.2",
+                "dist": {
+                    "url": "https://github.com/pornel/PHPTAL/zipball/1.2.2",
+                    "type": "zip"
+                },
+                "source": {
+                    "url": "https://github.com/pornel/PHPTAL.git",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "autoload": {
+                    "psr-0": {"PHPTAL": "classes/"}
+                }
+            }
+        }
+    ], 
     "require": {
         "phptal/phptal": "1.2.*"
     },
