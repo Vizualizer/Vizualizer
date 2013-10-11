@@ -48,7 +48,7 @@ class Vizualizer{
 		
 		// システムのルートURLを設定
 		if (!defined('VIZUALIZER_URL')) {
-			define('VIZUALIZER_URL', "http".((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")?"s":"")."://".$_SERVER["SERVER_NAME"].CLAY_SUBDIR);
+			define('VIZUALIZER_URL', "http".((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")?"s":"")."://".$_SERVER["SERVER_NAME"].VIZUALIZER_SUBDIR);
 		}
 
 		// ライブラリのクラス自動ローダーを初期化する。
@@ -114,6 +114,3 @@ class Vizualizer{
     	exit;
     }
 }
-
-// このファイルがインクルードされた時点で開始する。
-Vizualizer::startup();

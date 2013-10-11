@@ -12,7 +12,10 @@
 		}
 	],
     "require": {
-        "phptal/phptal": "dev-master"
+        "phptal/phptal": "1.2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
     	"psr-0": { "Vizualizer": "src" }
