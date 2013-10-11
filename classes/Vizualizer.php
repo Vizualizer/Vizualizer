@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2012 Clay System All Rights Reserved.
+ * Copyright (C) 2012 Vizualizer All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 /**
  * フレームワークの起点となるクラス
  * 
- * @package Base
+ * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
 class Vizualizer{
@@ -55,21 +55,7 @@ class Vizualizer{
 		require(VIZUALIZER_ROOT.DIRECTORY_SEPARATOR."Vizualizer".DIRECTORY_SEPARATOR."Autoloader.php");
 		Vizualizer_Autoloader::register();
 		
-		// 後起動処理を追加
-		Clay_Bootstrap_PhpVersion::start();
-		Clay_Bootstrap_CheckPermission::start();
-		Clay_Bootstrap_Configure::start();
-		Clay_Bootstrap_ErrorMessage::start();
-		Clay_Bootstrap_Timezone::start();
-		Clay_Bootstrap_Locale::start();
-		Clay_Bootstrap_UserAgent::start();
-		Clay_Bootstrap_SessionId::start();
-		Clay_Bootstrap_Parameter::start();
-		Clay_Bootstrap_Session::start();
-		Clay_Bootstrap_TemplateName::start();
-		Clay_Bootstrap_Filter::start();
-		
-		register_shutdown_function(array("Clay", "shutdown"));
+		Vizualizer_Bootstrap::startup();
 	}
 	
 	/**
