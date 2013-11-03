@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
  * 
@@ -21,82 +22,169 @@
  * @version   1.0.0
  */
 
+// Vizualizerの初期化
+Vizualizer::initialize();
+
 /**
  * フレームワークの起点となるクラス
- * 
+ *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer{
-	/**
-	 * フレームワークの起動処理を行うメソッドです。
-	 */
-	public static function startup(){
-		// システムのルートディレクトリを設定
-		if (!defined('VIZUALIZER_ROOT')) {
-			define('VIZUALIZER_ROOT', realpath(dirname(__FILE__).DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR.".."));
-		}
-		
-		// システムのルートURLへのサブディレクトリを設定
-		if (!defined('VIZUALIZER_SUBDIR')) {
-			if(substr($_SERVER["DOCUMENT_ROOT"], -1) == "/"){
-				define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, -1), "", VIZUALIZER_ROOT));
-			}else{
-				define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_ROOT));
-			}
-		}
-		
-		// システムのルートURLを設定
-		if (!defined('VIZUALIZER_URL')) {
-			define('VIZUALIZER_URL', "http".((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")?"s":"")."://".$_SERVER["SERVER_NAME"].VIZUALIZER_SUBDIR);
-		}
+class Vizualizer
+{
 
-		// ライブラリのクラス自動ローダーを初期化する。
-		require(VIZUALIZER_ROOT.DIRECTORY_SEPARATOR."Vizualizer".DIRECTORY_SEPARATOR."Autoloader.php");
-		Vizualizer_Autoloader::register();
-		
-		Vizualizer_Bootstrap::startup();
-	}
-	
-	/**
-	 * フレームワークの終了処理を行うメソッドです。
-	 */
-	public static function shutdown(){
-		
-	}
-	
-	/**
-	 * フレームワークでエラーが発生してキャッチされなかった場合の処理を記述するメソッドです。
-	 */
-    public static function error($code, $message, $ex = null){
-    	// ダウンロードの際は、よけいなバッファリングをクリア
-    	while(ob_get_level() > 0){
-    		ob_end_clean();
-    	}
-    		
-    	// エラーログに書き込み
-    	Clay_Logger::writeError($message."(".$code.")", $ex);
-    	
-    	// カスタムエラーページのパス
-    	$path = $_SERVER["CONFIGURE"]->site_home.$_SERVER["USER_TEMPLATE"].DIRECTORY_SEPARATOR."ERROR_".$code.".html";
-    
-    	// ファイルがある場合はエラーページを指定ファイルで出力
-    	if(file_exists($path)){
-    		try{
-    			header("HTTP/1.0 ".$code." ".$message, true, $code);
-    			header("Status: ".$code." ".$message);
-    			header("Content-Type: text/html; charset=utf-8");
-    			$_SERVER["TEMPLATE"]->display("ERROR_".$code.".html");
-    		}catch(Exception $e){
-    			// エラーページでのエラーは何もしない
-    		}
-    	}else{
-    		// エラーページが無い場合はデフォルト
-    		header("HTTP/1.0 ".$code." ".$message, true, $code);
-    		header("Status: ".$code." ".$message);
-    		header("Content-Type: text/html; charset=utf-8");
-    		echo $message;
-    	}
-    	exit;
+    /**
+     * リクエストパラメータのインスタンス用
+     */
+    private static $parameters;
+
+    /**
+     * 属性のインスタンス用
+     */
+    private static $attributes;
+
+    /**
+     * フレームワークの初期化処理を行うメソッドです。
+     */
+    final public static function initialize()
+    {
+        // パラメータをnullで初期化
+        self::$parameters = null;
+        
+        // 属性を初期化
+        self::$attributes = null;
+        
+        // システムのルートディレクトリを設定
+        if (!defined('VIZUALIZER_ROOT')) {
+            define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
+        }
+        
+        // システムのクラスディレクトリを設定
+        if (! defined('VIZUALIZER_CLASSES_DIR')) {
+            define('VIZUALIZER_CLASSES_DIR', VIZUALIZER_ROOT . "/classes");
+        }
+        
+        // ライブラリのクラス自動ローダーを初期化する。
+        require (VIZUALIZER_CLASSES_DIR . DIRECTORY_SEPARATOR . "Vizualizer" . DIRECTORY_SEPARATOR . "Autoloader.php");
+        Vizualizer_Autoloader::register();
+    }
+
+    /**
+     * フレームワークの起動処理を行うメソッドです。
+     */
+    final public static function startup($siteRoot = ".")
+    {
+        // システムのルートディレクトリを設定
+        if (! defined('VIZUALIZER_SITE_ROOT')) {
+            define('VIZUALIZER_SITE_ROOT', realpath($siteRoot));
+        }
+        
+            // システムのルートURLへのサブディレクトリを設定
+        if (! defined('VIZUALIZER_SUBDIR')) {
+            if (substr($_SERVER["DOCUMENT_ROOT"], - 1) == "/") {
+                define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, - 1), "", VIZUALIZER_SITE_ROOT));
+            } else {
+                define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_SITE_ROOT));
+            }
+        }
+        
+        // システムのルートURLを設定
+        if (! defined('VIZUALIZER_URL')) {
+            define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
+        }
+        
+        // Bootstrapを実行する。
+        Vizualizer_Bootstrap::register(10, "PhpVersion");
+        Vizualizer_Bootstrap::register(20, "Configure");
+        Vizualizer_Bootstrap::register(30, "ErrorMessage");
+        Vizualizer_Bootstrap::register(40, "Timezone");
+        Vizualizer_Bootstrap::register(50, "Locale");
+        Vizualizer_Bootstrap::register(60, "UserAgent");
+        Vizualizer_Bootstrap::register(70, "SessionId");
+        Vizualizer_Bootstrap::register(80, "Session");
+        Vizualizer_Bootstrap::register(90, "TemplateName");
+        Vizualizer_Bootstrap::startup();
+        
+        // テンプレートを生成
+        $templateClass = "Vizualizer_Template_".Vizualizer_Configure::get("template");
+        $template = new $templateClass();
+        
+        // テンプレートを表示
+        $attr = Vizualizer::attr();
+        $attr["template"] = $template;
+        $template->display(substr($attr["templateName"], 1));
+    }
+
+    /**
+     * フレームワークの終了処理を行うメソッドです。
+     */
+    final public static function shutdown()
+    {
+        Vizualizer_Bootstrap::shutdown();
+    }
+
+    /**
+     * フレームワークでエラーが発生してキャッチされなかった場合の処理を記述するメソッドです。
+     */
+    final public static function error($code, $message, $ex = null)
+    {
+        // ダウンロードの際は、よけいなバッファリングをクリア
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        
+        // エラーログに書き込み
+        Vizualizer_Logger::writeError($message . "(" . $code . ")", $ex);
+        
+        // カスタムエラーページのパス
+        $path = $_SERVER["CONFIGURE"]->site_home . $_SERVER["USER_TEMPLATE"] . DIRECTORY_SEPARATOR . "ERROR_" . $code . ".html";
+        
+        // ファイルがある場合はエラーページを指定ファイルで出力
+        if (file_exists($path)) {
+            try {
+                header("HTTP/1.0 " . $code . " " . $message, true, $code);
+                header("Status: " . $code . " " . $message);
+                header("Content-Type: text/html; charset=utf-8");
+                $_SERVER["TEMPLATE"]->display("ERROR_" . $code . ".html");
+            } catch (Exception $e) {
+                // エラーページでのエラーは何もしない
+            }
+        } else {
+            // エラーページが無い場合はデフォルト
+            header("HTTP/1.0 " . $code . " " . $message, true, $code);
+            header("Status: " . $code . " " . $message);
+            header("Content-Type: text/html; charset=utf-8");
+            echo $message;
+        }
+        exit();
+    }
+
+    /**
+     * パラメータオブジェクトを取得します。
+     * 
+     * @return Vizualizer_Parameter
+     */
+    public static function request()
+    {
+        if (self::$parameters === null) {
+            // パラメータを生成
+            self::$parameters = new Vizualizer_Parameter();
+        }
+        return self::$parameters;
+    }
+
+    /**
+     * 属性を取得します。
+     * 
+     * @return Vizualizer_Attributes
+     */
+    public static function attr()
+    {
+        if (self::$attributes === null) {
+            // パラメータを生成
+            self::$attributes = new Vizualizer_Attributes();
+        }
+        return self::$attributes;
     }
 }

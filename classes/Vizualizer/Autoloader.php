@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
  * 
@@ -23,36 +24,40 @@
 
 /**
  * フレームワークのクラスの自動ローディングを制御するクラス
- * 
+ *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Autoloader{
-	/**
-	 * クラスの自動ローディング処理を登録する。
-	 */
-	public static function register() {
-		return spl_autoload_register(array('Vizualizer_Autoloader', 'load'));
-	}
+class Vizualizer_Autoloader
+{
 
-	/**
-	 * クラスの自動ローディング処理の実装
-	 */
-	public static function load($class){
-		// クラスが読み込み済みかVizualizer_で始まっていない場合は読み込みの対象外とする。
-		if ((class_exists($class)) || (strpos($class, 'Vizualizer') !== 0)) {
-			return false;
-		}
+    /**
+     * クラスの自動ローディング処理を登録する。
+     */
+    public static function register()
+    {
+        return spl_autoload_register(array('Vizualizer_Autoloader','load'));
+    }
 
-		// クラスの読み込み先を取得する。
-		$classPath = CLAY_CLASSES_ROOT.DIRECTORY_SEPARATOR.str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
-
-		// クラスのファイルが存在していないか読み込み不可能の場合は読み込みの対象外とする。
-		if ((file_exists($classPath) === false) || (is_readable($classPath) === false)) {
-			return false;
-		}
-
-		// クラスを読み込む
-		require($classPath);
-	}
+    /**
+     * クラスの自動ローディング処理の実装
+     */
+    public static function load($class)
+    {
+        // クラスが読み込み済みかVizualizer_で始まっていない場合は読み込みの対象外とする。
+        if ((class_exists($class)) || (strpos($class, 'Vizualizer') !== 0)) {
+            return false;
+        }
+        
+        // クラスの読み込み先を取得する。
+        $classPath = VIZUALIZER_CLASSES_DIR . DIRECTORY_SEPARATOR . str_replace("_", DIRECTORY_SEPARATOR, $class) . ".php";
+        
+        // クラスのファイルが存在していないか読み込み不可能の場合は読み込みの対象外とする。
+        if ((file_exists($classPath) === false) || (is_readable($classPath) === false)) {
+            return false;
+        }
+        
+        // クラスを読み込む
+        require ($classPath);
+    }
 }
