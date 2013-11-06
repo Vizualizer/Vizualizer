@@ -23,28 +23,30 @@
  */
 
 /**
- * セッションIDをGETの値から取得するための起動処理です。
+ * システム共通例外のクラスです。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Bootstrap_SessionId
+class Vizualizer_Exception_System extends Exception
 {
 
-    public static function start()
-    {
-        // 引数にセッションIDが指定された場合、セッションIDを上書き
-        if (!empty($_GET[session_name()])) {
-            session_id($_GET[session_name()]);
-            unset($_GET[session_name()]);
-        }
-    }
+    /**
+     * エラーの元となった例外
+     */
+    var $source;
 
     /**
-     * 終了処理です。
-     * ここでは何も行いません。
+     * コンストラクタ
+     *
+     * @param $message 例外のメッセージ
+     * @param $code 例外のエラーコード
+     * @param $source 例外の原因となった例外
      */
-    public static function stop()
+    public function __construct($message = "", $code = 0, $source = null)
     {
+        parent::__construct($message, $code);
+
+        $this->source = $source;
     }
 }

@@ -38,7 +38,7 @@ class Vizualizer_Bootstrap_PhpVersion
     public static function start()
     {
         // PHPのバージョンIDを設定する。
-        if (! defined('PHP_VERSION_ID')) {
+        if (!defined('PHP_VERSION_ID')) {
             $version = explode('.', PHP_VERSION);
             define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
         }

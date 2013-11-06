@@ -23,28 +23,22 @@
  */
 
 /**
- * セッションIDをGETの値から取得するための起動処理です。
+ * 詳細表示用のモジュールです。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Bootstrap_SessionId
+abstract class Vizualizer_Plugin_Module_Detail extends Vizualizer_Plugin_Module
 {
 
-    public static function start()
+    protected function executeImpl($type, $name, $value, $result)
     {
-        // 引数にセッションIDが指定された場合、セッションIDを上書き
-        if (!empty($_GET[session_name()])) {
-            session_id($_GET[session_name()]);
-            unset($_GET[session_name()]);
-        }
-    }
+        // サイトデータを取得する。
+        $loader = new Vizualizer_Plugin($type);
+        $model = $loader->loadModel($name);
+        $model->findByPrimaryKey($value);
 
-    /**
-     * 終了処理です。
-     * ここでは何も行いません。
-     */
-    public static function stop()
-    {
+        $attr = Vizualizer::attr();
+        $attr[$result] = $model;
     }
 }

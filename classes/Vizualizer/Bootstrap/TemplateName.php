@@ -41,7 +41,7 @@ class Vizualizer_Bootstrap_TemplateName
                 $attributes["templateName"] = substr($attributes["templateName"], strlen(VIZUALIZER_SUBDIR));
             }
         }
-        
+
         // テンプレートにシンボリックリンクを作成する。
         if (Vizualizer_Configure::get("site_home") !== null && Vizualizer_Configure::get("site_home") !== "") {
             if (!is_dir(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_contents")) {
@@ -53,7 +53,7 @@ class Vizualizer_Bootstrap_TemplateName
             }
             if (is_writable(Vizualizer_Configure::get("site_home"))) {
                 if (!file_exists(Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile")) {
-            echo Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "default => ".Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile";
+                    echo Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "default => " . Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile";
                     symlink(Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "default", Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile");
                 }
                 if (!file_exists(Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "sphone")) {
@@ -67,7 +67,7 @@ class Vizualizer_Bootstrap_TemplateName
                 }
             }
         }
-        
+
         // ユーザーのテンプレートを取得する。
         if (Vizualizer_Configure::get("device") !== null) {
             if (Vizualizer_Configure::get("device")->isMobile()) {
@@ -87,14 +87,14 @@ class Vizualizer_Bootstrap_TemplateName
         } else {
             $attributes["userTemplate"] = DIRECTORY_SEPARATOR . "default";
         }
-        
+
         // テンプレートがディレクトリかどうか調べ、ディレクトリの場合はファイル名に落とす。
         // 呼び出し先がディレクトリで最後がスラッシュでない場合は最後にスラッシュを補完
         if (is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"])) {
-            if (is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"]) && substr($attributes["templateName"], - 1) != DIRECTORY_SEPARATOR) {
+            if (is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"]) && substr($attributes["templateName"], -1) != DIRECTORY_SEPARATOR) {
                 $attributes["templateName"] .= DIRECTORY_SEPARATOR;
             }
-            if (substr($attributes["templateName"], - 1) == DIRECTORY_SEPARATOR) {
+            if (substr($attributes["templateName"], -1) == DIRECTORY_SEPARATOR) {
                 if (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.html")) {
                     $attributes["templateName"] .= "index.html";
                 } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.htm")) {
@@ -105,11 +105,11 @@ class Vizualizer_Bootstrap_TemplateName
             }
         }
         if (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"]) || is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"])) {
-            if (is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"]) && substr($attributes["templateName"], - 1) != DIRECTORY_SEPARATOR) {
+            if (is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"]) && substr($attributes["templateName"], -1) != DIRECTORY_SEPARATOR) {
                 $attributes["templateName"] .= DIRECTORY_SEPARATOR;
             }
             // 呼び出し先がスラッシュで終わっている場合にはファイル名を補完
-            if (substr($attributes["templateName"], - 1) == DIRECTORY_SEPARATOR) {
+            if (substr($attributes["templateName"], -1) == DIRECTORY_SEPARATOR) {
                 if (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.html")) {
                     $attributes["templateName"] .= "index.html";
                 } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.htm")) {
@@ -119,7 +119,7 @@ class Vizualizer_Bootstrap_TemplateName
                 }
             }
         }
-        
+
         // テンプレートの存在するパスを取得する。
         define("TEMPLATE_DIRECTORY", dirname($attributes["templateName"]));
     }
@@ -132,4 +132,3 @@ class Vizualizer_Bootstrap_TemplateName
     {
     }
 }
- 

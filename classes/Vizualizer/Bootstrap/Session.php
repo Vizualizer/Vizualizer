@@ -46,7 +46,7 @@ class Vizualizer_Bootstrap_Session
                     $host = Vizualizer_Configure::get("memcache");
                     $port = 0;
                 }
-                if (! ($port > 0)) {
+                if (!($port > 0)) {
                     $port = 11211;
                 }
                 ini_set("session.save_handler", "memcache");
@@ -68,4 +68,3 @@ class Vizualizer_Bootstrap_Session
     {
     }
 }
- 

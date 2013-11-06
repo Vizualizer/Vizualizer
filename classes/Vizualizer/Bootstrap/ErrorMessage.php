@@ -39,9 +39,9 @@ class Vizualizer_Bootstrap_ErrorMessage
         }
         if (Vizualizer_Configure::get("debug")) {
             if (defined("E_DEPRECATED")) {
-                error_reporting(E_ALL & ~ E_STRICT & ~ E_DEPRECATED);
+                error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED);
             } else {
-                error_reporting(E_ALL & ~ E_STRICT);
+                error_reporting(E_ALL & ~E_STRICT);
             }
             ini_set('display_errors', Vizualizer_Configure::get("display_error"));
             ini_set('log_errors', 'On');

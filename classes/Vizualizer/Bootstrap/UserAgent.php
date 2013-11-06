@@ -34,17 +34,17 @@ class Vizualizer_Bootstrap_UserAgent
     public static function start()
     {
         // ユーザーエージェントが存在しない場合はダミーを設定
-        if (! isset($_SERVER["HTTP_USER_AGENT"])) {
+        if (!isset($_SERVER["HTTP_USER_AGENT"])) {
             $_SERVER["HTTP_USER_AGENT"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36";
         }
-        
+
         // カスタムクライアントのユーザーエージェントを補正
         if (preg_match("/^VIZUALIZER-(.+)-CLIENT\\[(.+)\\]$/", $_SERVER["HTTP_USER_AGENT"], $params) > 0) {
             $_SERVER["HTTP_USER_AGENT"] = "Mozilla/5.0 (Linux; U; Android 1.6; ja-jp; VIZUALIZER-ANDROID-CLIENT)";
             $_SERVER["USER_TEMPLATE"] = "/" . strtolower($params[1]);
             $_SERVER["HTTP_X_DCMGUID"] = $params[2];
         }
-        
+
         // UA解析用のライブラリの初期設定
         $mobileInfo = Vizualizer_Mobile::create();
         Vizualizer_Configure::set("device", $mobileInfo);
@@ -58,4 +58,3 @@ class Vizualizer_Bootstrap_UserAgent
     {
     }
 }
- 

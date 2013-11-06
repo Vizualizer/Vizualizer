@@ -23,28 +23,38 @@
  */
 
 /**
- * セッションIDをGETの値から取得するための起動処理です。
+ * データベースエラー時の例外クラスです。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Bootstrap_SessionId
+class Vizualizer_Exception_Database extends Vizualizer_Exception_System
 {
 
-    public static function start()
+    /**
+     * エラーオブジェクト
+     */
+    private $err;
+
+    /**
+     * コンストラクタ
+     *
+     * @param $err この例外の原因となったデータベースの例外
+     * @param $code この例外のエラーコード
+     */
+    public function __construct($err, $code = 0)
     {
-        // 引数にセッションIDが指定された場合、セッションIDを上書き
-        if (!empty($_GET[session_name()])) {
-            session_id($_GET[session_name()]);
-            unset($_GET[session_name()]);
-        }
+        $this->err = $err;
+        parent::__construct($err->getMessage(), $code);
     }
 
     /**
-     * 終了処理です。
-     * ここでは何も行いません。
+     * データベース例外を取得します。
+     *
+     * @return Exception この例外の原因となったデータベースの例外
      */
-    public static function stop()
+    public function getError()
     {
+        return $this->err;
     }
 }

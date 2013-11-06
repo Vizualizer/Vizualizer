@@ -23,28 +23,40 @@
  */
 
 /**
- * セッションIDをGETの値から取得するための起動処理です。
+ * 入力チェックエラー用の例外クラスです。
+ * システム上でエラーメッセージをリスト化して保持することができ、
+ * モジュール内で処理されなかった場合は、次のモジュールに引き継いで処理させることができます。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Bootstrap_SessionId
+class Vizualizer_Exception_Invalid extends Vizualizer_Exception_System
 {
 
-    public static function start()
+    /**
+     * 入力のエラーメッセージリスト
+     */
+    private $errors;
+
+    /**
+     * コンストラクタ
+     *
+     * @param $errors 入力エラーのメッセージリスト
+     * @param $code この例外のエラーコード
+     */
+    public function __construct($errors, $code = 0)
     {
-        // 引数にセッションIDが指定された場合、セッションIDを上書き
-        if (!empty($_GET[session_name()])) {
-            session_id($_GET[session_name()]);
-            unset($_GET[session_name()]);
-        }
+        $this->errors = $errors;
+        parent::__construct(implode("\r\n", $errors), $code);
     }
 
     /**
-     * 終了処理です。
-     * ここでは何も行いません。
+     * 入力のエラーメッセージのリストを取得する。
+     *
+     * @return 入力エラーのメッセージリスト
      */
-    public static function stop()
+    public function getErrors()
     {
+        return $this->errors;
     }
 }
