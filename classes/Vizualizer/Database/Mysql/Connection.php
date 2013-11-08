@@ -33,9 +33,14 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     private $connection;
 
+    /**
+     * コンストラクタ
+     *
+     * @param array $configure
+     */
     public function __construct($configure)
     {
-        if (! isset($configure["port"])) {
+        if (!isset($configure["port"])) {
             $configure["port"] = "3306";
         }
         $this->connection = mysqli_connect($configure["host"], $configure["user"], $configure["password"], $configure["database"], $configure["port"]);
@@ -44,8 +49,16 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     }
 
     /**
+     * デストラクタ
+     */
+    public function __destruct()
+    {
+        $this->close();
+    }
+
+    /**
      * テーブルのカラムを取得する。
-     * 
+     *
      * @param string $table テーブル名
      * @return array カラムのリスト
      * @throws Vizualizer_Exception_System
@@ -66,7 +79,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     /**
      * テーブルのキーを取得する。
-     * 
+     *
      * @param string $table テーブル名
      * @return array キーのリスト
      */
@@ -83,7 +96,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     /**
      * テーブルのインデックスを取得する。
-     * 
+     *
      * @param string $table テーブル名
      * @return array インデックスのリスト
      */
@@ -92,7 +105,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
         $result = $this->query("SHOW INDEXES FROM " . $table);
         $indexes = array();
         while ($index = $result->fetch()) {
-            if (! isset($indexes[$index["Key_name"]]) || ! is_array($indexes[$index["Key_name"]])) {
+            if (!isset($indexes[$index["Key_name"]]) || !is_array($indexes[$index["Key_name"]])) {
                 $indexes[$index["Key_name"]] = array();
             }
             $indexes[$index["Key_name"]][] = $index["Column_name"];
@@ -127,7 +140,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     /**
      * 値のエスケープ処理
-     * 
+     *
      * @param string $value エスケープする値
      * @return string エスケープした値
      */
@@ -141,7 +154,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     /**
      * 識別子のエスケープ処理
-     * 
+     *
      * @param string $value エスケープする識別子
      * @return string エスケープした識別子
      */
@@ -152,7 +165,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     /**
      * クエリの実行
-     * 
+     *
      * @param string $query 実行するクエリ
      * @return Vizualizer_Database_Result 実行結果
      */
@@ -174,7 +187,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     /**
      * 最後に挿入した自動採番を取得
-     * 
+     *
      * @return int 最後の自動採番値
      */
     public function lastInsertId()
@@ -193,4 +206,3 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
         }
     }
 }
- 

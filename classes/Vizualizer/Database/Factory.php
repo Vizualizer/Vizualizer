@@ -33,7 +33,7 @@ class Vizualizer_Database_Factory
 
     const MODE_WRITE = "write";
     const MODE_READ = "read";
-    
+
     /**
      *
      * @var array[string] データベースの接続情報を保持するインスタンス属性
@@ -48,7 +48,7 @@ class Vizualizer_Database_Factory
 
     /**
      * データベースファクトリクラスを初期化します。
-     * 
+     *
      * @param array[string] $configures データベースの接続情報
      */
     public static function initialize($configures)
@@ -67,7 +67,7 @@ class Vizualizer_Database_Factory
 
     /**
      * データベースの設定情報を取得します。
-     * 
+     *
      * @param string $code データベース設定の元となるキー
      * @return array[string] データベースの接続情報
      */
@@ -77,25 +77,25 @@ class Vizualizer_Database_Factory
             $code = "default";
         }
         if(array_key_exists($code, self::$configures)){
-            return self::$configures[$connectionName];
+            return self::$configures[$code];
         }
         return array();
     }
 
     /**
      * データベースの書き込み用接続を取得します。
-     * 
+     *
      * @param string $code データベース設定の元となるキー
      * @return Vizualizer_Database_Connection データベースの接続
      */
     private static function getConnection($code = "default", $mode = self::MODE_WRITE)
     {
-        
+
         // DBのコネクションが設定されていない場合は接続する。
         if (!array_key_exists($code . "_" . $mode, self::$connections)) {
             $confs = Vizualizer_Database_Factory::getConfigure($code);
             $conf = $confs[$mode];
-            
+
             try {
                 // 設定に応じてDBに接続
                 switch ($conf["dbtype"]) {
@@ -125,7 +125,7 @@ class Vizualizer_Database_Factory
         }
         return false;
     }
-    
+
     /**
      * 読み込み用の接続を取得する。
      * @param unknown $code
@@ -138,7 +138,7 @@ class Vizualizer_Database_Factory
         }
         return false;
     }
-    
+
     /**
      * トランザクションをコミットする。
      * @param Vizualizer_Database_Connection $connection
@@ -171,6 +171,5 @@ class Vizualizer_Database_Factory
             unset(self::$connections[$code]);
         }
     }
-    
+
 }
- 

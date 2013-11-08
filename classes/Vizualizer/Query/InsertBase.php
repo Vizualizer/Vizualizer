@@ -1,13 +1,13 @@
 <?php
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,8 +28,8 @@
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
 abstract class Vizualizer_Query_InsertBase{
-	/** 
-	 * @var string 接続に使用するモジュール名 
+	/**
+	 * @var string 接続に使用するモジュール名
 	 */
 	private $module;
 
@@ -52,7 +52,7 @@ abstract class Vizualizer_Query_InsertBase{
 		$this->module = $table->getModuleName();
 		$this->table =& $table;
 	}
-	
+
 	protected abstract function getPrefix();
 
 	/**
@@ -66,10 +66,10 @@ abstract class Vizualizer_Query_InsertBase{
 		$cols = array();
 		$phs = array();
 		$this->vals = array();
-		$connection = Vizualizer_Database_Factory::getConnection($this->module, true);
+		$connection = Vizualizer_Database_Factory::conn($this->module);
 		foreach($values as $key => $value){
 			if(isset($this->table->$key)){
-				$cols[] = $connection->escape_identifier($key);
+				$cols[] = $connection->escapeIdentifier($key);
 				$phs[] = "?";
 				$this->vals[] = trim($value);
 			}
@@ -87,10 +87,10 @@ abstract class Vizualizer_Query_InsertBase{
 		// パラメータを展開
 		$cols = array();
 		$vals = array();
-		$connection = Vizualizer_Database_Factory::getConnection($this->module, true);
+		$connection = Vizualizer_Database_Factory::conn($this->module);
 		foreach($values as $key => $value){
 			if(isset($this->table->$key)){
-				$cols[] = $connection->escape_identifier($key);
+				$cols[] = $connection->escapeIdentifier($key);
 				$vals[] = "'".$connection->escape(trim($value))."'";
 			}
 		}
@@ -108,13 +108,13 @@ abstract class Vizualizer_Query_InsertBase{
 	 */
 	public function lastInsertId(){
 		try{
-			$connection = Vizualizer_Database_Factory::getConnection($this->module);
+			$connection = Vizualizer_Database_Factory::begin($this->module);
 			return $connection->auto_increment();
 		}catch(Exception $e){
 			Vizualizer_Logger::writeError($e->getMessage(), $e);
 			throw new Vizualizer_Exception_Database($e);
 		}
-	}	
+	}
 
 	/**
 	 * 現在の状態で挿入クエリを実行する。
@@ -123,7 +123,7 @@ abstract class Vizualizer_Query_InsertBase{
 	 */
 	public function execute($values){
 		try{
-			$connection = Vizualizer_Database_Factory::getConnection($this->module);
+			$connection = Vizualizer_Database_Factory::begin($this->module);
 			$sql = $this->showQuery($values);
 			Vizualizer_Logger::writeDebug($sql);
 			$result = $connection->query($sql);
@@ -132,6 +132,5 @@ abstract class Vizualizer_Query_InsertBase{
 			throw new Vizualizer_Exception_Database($e);
 		}
 		return $result;
-	}	
+	}
 }
- 

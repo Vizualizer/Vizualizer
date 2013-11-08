@@ -39,7 +39,7 @@ class Vizualizer_Cache_Factory
      */
     public static function create($file, $expires = 3600)
     {
-        if (class_exists("Memcache") && !empty(Vizualizer_Configure::get("memcache"))) {
+        if (class_exists("Memcache") && Vizualizer_Configure::get("memcache") !== null) {
             return new Vizualizer_Cache_Memory(Vizualizer_Configure::get("site_domain"), $file, $expires);
         } else {
             return new Vizualizer_Cache_File(Vizualizer_Configure::get("site_domain"), $file, $expires);

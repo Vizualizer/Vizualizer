@@ -42,7 +42,7 @@ class LoadModuleParams
  * Type: function<br>
  * Name: loadmodule<br>
  * Purpose: load framework module.<br>
- * 
+ *
  * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
  * @param array $params parameters
  * @param object $smarty Smarty object
@@ -56,7 +56,7 @@ function smarty_function_loadmodule($params, $template)
         trigger_error("loadmodule: missing name parameter", E_USER_WARNING);
         return;
     }
-    
+
     if (! empty($params["if"])) {
         $result = true;
         $expression = '$result = ' . str_replace('_POST', '$_POST', $params["if"]) . ';';
@@ -65,23 +65,24 @@ function smarty_function_loadmodule($params, $template)
             return;
         }
     }
-    
+
     // パラメータを変数にコピー
     $name = $params['name'];
-    
+
     // errorパラメータはエラー例外時に指定されたテンプレートに変更する。
     if (isset($params["error"])) {
         $error = $params['error'];
     } else {
         $error = "";
     }
-    
+
     // モジュールのクラスが利用可能か調べる。
     $errors = null;
     try {
         // モジュール用のクラスをリフレクション
-        $loader = new Vizualizer_Plugin("");
-        $object = $loader->loadModule($name);
+        list($namespace, $class) = explode(".", $name, 2);
+        $loader = new Vizualizer_Plugin($namespace);
+        $object = $loader->loadModule($class);
         if (method_exists($object, "execute")) {
             Vizualizer_Logger::writeDebug("=========== " . $name . " start ===========");
             // 検索条件と並べ替えキー以外を無効化する。
@@ -120,25 +121,25 @@ function smarty_function_loadmodule($params, $template)
         Vizualizer_Logger::writeError($e->getMessage(), $e);
         $errors = array($e->getMessage());
     }
-    
+
     // エラー配列をスタックさせる
     if ($errors !== null) {
-        
+        $attr = Vizualizer::attr();
+        $templateEngine = $attr["template"];
         if (! empty($error)) {
             // errorパラメータが渡っている場合はスタックさせたエラーを全て出力してエラー画面へ
-            $_SERVER["TEMPLATE"]->assign("ERRORS", $errors);
-            unset($_SERVER["ERRORS"]);
-            $_SERVER["TEMPLATE"]->display($error);
+            $templateEngine->assign("ERRORS", $errors);
+            unset($attr["ERRORS"]);
+            $templateEngine->display($error);
             exit();
         } else {
             // エラー用配列が配列になっていない場合は初期化
-            if (! is_array($_SERVER["ERRORS"])) {
-                $_SERVER["ERRORS"] = array();
+            if (! is_array($attr["ERRORS"])) {
+                $attr["ERRORS"] = array();
             }
-            
+
             // エラー内容をマージさせる。
-            $_SERVER["ERRORS"] = array_merge($_SERVER["ERRORS"], $errors);
+            $attr["ERRORS"] = array_merge($attr["ERRORS"], $errors);
         }
     }
 }
-?>

@@ -30,16 +30,22 @@
  */
 class Vizualizer_Session
 {
+
+    private static $started = false;
+
     private static $session = array();
-    
+
     /**
      * セッションのクラスを初期化する。
      */
     public static function startup()
     {
-        self::$session = $_SESSION;
+        if (!self::$started) {
+            self::$session = $_SESSION;
+            self::$started = true;
+        }
     }
-    
+
     /**
      * セッションのクラスを解放する
      */
@@ -47,7 +53,7 @@ class Vizualizer_Session
     {
         $_SESSION = self::$session;
     }
-    
+
     /**
      * 指定されたキーのパラメータを取得する。
      *
@@ -61,7 +67,7 @@ class Vizualizer_Session
         }
         return null;
     }
-    
+
     /**
      * 指定されたキーにパラメータを設定する。
      *
@@ -72,21 +78,22 @@ class Vizualizer_Session
     {
         self::$session[$key] = $value;
     }
-    
+
     /**
      * 指定されたキーのパラメータを削除する。
+     *
      * @param string $key
      */
     public static function remove($key)
     {
         unset(self::$session[$key]);
     }
-    
+
     /**
      * 設定のリストを取得
      */
-   public static function values()
-   {
-       return self::$session;
-   }
+    public static function values()
+    {
+        return self::$session;
+    }
 }

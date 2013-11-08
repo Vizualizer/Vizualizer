@@ -58,6 +58,8 @@ class Vizualizer_Bootstrap_Session
                 Vizualizer_Session_Manager::create(new $manager());
                 break;
         }
+        session_start();
+        Vizualizer_Session::startup();
     }
 
     /**
@@ -66,5 +68,6 @@ class Vizualizer_Bootstrap_Session
      */
     public static function stop()
     {
+        Vizualizer_Session::shutdown();
     }
 }

@@ -1,13 +1,13 @@
 <?php
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,23 +23,23 @@
 
 /**
  * データベースカラムラッパー用のクラスです。
- * 
+ *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
 class Vizualizer_Plugin_Table_Column{
 	/**
-	 * @var string テーブルのモジュール名 
+	 * @var string テーブルのモジュール名
 	 */
 	private $module;
 
 	/**
-	 * @var string テーブルの名称 
+	 * @var string テーブルの名称
 	 */
 	private $table;
 
-	/** 
-	 * @var string フィールド名 
+	/**
+	 * @var string フィールド名
 	 */
 	private $field;
 
@@ -48,12 +48,12 @@ class Vizualizer_Plugin_Table_Column{
 	 */
 	private $canNull;
 
-	/** 
+	/**
 	 * @var boolean 主キーかどうかのフラグ
 	 */
 	private $isKey;
 
-	/** 
+	/**
 	 * @var boolean 自動採番かどうかのフラグ
 	 */
 	private $isAutoIncrement;
@@ -71,7 +71,7 @@ class Vizualizer_Plugin_Table_Column{
 		$this->isKey = (($column["Key"] == "PRI")?true:false);
 		$this->isAutoIncrement = (($column["Extra"] == "auto_increment")?true:false);
 	}
-	
+
 	/**
 	 * テーブルのカラムの詳細情報を取得
 	 * @param string $name カラム種別
@@ -83,17 +83,16 @@ class Vizualizer_Plugin_Table_Column{
 		}
 		return null;
 	}
-	
+
 	/**
 	 * フィールドを文字列として扱った場合にフィールド名となるようにする。
 	 * @return string クラスの文字列表現
 	 */
 	public function __toString(){
 		// DBの接続を取得する。
-		$connection = Vizualizer_Database_Factory::getConnection($this->module, true);
-		
+		$connection = Vizualizer_Database_Factory::conn($this->module);
+
 		// カラム名をエスケープする。
-		return $this->table.".".$connection->escape_identifier($this->field);
+		return $this->table.".".$connection->escapeIdentifier($this->field);
 	}
 }
- 

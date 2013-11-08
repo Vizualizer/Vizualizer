@@ -52,7 +52,7 @@ class Vizualizer_Plugin
 
     /**
      * 拡張ライブラリファイルを読み込む
-     * 
+     *
      * @param string $type 拡張ファイルの種別
      * @param string $name 拡張ファイルのオブジェクト名
      */
@@ -99,7 +99,7 @@ class Vizualizer_Plugin
      */
     function loadTable($name)
     {
-        return $this->load("Table", $name, $params);
+        return $this->load("Table", $name);
     }
 
     /**
@@ -122,4 +122,3 @@ class Vizualizer_Plugin
         return $this->load("Json", $name);
     }
 }
- 
