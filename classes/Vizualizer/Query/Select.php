@@ -249,22 +249,22 @@ class Vizualizer_Query_Select
         $sql .= (!empty($this->orders) ? " ORDER BY " . implode(", ", $this->orders) : "");
         $sql .= (($this->limit !== null) ? " LIMIT " . $this->limit : "");
         $sql .= (($this->offset !== null) ? " OFFSET " . $this->offset : "");
-
+        
         return $sql;
     }
 
     public function showQuery()
     {
         $sql = $this->buildQuery();
-
+        
         $values = array_merge($this->tableValues, $this->whereValues, $this->havingValues);
-
+        
         $connection = Vizualizer_Database_Factory::conn($this->module);
-
+        
         if (is_array($values) && count($values) > 0) {
             $partSqls = explode("?", $sql);
             $sql = $partSqls[0];
-
+            
             foreach ($values as $index => $value) {
                 $sql .= "'" . $connection->escape($value) . "'" . $partSqls[$index + 1];
             }
@@ -276,7 +276,7 @@ class Vizualizer_Query_Select
     {
         // クエリのビルド
         $sql = $this->buildQuery();
-
+        
         // クエリの検索件数を制限する。
         if ($limit != null) {
             $sql .= " LIMIT " . $limit;
@@ -284,7 +284,7 @@ class Vizualizer_Query_Select
                 $sql .= " OFFSET " . $offset;
             }
         }
-
+        
         // クエリを実行する。
         try {
             $sql = $this->showQuery();
@@ -295,7 +295,7 @@ class Vizualizer_Query_Select
             Vizualizer_Logger::writeError($sql, $e);
             throw new Vizualizer_Exception_Database($e);
         }
-
+        
         return new Vizualizer_Query_Select_Result($result);
     }
 
@@ -303,14 +303,14 @@ class Vizualizer_Query_Select
     {
         // 結果オブジェクトを取得
         $result = $this->fetch($limit, $offset);
-
+        
         // 結果を全て取得
         $data = $result->count();
-
+        
         // 結果オブジェクトを解放
         $result->close();
         $result = null;
-
+        
         // クエリの実行結果を返す。
         return $data;
     }
@@ -319,14 +319,14 @@ class Vizualizer_Query_Select
     {
         // 結果オブジェクトを取得
         $result = $this->fetch($limit, $offset);
-
+        
         // 結果を全て取得
         $data = $result->all();
-
+        
         // 結果オブジェクトを解放
         $result->close();
         $result = null;
-
+        
         // クエリの実行結果を返す。
         return $data;
     }

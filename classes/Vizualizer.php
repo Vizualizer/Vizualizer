@@ -61,7 +61,7 @@ class Vizualizer
         }
         
         // システムのクラスディレクトリを設定
-        if (! defined('VIZUALIZER_CLASSES_DIR')) {
+        if (!defined('VIZUALIZER_CLASSES_DIR')) {
             define('VIZUALIZER_CLASSES_DIR', VIZUALIZER_ROOT . "/classes");
         }
         
@@ -76,21 +76,21 @@ class Vizualizer
     final public static function startup($siteRoot = ".")
     {
         // システムのルートディレクトリを設定
-        if (! defined('VIZUALIZER_SITE_ROOT')) {
+        if (!defined('VIZUALIZER_SITE_ROOT')) {
             define('VIZUALIZER_SITE_ROOT', realpath($siteRoot));
         }
         
-            // システムのルートURLへのサブディレクトリを設定
-        if (! defined('VIZUALIZER_SUBDIR')) {
-            if (substr($_SERVER["DOCUMENT_ROOT"], - 1) == "/") {
-                define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, - 1), "", VIZUALIZER_SITE_ROOT));
+        // システムのルートURLへのサブディレクトリを設定
+        if (!defined('VIZUALIZER_SUBDIR')) {
+            if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
+                define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, -1), "", VIZUALIZER_SITE_ROOT));
             } else {
                 define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_SITE_ROOT));
             }
         }
         
         // システムのルートURLを設定
-        if (! defined('VIZUALIZER_URL')) {
+        if (!defined('VIZUALIZER_URL')) {
             define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
         }
         
@@ -107,7 +107,7 @@ class Vizualizer
         Vizualizer_Bootstrap::startup();
         
         // テンプレートを生成
-        $templateClass = "Vizualizer_Template_".Vizualizer_Configure::get("template");
+        $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
         $template = new $templateClass();
         
         // テンプレートを表示
@@ -162,7 +162,7 @@ class Vizualizer
 
     /**
      * パラメータオブジェクトを取得します。
-     * 
+     *
      * @return Vizualizer_Parameter
      */
     public static function request()
@@ -176,7 +176,7 @@ class Vizualizer
 
     /**
      * 属性を取得します。
-     * 
+     *
      * @return Vizualizer_Attributes
      */
     public static function attr()

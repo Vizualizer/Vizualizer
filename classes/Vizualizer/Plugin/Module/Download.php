@@ -43,7 +43,7 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
         if (!$params->check("search") || isset($_POST[$params->get("search")])) {
             $loader = new Vizualizer_Plugin($type);
             $loader->LoadSetting();
-
+            
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
             $conditions = array();
             $post = Vizualizer::request();
@@ -54,7 +54,7 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
                     }
                 }
             }
-
+            
             // 並べ替え順序が指定されている場合に適用
             $sortOrder = "";
             $sortReverse = false;
@@ -68,29 +68,29 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
                     $sortReverse = true;
                 }
             }
-
+            
             $model = $loader->LoadModel($name);
-
+            
             // 顧客データを検索する。
             if ($this->groupBy) {
                 $model->setGroupBy($this->groupBy);
             }
             $result = $model->getAllBy($conditions, $sortOrder, $sortReverse);
-
+            
             $titles = explode(",", $params->get("titles"));
             $columns = explode(",", $params->get("columns"));
-
+            
             // ヘッダを送信
             header("Content-Type: application/csv");
             header("Content-Disposition: attachment; filename=\"" . $params->get("prefix", "csvfile") . date("YmdHis") . ".csv\"");
-
+            
             ob_end_clean();
-
+            
             // CSVヘッダを出力
             echo mb_convert_encoding("\"" . implode("\",\"", $titles) . "\"\r\n", "Shift_JIS", "UTF-8");
-
+            
             while ($data = $result->next()) {
-
+                
                 // データが０件以上の場合は繰り返し
                 foreach ($columns as $index => $column) {
                     if ($index > 0)

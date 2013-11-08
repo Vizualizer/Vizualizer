@@ -117,7 +117,7 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
         // セッションに値を設定
         try {
             $insert = new Vizualizer_Query_Replace($this->table);
-            $sqlval = array($id_key => $id,$data_key => $sess_data);
+            $sqlval = array($id_key => $id, $data_key => $sess_data);
             $sqlval["create_time"] = $sqlval["update_time"] = date("Y-m-d H:i:s");
             Clay_Logger::writeDebug($insert->showQuery($sqlval));
             $insert->execute($sqlval);

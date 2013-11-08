@@ -46,7 +46,7 @@ class Vizualizer_Exception_System extends Exception
     public function __construct($message = "", $code = 0, $source = null)
     {
         parent::__construct($message, $code);
-
+        
         $this->source = $source;
     }
 }

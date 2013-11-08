@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
  * 
@@ -27,9 +28,12 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Query_InsertIgnore extends Vizualizer_Query_InsertBase{
-	protected function getPrefix(){
-		return "INSERT IGNORE";
-	}
+class Vizualizer_Query_InsertIgnore extends Vizualizer_Query_InsertBase
+{
+
+    protected function getPrefix()
+    {
+        return "INSERT IGNORE";
+    }
 }
  

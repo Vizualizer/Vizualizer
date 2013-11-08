@@ -41,7 +41,7 @@ class Vizualizer_Bootstrap_TemplateName
                 $attributes["templateName"] = substr($attributes["templateName"], strlen(VIZUALIZER_SUBDIR));
             }
         }
-
+        
         // テンプレートにシンボリックリンクを作成する。
         if (Vizualizer_Configure::get("site_home") !== null && Vizualizer_Configure::get("site_home") !== "") {
             if (!is_dir(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_contents")) {
@@ -67,7 +67,7 @@ class Vizualizer_Bootstrap_TemplateName
                 }
             }
         }
-
+        
         // ユーザーのテンプレートを取得する。
         if (Vizualizer_Configure::get("device") !== null) {
             if (Vizualizer_Configure::get("device")->isMobile()) {
@@ -87,7 +87,7 @@ class Vizualizer_Bootstrap_TemplateName
         } else {
             $attributes["userTemplate"] = DIRECTORY_SEPARATOR . "default";
         }
-
+        
         // テンプレートがディレクトリかどうか調べ、ディレクトリの場合はファイル名に落とす。
         // 呼び出し先がディレクトリで最後がスラッシュでない場合は最後にスラッシュを補完
         if (is_dir(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"])) {
@@ -119,7 +119,7 @@ class Vizualizer_Bootstrap_TemplateName
                 }
             }
         }
-
+        
         // テンプレートの存在するパスを取得する。
         define("TEMPLATE_DIRECTORY", dirname($attributes["templateName"]));
     }

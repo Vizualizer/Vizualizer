@@ -161,11 +161,11 @@ class Vizualizer_Plugin_Model_View extends Vizualizer_Plugin_Model
                 $select = $this->appendWhere($select, $key, $value);
             }
         }
-
+        
         if ($this->groupBy != null) {
             $select->addGroupBy($this->groupBy);
         }
-
+        
         if (!empty($order)) {
             if (is_array($order)) {
                 foreach ($order as $index => $ord) {
@@ -195,7 +195,7 @@ class Vizualizer_Plugin_Model_View extends Vizualizer_Plugin_Model
         $sqlResult = $select->fetch($this->limit, $this->offset);
         $thisClass = get_class($this);
         $result = new Vizualizer_Plugin_ModelIterator($thisClass, $sqlResult);
-
+        
         return $result;
     }
 
@@ -205,14 +205,14 @@ class Vizualizer_Plugin_Model_View extends Vizualizer_Plugin_Model
     public function findAllBy($values = array(), $order = "", $reverse = false)
     {
         $res = $this->getAllBy($values, $order, $reverse);
-
+        
         $thisClass = get_class($this);
         $result = array();
         foreach ($res->all() as $i => $data) {
             $result[$i] = new $thisClass($data);
         }
         $res->close();
-
+        
         return $result;
     }
 
@@ -237,7 +237,7 @@ class Vizualizer_Plugin_Model_View extends Vizualizer_Plugin_Model
             }
         }
         $result = $select->execute();
-
+        
         if (count($result) > 0) {
             return $result[0]["count"];
         } else {

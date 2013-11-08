@@ -45,7 +45,7 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
             // サイトデータを取得する。
             $loader = new Vizualizer_Plugin($type);
             $model = $loader->loadModel($name);
-
+            
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
             $conditions = array();
             if (is_array($post["search"])) {
@@ -57,12 +57,12 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
                     }
                 }
             }
-
+            
             // 追加の検索条件があれば設定
             if ($params->check("wkey") && $params->check("wvalue")) {
                 $conditions[$params->check("wkey")] = $params->check("wvalue");
             }
-
+            
             $attr = Vizualizer::attr();
             if ($this->groupBy) {
                 $model->setGroupBy($this->groupBy);

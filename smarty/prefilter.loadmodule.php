@@ -46,11 +46,11 @@ function smarty_prefilter_loadmodule($source, $smarty)
             $param[1] = str_replace("\\\"", "%BSDQ%", $param[1]);
             if (preg_match_all("/([a-z0-9_:.-]+)(?:=([^> '\"\\t\\n]+|(?:'.*?')|(?:\".*?\")))?/is", $param[1], $keyPairs, PREG_SET_ORDER) > 0) {
                 foreach ($keyPairs as $keyPair) {
-                    if (! isset($keyPair[2])) {
+                    if (!isset($keyPair[2])) {
                         $item[$keyPair[1]] = "";
-                    } elseif (substr($keyPair[2], 0, 1) == "'" && substr($keyPair[2], - 1) == "'" || substr($keyPair[2], 0, 1) == "\"" && substr($keyPair[2], - 1) == "\"") {
+                    } elseif (substr($keyPair[2], 0, 1) == "'" && substr($keyPair[2], -1) == "'" || substr($keyPair[2], 0, 1) == "\"" && substr($keyPair[2], -1) == "\"") {
                         $keyPair[2] = str_replace("%BSDQ%", "\\\"", $keyPair[2]);
-                        $item[$keyPair[1]] = substr($keyPair[2], 1, - 1);
+                        $item[$keyPair[1]] = substr($keyPair[2], 1, -1);
                     } else {
                         $keyPair[2] = str_replace("%BSDQ%", "\\\"", $keyPair[2]);
                         $item[$keyPair[1]] = $keyPair[2];
@@ -62,7 +62,7 @@ function smarty_prefilter_loadmodule($source, $smarty)
         // paramsの値を整形したものに置き換える。
         $params = $list;
         foreach ($params as $tag => $param) {
-            if (! array_key_exists("name", $param)) {
+            if (!array_key_exists("name", $param)) {
                 continue;
             }
             switch ($param["name"]) {

@@ -46,7 +46,7 @@ class Vizualizer_Plugin
      */
     public function __construct($namespace)
     {
-        $this->namespace = strtoupper(substr($namespace, 0, 1)). strtolower(substr($namespace, 1));
+        $this->namespace = strtoupper(substr($namespace, 0, 1)) . strtolower(substr($namespace, 1));
         $this->tables = array();
     }
 
@@ -60,7 +60,7 @@ class Vizualizer_Plugin
     {
         try {
             $names = explode(".", $name);
-            $className = "Vizualizer".$this->namespace."_".$type."_".implode("_", $names);
+            $className = "Vizualizer" . $this->namespace . "_" . $type . "_" . implode("_", $names);
             if (class_exists($className)) {
                 Vizualizer_Logger::writeDebug("Loading: " . $className . "(" . memory_get_usage() . ")");
                 return new $className($params);

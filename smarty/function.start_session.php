@@ -43,7 +43,7 @@ function smarty_function_start_session($params, $template)
             // INPUT_DATAのセッションの内容をPOSTに戻す。（POST優先）
             if (is_array($inputData[TEMPLATE_DIRECTORY])) {
                 foreach ($inputData[TEMPLATE_DIRECTORY] as $key => $value) {
-                    if (! isset($post[$key])) {
+                    if (!isset($post[$key])) {
                         $post[$key] = $value;
                     }
                 }

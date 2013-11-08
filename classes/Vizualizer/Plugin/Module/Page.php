@@ -51,7 +51,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
         if (!$params->check("search") || isset($post[$params->get("search")])) {
             $loader = new Vizualizer_Plugin($type);
             $loader->LoadSetting();
-
+            
             // ページャの初期化
             $pagerMode = $params->get("_pager_mode", Vizualizer_Pager::PAGE_SLIDE);
             $pagerDisplay = $params->get("_pager_dispmode", Vizualizer_Pager::DISPLAY_ATTR);
@@ -67,7 +67,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
             }
             $pager = new Vizualizer_Pager($pagerMode, $pagerDisplay, $pagerCount, $pagerNumbers);
             $pager->importTemplates($params);
-
+            
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
             $conditions = array();
             if (is_array($post["search"])) {
@@ -77,12 +77,12 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                     }
                 }
             }
-
+            
             // 追加の検索条件があれば設定
             if ($params->check("wkey") && $params->check("wvalue")) {
                 $conditions[$params->check("wkey")] = $params->check("wvalue");
             }
-
+            
             // 並べ替え順序が指定されている場合に適用
             $sortOrder = "";
             $sortReverse = false;
@@ -96,7 +96,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                     $sortReverse = true;
                 }
             }
-
+            
             // 顧客データを検索する。
             $model = $loader->LoadModel($name);
             if (!$this->isEmpty($this->countColumn)) {
@@ -109,7 +109,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
             }
             $model->limit($pager->getPageSize(), $pager->getCurrentFirstOffset());
             $models = $model->findAllBy($conditions, $sortOrder, $sortReverse);
-
+            
             $attr = Vizualizer::attr();
             $attr[$result . "_pager"] = $pager;
             $attr[$result] = $models;

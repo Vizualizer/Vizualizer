@@ -54,29 +54,29 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
                     $model->$key = $value;
                 }
             }
-
+            
             // トランザクションの開始
             Vizualizer_Database_Factory::begin(strtolower($type));
-
+            
             try {
                 $model->save();
                 if (!empty($this->key_prefix)) {
-					$post[$this->key_prefix.$primary_key] = $model->$primary_key;
-				}else{
-					$post[$primary_key] = $model->$primary_key;
-				}
-
-				// エラーが無かった場合、処理をコミットする。
-				Vizualizer_Database_Factory::commit(strtolower($type));
-				if($this->continue != "1"){
-					$this->removeInput("add");
-					$this->removeInput("save");
-					$this->reload();
-				}
-			}catch(Exception $e){
-				Vizualizer_Database_Factory::rollBack(strtolower($type));
-				throw $e;
-			}
-		}
-	}
+                    $post[$this->key_prefix . $primary_key] = $model->$primary_key;
+                } else {
+                    $post[$primary_key] = $model->$primary_key;
+                }
+                
+                // エラーが無かった場合、処理をコミットする。
+                Vizualizer_Database_Factory::commit(strtolower($type));
+                if ($this->continue != "1") {
+                    $this->removeInput("add");
+                    $this->removeInput("save");
+                    $this->reload();
+                }
+            } catch (Exception $e) {
+                Vizualizer_Database_Factory::rollBack(strtolower($type));
+                throw $e;
+            }
+        }
+    }
 }

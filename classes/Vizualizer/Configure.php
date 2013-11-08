@@ -30,8 +30,9 @@
  */
 class Vizualizer_Configure
 {
+
     private static $configure = array();
-    
+
     /**
      * 指定されたキーのパラメータを取得する。
      *
@@ -45,7 +46,7 @@ class Vizualizer_Configure
         }
         return null;
     }
-    
+
     /**
      * 指定されたキーにパラメータを設定する。
      *
@@ -56,12 +57,12 @@ class Vizualizer_Configure
     {
         self::$configure[$key] = $value;
     }
-    
+
     /**
      * 設定のリストを取得
      */
-   public static function values()
-   {
-       return self::$configure;
-   }
+    public static function values()
+    {
+        return self::$configure;
+    }
 }

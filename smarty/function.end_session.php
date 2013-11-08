@@ -16,7 +16,7 @@
  * Type: function<br>
  * Name: end_session<br>
  * Purpose: end session module.<br>
- * 
+ *
  * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
  * @param array $params parameters
  * @param object $smarty Smarty object

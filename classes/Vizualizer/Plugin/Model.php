@@ -32,25 +32,25 @@ class Vizualizer_Plugin_Model
 {
     // ベースのデータベースアクセスオブジェクト
     protected $access;
-
+    
     // カラムリスト
     protected $columns;
-
+    
     // 主キーのリスト
     protected $primary_keys;
-
+    
     // 元設定値リスト
     protected $values_org;
-
+    
     // 設定値リスト
     protected $values;
-
+    
     // 結果のグループ化
     protected $groupBy;
-
+    
     // 出力レコード数
     protected $limit;
-
+    
     // 出力レコードオフセット
     protected $offset;
 
@@ -93,7 +93,7 @@ class Vizualizer_Plugin_Model
     public function __set($name, $value)
     {
         // 主キー以外のカラムとして存在した場合は変更を行う。
-        if (! in_array($name, $this->primary_keys)) {
+        if (!in_array($name, $this->primary_keys)) {
             if ($name == "create_role_id" || $name == "create_operator_id" || $name == "create_time") {
                 if (empty($this->values[$name])) {
                     // データ登録日は未設定の場合のみ設定する。
@@ -158,7 +158,7 @@ class Vizualizer_Plugin_Model
             }
         }
         // 何かしらの情報が登録されている場合のみ登録処理を実行する。
-        if (! empty($sqlvals)) {
+        if (!empty($sqlvals)) {
             // データ作成日／更新日は自動的に設定する。
             $sqlvals["create_time"] = $sqlvals["update_time"] = date("Y-m-d H:i:s");
             $insert->execute($sqlvals);
@@ -178,7 +178,7 @@ class Vizualizer_Plugin_Model
     public function findBy($values = array())
     {
         $result = $this->findAllBy($values);
-
+        
         if (($data = $result->next()) !== NULL) {
             $this->setValues($data->toArray());
             return true;
@@ -198,12 +198,12 @@ class Vizualizer_Plugin_Model
                 $select = $this->appendWhere($select, $key, $value);
             }
         }
-
+        
         if ($this->groupBy != null) {
             $select->addGroupBy($this->groupBy);
         }
-
-        if (! empty($order)) {
+        
+        if (!empty($order)) {
             if (is_array($order)) {
                 foreach ($order as $index => $ord) {
                     if (is_array($reverse)) {
@@ -243,7 +243,7 @@ class Vizualizer_Plugin_Model
         $sqlResult = $select->fetch($this->limit, $this->offset);
         $thisClass = get_class($this);
         $result = new Vizualizer_Plugin_ModelIterator($thisClass, $sqlResult);
-
+        
         return $result;
     }
 
@@ -260,7 +260,7 @@ class Vizualizer_Plugin_Model
             }
         }
         $result = $select->execute();
-
+        
         if (count($result) > 0) {
             return $result[0]["count"];
         } else {
@@ -365,12 +365,12 @@ class Vizualizer_Plugin_Model
                     $select->addWhere($fullkey . " NOT LIKE ?", array($value));
                     break;
                 case "in":
-                    if (! is_array($value)) {
+                    if (!is_array($value)) {
                         $value = array($value);
                     }
                     $placeholders = "";
                     foreach ($value as $v) {
-                        if (! empty($placeholders)) {
+                        if (!empty($placeholders)) {
                             $placeholders .= ",";
                         }
                         $placeholders .= "?";
@@ -378,12 +378,12 @@ class Vizualizer_Plugin_Model
                     $select->addWhere($fullkey . " in (" . $placeholders . ")", $value);
                     break;
                 case "nin":
-                    if (! is_array($value)) {
+                    if (!is_array($value)) {
                         $value = array($value);
                     }
                     $placeholders = "";
                     foreach ($value as $v) {
-                        if (! empty($placeholders)) {
+                        if (!empty($placeholders)) {
                             $placeholders .= ",";
                         }
                         $placeholders .= "?";
@@ -421,7 +421,7 @@ class Vizualizer_Plugin_Model
      */
     public function save()
     {
-        if (! empty($this->primary_keys)) {
+        if (!empty($this->primary_keys)) {
             // 現在該当のデータが登録されているか調べる。
             $pkset = false;
             $select = new Vizualizer_Query_Select($this->access);
@@ -440,15 +440,15 @@ class Vizualizer_Plugin_Model
             } else {
                 $result = array();
             }
-
+            
             // データ作成日／更新日は自動的に設定する。
             if (isset($_SESSION) && is_array($_SESSION) && array_key_exists("OPERATOR", $_SESSION) && $_SESSION["OPERATOR"]["operator_id"] > 0) {
                 $this->create_role_id = $this->update_role_id = $_SESSION["OPERATOR"]["role_id"];
                 $this->create_operator_id = $this->update_operator_id = $_SESSION["OPERATOR"]["operator_id"];
             }
             $this->create_time = $this->update_time = date("Y-m-d H:i:s");
-
-            if (! is_array($result) || empty($result)) {
+            
+            if (!is_array($result) || empty($result)) {
                 // 主キーのデータが無かった場合はデータを作成する。
                 $this->create();
             } else {
@@ -461,7 +461,7 @@ class Vizualizer_Plugin_Model
                         // 主キーは更新条件
                         $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
                         $updateWhere = true;
-                    } elseif (array_key_exists($column, $this->values) && (! array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
+                    } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
                         if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
                             $update->addSets($this->access->$column . " = ?", array($this->values[$column]));
                         } else {
@@ -507,7 +507,7 @@ class Vizualizer_Plugin_Model
      */
     public function delete()
     {
-        if (! empty($this->primary_keys)) {
+        if (!empty($this->primary_keys)) {
             $delete = new Vizualizer_Query_Delete($this->access);
             $deleteWhere = false;
             foreach ($this->columns as $column) {

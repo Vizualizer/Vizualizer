@@ -58,7 +58,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function __construct()
     {
         $this->index = 0;
-
+        
         // HTTPのパラメータを統合する。（POST優先）
         $this->parameters = $_GET;
         if (!is_array($this->parameters)) {
@@ -69,7 +69,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
                 $this->parameters[$name] = $value;
             }
         }
-
+        
         // input-imageによって渡されたパラメータを展開
         $inputImageKeys = array();
         foreach ($this->parameters as $name => $value) {

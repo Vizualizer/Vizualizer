@@ -44,9 +44,10 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      * @var array
      */
     private $currentData;
-    
+
     /**
      * モデルクラス名
+     * 
      * @var string
      */
     private $modelClass;
@@ -60,6 +61,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
 
     /**
      * パラメータオブジェクトを初期化する。
+     * 
      * @param string $modelClass
      * @param Vizualizer_Query_Select_Result $result
      */
