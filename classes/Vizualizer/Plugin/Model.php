@@ -32,25 +32,25 @@ class Vizualizer_Plugin_Model
 {
     // ベースのデータベースアクセスオブジェクト
     protected $access;
-    
+
     // カラムリスト
     protected $columns;
-    
+
     // 主キーのリスト
     protected $primary_keys;
-    
+
     // 元設定値リスト
     protected $values_org;
-    
+
     // 設定値リスト
     protected $values;
-    
+
     // 結果のグループ化
     protected $groupBy;
-    
+
     // 出力レコード数
     protected $limit;
-    
+
     // 出力レコードオフセット
     protected $offset;
 
@@ -60,7 +60,7 @@ class Vizualizer_Plugin_Model
      */
     public function __construct($accessTable, $values = array())
     {
-        $this->access = & $accessTable;
+        $this->access = $accessTable;
         $this->columns = array();
         $this->primary_keys = $this->access->getPrimaryKeys();
         $this->values_org = array();
@@ -178,7 +178,7 @@ class Vizualizer_Plugin_Model
     public function findBy($values = array())
     {
         $result = $this->findAllBy($values);
-        
+
         if (($data = $result->next()) !== NULL) {
             $this->setValues($data->toArray());
             return true;
@@ -198,11 +198,11 @@ class Vizualizer_Plugin_Model
                 $select = $this->appendWhere($select, $key, $value);
             }
         }
-        
+
         if ($this->groupBy != null) {
             $select->addGroupBy($this->groupBy);
         }
-        
+
         if (!empty($order)) {
             if (is_array($order)) {
                 foreach ($order as $index => $ord) {
@@ -243,7 +243,7 @@ class Vizualizer_Plugin_Model
         $sqlResult = $select->fetch($this->limit, $this->offset);
         $thisClass = get_class($this);
         $result = new Vizualizer_Plugin_ModelIterator($thisClass, $sqlResult);
-        
+
         return $result;
     }
 
@@ -260,7 +260,7 @@ class Vizualizer_Plugin_Model
             }
         }
         $result = $select->execute();
-        
+
         if (count($result) > 0) {
             return $result[0]["count"];
         } else {
@@ -407,9 +407,10 @@ class Vizualizer_Plugin_Model
         $this->values = array();
         if ($values instanceof Vizualizer_Plugin_Model) {
             $values = $values->values;
-        }
-        foreach ($values as $key => $value) {
-            $this->values[$key] = $this->values_org[$key] = $value;
+        } elseif (is_array($values)) {
+            foreach ($values as $key => $value) {
+                $this->values[$key] = $this->values_org[$key] = $value;
+            }
         }
     }
 
@@ -440,14 +441,14 @@ class Vizualizer_Plugin_Model
             } else {
                 $result = array();
             }
-            
+
             // データ作成日／更新日は自動的に設定する。
             if (isset($_SESSION) && is_array($_SESSION) && array_key_exists("OPERATOR", $_SESSION) && $_SESSION["OPERATOR"]["operator_id"] > 0) {
                 $this->create_role_id = $this->update_role_id = $_SESSION["OPERATOR"]["role_id"];
                 $this->create_operator_id = $this->update_operator_id = $_SESSION["OPERATOR"]["operator_id"];
             }
             $this->create_time = $this->update_time = date("Y-m-d H:i:s");
-            
+
             if (!is_array($result) || empty($result)) {
                 // 主キーのデータが無かった場合はデータを作成する。
                 $this->create();
