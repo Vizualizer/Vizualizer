@@ -443,9 +443,9 @@ class Vizualizer_Plugin_Model
             }
 
             // データ作成日／更新日は自動的に設定する。
-            if (isset($_SESSION) && is_array($_SESSION) && array_key_exists("OPERATOR", $_SESSION) && $_SESSION["OPERATOR"]["operator_id"] > 0) {
-                $this->create_role_id = $this->update_role_id = $_SESSION["OPERATOR"]["role_id"];
-                $this->create_operator_id = $this->update_operator_id = $_SESSION["OPERATOR"]["operator_id"];
+            $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+            if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                $this->create_operator_id = $this->update_operator_id = $operator["operator_id"]["operator_id"];
             }
             $this->create_time = $this->update_time = date("Y-m-d H:i:s");
 

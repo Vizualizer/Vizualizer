@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,25 +57,18 @@ abstract class Vizualizer_Plugin_Module
 
     protected function removeInput($key)
     {
-        unset($_SESSION["INPUT_DATA"][TEMPLATE_DIRECTORY][$key]);
-        unset($_POST[$key]);
+        Vizualizer::request()->remove($key);
     }
 
     protected function redirect($url)
     {
-        if (is_array($_POST)) {
-            $_SESSION["INPUT_DATA"] = array(TEMPLATE_DIRECTORY => array());
-            foreach ($_POST as $key => $value) {
-                $_SESSION["INPUT_DATA"][TEMPLATE_DIRECTORY][$key] = $value;
-            }
-        }
         header("Location: " . $url);
-        exit();
+        exit;
     }
 
     protected function reload()
     {
-        $this->redirect(CLAY_SUBDIR . $_SERVER["TEMPLATE_NAME"]);
+        $attr = Vizualizer::attr();
+        $this->redirect(VIZUALIZER_SUBDIR . $attr["templateName"]);
     }
 }
- 

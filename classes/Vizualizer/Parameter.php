@@ -96,7 +96,12 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
             }
         }
         $this->parameters[TEMPLATE_DIRECTORY] = $this->normalize($this->parameters[TEMPLATE_DIRECTORY]);
-        $this->keys = array_keys($this->parameters);
+        $this->keys = array_keys($this->parameters[TEMPLATE_DIRECTORY]);
+    }
+
+    public function remove($key){
+        Vizualizer_Session::remove(Vizualizer::INPUT_KEY);
+        unset($this->parameters[$key]);
     }
 
     /**
@@ -116,7 +121,11 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function key()
     {
-        return $this->keys[$this->index];
+        if(isset($this->keys[$this->index])){
+            return $this->keys[$this->index];
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -125,7 +134,6 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function next()
     {
         $this->index ++;
-        return $this->current();
     }
 
     /**
