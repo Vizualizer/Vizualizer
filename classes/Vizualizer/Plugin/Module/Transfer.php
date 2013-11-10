@@ -43,8 +43,7 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
         $post = Vizualizer::request();
         if (!$params->check("search") || isset($post[$params->get("search")])) {
             $loader = new Vizualizer_Plugin($type);
-            $loader->LoadSetting();
-            
+
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
             $conditions = array();
             if (is_array($post["search"])) {
@@ -54,7 +53,7 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
                     }
                 }
             }
-            
+
             // 並べ替え順序が指定されている場合に適用
             $sortOrder = "";
             $sortReverse = false;
@@ -68,26 +67,26 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
                     $sortReverse = true;
                 }
             }
-            
+
             $model = $loader->LoadModel($name);
-            
+
             // 顧客データを検索する。
             if ($this->groupBy) {
                 $model->setGroupBy($this->groupBy);
             }
             $result = $model->getAllBy($conditions, $sortOrder, $sortReverse);
-            
+
             $titles = explode(",", $params->get("titles"));
             $columns = explode(",", $params->get("columns"));
-            
+
             $basename = uniqid($type . "_" . $name . "_") . ".csv";
             $filename = CLAY_ROOT . DIRECTORY_SEPARATOR . "_uploads" . DIRECTORY_SEPARATOR . $basename;
-            
+
             if (($fp = fopen($filename, "w+")) !== FALSE) {
                 // CSVヘッダを出力
                 fwrite($fp, mb_convert_encoding("\"" . implode("\",\"", $titles) . "\"\r\n", "Shift_JIS", "UTF-8"));
                 while ($data = $result->next()) {
-                    
+
                     // データが０件以上の場合は繰り返し
                     foreach ($columns as $index => $column) {
                         if ($index > 0)
@@ -97,7 +96,7 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
                     fwrite($fp, "\r\n");
                 }
                 fclose($fp);
-                
+
                 // 作成したファイルを転送
                 $info = parse_url($params->get("url", ""));
                 $info["chost"] = $info["host"];
@@ -142,7 +141,7 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
                     $postdata2 .= "\r\n--" . $boundary . "--";
                     $postdata .= "Content-Length: " . strlen($postdata2) . "\r\n";
                     $postdata .= "\r\n" . $postdata2;
-                    
+
                     echo $postdata;
                     fputs($fp, $postdata);
                     $response = "";
