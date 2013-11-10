@@ -179,7 +179,7 @@ class Vizualizer_Plugin_Model
     {
         $result = $this->findAllBy($values);
 
-        if (($data = $result->next()) !== NULL) {
+        if (($data = $result->current()) !== NULL) {
             $this->setValues($data->toArray());
             return true;
         }
