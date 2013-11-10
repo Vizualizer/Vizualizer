@@ -58,21 +58,32 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function __construct()
     {
         $this->index = 0;
-        
+
         // HTTPのパラメータを統合する。（POST優先）
-        $this->parameters = $_GET;
+        $this->parameters = Vizualizer_Session::get(Vizualizer::INPUT_KEY);
         if (!is_array($this->parameters)) {
             $this->parameters = array();
         }
-        if (is_array($_POST)) {
-            foreach ($_POST as $name => $value) {
-                $this->parameters[$name] = $value;
+        if(isset($this->parameters[TEMPLATE_DIRECTORY])){
+            $this->parameters = array(TEMPLATE_DIRECTORY => $this->parameters[TEMPLATE_DIRECTORY]);
+        }else{
+            $this->parameters = array(TEMPLATE_DIRECTORY => array());
+        }
+        if (is_array($_GET)) {
+            foreach ($_GET as $name => $value) {
+                $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
             }
         }
-        
+        if (is_array($_POST)) {
+            foreach ($_POST as $name => $value) {
+                $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
+            }
+        }
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
+
         // input-imageによって渡されたパラメータを展開
         $inputImageKeys = array();
-        foreach ($this->parameters as $name => $value) {
+        foreach ($this->parameters[TEMPLATE_DIRECTORY] as $name => $value) {
             if (preg_match("/^(.+)_([xy])$/", $name, $params) > 0) {
                 $inputImageKeys[$params[1]][$params[2]] = $value;
             }
@@ -80,12 +91,17 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         foreach ($inputImageKeys as $key => $inputImage) {
             if (isset($inputImage["x"]) && isset($inputImage["y"])) {
                 $this->parameters[$key] = $inputImage["x"] . "," . $inputImage["y"];
-                unset($this->parameters[$key . "_x"]);
-                unset($this->parameters[$key . "_y"]);
+                unset($this->parameters[TEMPLATE_DIRECTORY][$key . "_x"]);
+                unset($this->parameters[TEMPLATE_DIRECTORY][$key . "_y"]);
             }
         }
-        $this->parameters = $this->normalize($this->parameters);
-        $this->keys = array_keys($this->parameters);
+        $this->parameters[TEMPLATE_DIRECTORY] = $this->normalize($this->parameters[TEMPLATE_DIRECTORY]);
+        $this->keys = array_keys($this->parameters[TEMPLATE_DIRECTORY]);
+    }
+
+    public function remove($key){
+        Vizualizer_Session::remove(Vizualizer::INPUT_KEY);
+        unset($this->parameters[$key]);
     }
 
     /**
@@ -95,7 +111,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function current()
     {
-        return $this->parameters[$this->key()];
+        return $this->parameters[TEMPLATE_DIRECTORY][$this->key()];
     }
 
     /**
@@ -105,7 +121,11 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function key()
     {
-        return $this->keys[$this->index];
+        if(isset($this->keys[$this->index])){
+            return $this->keys[$this->index];
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -114,7 +134,6 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function next()
     {
         $this->index ++;
-        return $this->current();
     }
 
     /**
@@ -143,7 +162,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->parameters);
+        return array_key_exists($offset, $this->parameters[TEMPLATE_DIRECTORY]);
     }
 
     /**
@@ -155,7 +174,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
-            return $this->parameters[$offset];
+            return $this->parameters[TEMPLATE_DIRECTORY][$offset];
         }
         return false;
     }
@@ -168,7 +187,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->parameters[$offset] = $value;
+        $this->parameters[TEMPLATE_DIRECTORY][$offset] = $value;
     }
 
     /**
@@ -179,7 +198,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function offsetUnset($offset)
     {
         if ($this->offsetExists($offset)) {
-            unset($this->parameters[$offset]);
+            unset($this->parameters[TEMPLATE_DIRECTORY][$offset]);
         }
     }
 

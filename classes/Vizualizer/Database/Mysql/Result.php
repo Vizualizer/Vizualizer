@@ -58,7 +58,8 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
     public function fetch()
     {
         if ($this->resource != null) {
-            return mysqli_fetch_assoc($this->resource);
+            $result = mysqli_fetch_assoc($this->resource);
+            return $result;
         }
         return NULL;
     }
@@ -83,7 +84,7 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
     public function rewind()
     {
         if ($this->count() > 0) {
-            mysqli_field_seek($this->resource, 0);
+            mysqli_data_seek($this->resource, 0);
         }
     }
 

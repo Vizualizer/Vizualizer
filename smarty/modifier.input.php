@@ -16,7 +16,7 @@
  * Type: modifier<br>
  * Name: input<br>
  * Purpose: modify value prefer input<br>
- * 
+ *
  * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
  * @param array $params parameters
  * @param object $smarty Smarty object
@@ -25,11 +25,12 @@
  */
 function smarty_modifier_input($value, $key, $subkey = "")
 {
-    if ($value === null || $value === "" || isset($_POST[$key])) {
-        if ($subkey != "" && is_array($_POST[$key])) {
-            return $_POST[$key][$subkey];
+    $post = Vizualizer::request();
+    if ($value === null || $value === "" || isset($post[$key])) {
+        if ($subkey != "" && is_array($post[$key])) {
+            return $post[$key][$subkey];
         } else {
-            return $_POST[$key];
+            return $post[$key];
         }
     }
     return $value;

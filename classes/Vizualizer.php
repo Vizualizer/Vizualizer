@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,12 @@ class Vizualizer
 {
 
     /**
+     * 入力パラメータ保存用の定数
+     * @var string
+     */
+    const INPUT_KEY = "INPUT_DATA";
+
+    /**
      * リクエストパラメータのインスタンス用
      */
     private static $parameters;
@@ -49,25 +55,26 @@ class Vizualizer
      */
     final public static function initialize()
     {
-        // パラメータをnullで初期化
-        self::$parameters = null;
-        
-        // 属性を初期化
-        self::$attributes = null;
-        
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
         }
-        
+
         // システムのクラスディレクトリを設定
         if (!defined('VIZUALIZER_CLASSES_DIR')) {
             define('VIZUALIZER_CLASSES_DIR', VIZUALIZER_ROOT . "/classes");
         }
-        
+
         // ライブラリのクラス自動ローダーを初期化する。
         require (VIZUALIZER_CLASSES_DIR . DIRECTORY_SEPARATOR . "Vizualizer" . DIRECTORY_SEPARATOR . "Autoloader.php");
         Vizualizer_Autoloader::register();
+
+        // パラメータをnullで初期化
+        self::$parameters = null;
+
+        // 属性を初期化
+        self::$attributes = null;
+
     }
 
     /**
@@ -79,7 +86,7 @@ class Vizualizer
         if (!defined('VIZUALIZER_SITE_ROOT')) {
             define('VIZUALIZER_SITE_ROOT', realpath($siteRoot));
         }
-        
+
         // システムのルートURLへのサブディレクトリを設定
         if (!defined('VIZUALIZER_SUBDIR')) {
             if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
@@ -88,12 +95,12 @@ class Vizualizer
                 define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_SITE_ROOT));
             }
         }
-        
+
         // システムのルートURLを設定
         if (!defined('VIZUALIZER_URL')) {
             define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
         }
-        
+
         // Bootstrapを実行する。
         Vizualizer_Bootstrap::register(10, "PhpVersion");
         Vizualizer_Bootstrap::register(20, "Configure");
@@ -105,11 +112,11 @@ class Vizualizer
         Vizualizer_Bootstrap::register(80, "Session");
         Vizualizer_Bootstrap::register(90, "TemplateName");
         Vizualizer_Bootstrap::startup();
-        
+
         // テンプレートを生成
         $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
         $template = new $templateClass();
-        
+
         // テンプレートを表示
         $attr = Vizualizer::attr();
         $attr["template"] = $template;
@@ -133,13 +140,13 @@ class Vizualizer
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
-        
+
         // エラーログに書き込み
         Vizualizer_Logger::writeError($message . "(" . $code . ")", $ex);
-        
+
         // カスタムエラーページのパス
         $path = $_SERVER["CONFIGURE"]->site_home . $_SERVER["USER_TEMPLATE"] . DIRECTORY_SEPARATOR . "ERROR_" . $code . ".html";
-        
+
         // ファイルがある場合はエラーページを指定ファイルで出力
         if (file_exists($path)) {
             try {

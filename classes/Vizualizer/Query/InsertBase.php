@@ -80,7 +80,7 @@ abstract class Vizualizer_Query_InsertBase
                 $this->vals[] = trim($value);
             }
         }
-        
+
         $sql = "";
         if (!empty($cols)) {
             // クエリのビルド
@@ -101,7 +101,7 @@ abstract class Vizualizer_Query_InsertBase
                 $vals[] = "'" . $connection->escape(trim($value)) . "'";
             }
         }
-        
+
         $sql = "";
         if (!empty($cols)) {
             // クエリのビルド
@@ -117,7 +117,7 @@ abstract class Vizualizer_Query_InsertBase
     {
         try {
             $connection = Vizualizer_Database_Factory::begin($this->module);
-            return $connection->auto_increment();
+            return $connection->lastInsertId();
         } catch (Exception $e) {
             Vizualizer_Logger::writeError($e->getMessage(), $e);
             throw new Vizualizer_Exception_Database($e);

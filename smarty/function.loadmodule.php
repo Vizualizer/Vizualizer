@@ -56,7 +56,7 @@ function smarty_function_loadmodule($params, $template)
         trigger_error("loadmodule: missing name parameter", E_USER_WARNING);
         return;
     }
-    
+
     if (!empty($params["if"])) {
         $result = true;
         $expression = '$result = ' . str_replace('_POST', '$_POST', $params["if"]) . ';';
@@ -65,19 +65,20 @@ function smarty_function_loadmodule($params, $template)
             return;
         }
     }
-    
+
     // パラメータを変数にコピー
     $name = $params['name'];
-    
+
     // errorパラメータはエラー例外時に指定されたテンプレートに変更する。
     if (isset($params["error"])) {
         $error = $params['error'];
     } else {
         $error = "";
     }
-    
+
     // モジュールのクラスが利用可能か調べる。
     $errors = null;
+
     try {
         // モジュール用のクラスをリフレクション
         list ($namespace, $class) = explode(".", $name, 2);
@@ -121,7 +122,7 @@ function smarty_function_loadmodule($params, $template)
         Vizualizer_Logger::writeError($e->getMessage(), $e);
         $errors = array($e->getMessage());
     }
-    
+
     // エラー配列をスタックさせる
     if ($errors !== null) {
         $attr = Vizualizer::attr();
@@ -137,9 +138,13 @@ function smarty_function_loadmodule($params, $template)
             if (!is_array($attr["ERRORS"])) {
                 $attr["ERRORS"] = array();
             }
-            
+
             // エラー内容をマージさせる。
-            $attr["ERRORS"] = array_merge($attr["ERRORS"], $errors);
+            if (is_array($attr["ERRORS"])) {
+                $attr["ERRORS"] = array_merge($attr["ERRORS"], $errors);
+            } else {
+                $attr["ERRORS"] = $errors;
+            }
         }
     }
 }

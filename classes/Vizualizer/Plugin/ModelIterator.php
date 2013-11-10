@@ -47,7 +47,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
 
     /**
      * モデルクラス名
-     * 
+     *
      * @var string
      */
     private $modelClass;
@@ -61,7 +61,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
 
     /**
      * パラメータオブジェクトを初期化する。
-     * 
+     *
      * @param string $modelClass
      * @param Vizualizer_Query_Select_Result $result
      */
@@ -100,7 +100,6 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     {
         $this->index ++;
         $this->currentData = $this->result->next();
-        return $this->current();
     }
 
     /**
@@ -108,9 +107,9 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      */
     public function rewind()
     {
-        $this->index = -1;
+        $this->index = 0;
         $this->result->rewind();
-        $this->currentData = array();
+        $this->currentData = $this->result->next();
     }
 
     /**
