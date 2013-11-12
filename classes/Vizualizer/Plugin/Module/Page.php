@@ -112,8 +112,6 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
             $attr = Vizualizer::attr();
             $attr[$result . "_pager"] = $pager;
             $attr[$result] = $models;
-            echo $result."<br>";
-            print_r($attr["operator_pager"]);
         } elseif (!$params->check("reset") || isset($post[$params->get("reset")])) {
             $post["search"] = array();
             unset($post[$params->get("reset")]);
