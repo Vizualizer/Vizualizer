@@ -64,11 +64,11 @@ class Vizualizer
         if (!defined('VIZUALIZER_CLASSES_DIR')) {
             define('VIZUALIZER_CLASSES_DIR', VIZUALIZER_ROOT . "/classes");
         }
-
+        /*
         // ライブラリのクラス自動ローダーを初期化する。
         require (VIZUALIZER_CLASSES_DIR . DIRECTORY_SEPARATOR . "Vizualizer" . DIRECTORY_SEPARATOR . "Autoloader.php");
         Vizualizer_Autoloader::register();
-
+        */
         // パラメータをnullで初期化
         self::$parameters = null;
 

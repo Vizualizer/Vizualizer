@@ -64,9 +64,9 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         if (!is_array($this->parameters)) {
             $this->parameters = array();
         }
-        if(isset($this->parameters[TEMPLATE_DIRECTORY])){
+        if (isset($this->parameters[TEMPLATE_DIRECTORY])) {
             $this->parameters = array(TEMPLATE_DIRECTORY => $this->parameters[TEMPLATE_DIRECTORY]);
-        }else{
+        } else {
             $this->parameters = array(TEMPLATE_DIRECTORY => array());
         }
         if (is_array($_GET)) {
@@ -79,7 +79,6 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
                 $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
             }
         }
-        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
 
         // input-imageによって渡されたパラメータを展開
         $inputImageKeys = array();
@@ -96,12 +95,22 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
             }
         }
         $this->parameters[TEMPLATE_DIRECTORY] = $this->normalize($this->parameters[TEMPLATE_DIRECTORY]);
+
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
+
         $this->keys = array_keys($this->parameters[TEMPLATE_DIRECTORY]);
     }
 
-    public function remove($key){
-        Vizualizer_Session::remove(Vizualizer::INPUT_KEY);
-        unset($this->parameters[$key]);
+    public function set($key, $value)
+    {
+        $this->parameters[TEMPLATE_DIRECTORY][$key] = $value;
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
+    }
+
+    public function remove($key)
+    {
+        unset($this->parameters[TEMPLATE_DIRECTORY][$key]);
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
     }
 
     /**
@@ -121,9 +130,9 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function key()
     {
-        if(isset($this->keys[$this->index])){
+        if (isset($this->keys[$this->index])) {
             return $this->keys[$this->index];
-        }else{
+        } else {
             return null;
         }
     }

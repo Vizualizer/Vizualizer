@@ -66,9 +66,15 @@ abstract class Vizualizer_Plugin_Module
         exit;
     }
 
+    protected function redirectInside($url)
+    {
+        header("Location: ". VIZUALIZER_SUBDIR . $url);
+        exit;
+    }
+
     protected function reload()
     {
         $attr = Vizualizer::attr();
-        $this->redirect(VIZUALIZER_SUBDIR . $attr["templateName"]);
+        $this->redirectInside($attr["templateName"]);
     }
 }

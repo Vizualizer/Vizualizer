@@ -60,7 +60,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     private $result;
 
     /**
-     * パラメータオブジェクトを初期化する。
+     * コンストラクタ
      *
      * @param string $modelClass
      * @param Vizualizer_Query_Select_Result $result
@@ -70,6 +70,13 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
         $this->modelClass = $modelClass;
         $this->result = $result;
         $this->rewind();
+    }
+
+    /**
+     * デストラクタ
+     */
+    public function __destruct(){
+        $this->result->close();
     }
 
     /**

@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -89,24 +89,24 @@ class Vizualizer_Query_Delete
         // クエリのビルド
         $sql = "DELETE FROM " . $this->tables;
         $sql .= (!empty($this->wheres) ? " WHERE " . implode(" AND ", $this->wheres) : "");
-        
+
         return $sql;
     }
 
     public function showQuery()
     {
         $sql = $this->buildQuery();
-        
+
         if (is_array($this->values) && count($this->values) > 0) {
             $partSqls = explode("?", $sql);
             $sql = $partSqls[0];
-            
-            $connection = Vizualizer_Database_Factory::getConnection($this->module, true);
+
+            $connection = Vizualizer_Database_Factory::begin($this->module);
             foreach ($this->values as $index => $value) {
                 $sql .= "'" . $connection->escape($value) . "'" . $partSqls[$index + 1];
             }
         }
-        
+
         return $sql;
     }
 
@@ -118,7 +118,7 @@ class Vizualizer_Query_Delete
         // クエリを実行する。
         try {
             $sql = $this->showQuery();
-            $connection = Vizualizer_Database_Factory::getConnection($this->module);
+            $connection = Vizualizer_Database_Factory::begin($this->module);
             Vizualizer_Logger::writeDebug($sql);
             $result = $connection->query($sql);
         } catch (Exception $e) {
@@ -128,4 +128,3 @@ class Vizualizer_Query_Delete
         return $result;
     }
 }
- 

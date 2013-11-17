@@ -75,7 +75,7 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
                     $this->reload();
                 }
             } catch (Exception $e) {
-                Vizualizer_Database_Factory::rollBack(strtolower($type));
+                Vizualizer_Database_Factory::rollback($connection);
                 throw $e;
             }
         }
