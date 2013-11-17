@@ -64,6 +64,12 @@ class Vizualizer_Plugin
             if (class_exists($className)) {
                 Vizualizer_Logger::writeDebug("Loading: " . $className . "(" . memory_get_usage() . ")");
                 return new $className($params);
+            }else{
+                $className = "Vizualizer_" . $type . "_" . $this->namespace . "_" . implode("_", $names);
+                if (class_exists($className)) {
+                    Vizualizer_Logger::writeDebug("Loading: " . $className . "(" . memory_get_usage() . ")");
+                    return new $className($params);
+                }
             }
             Vizualizer_Logger::writeDebug("No Plugin : " . $className);
             return null;
