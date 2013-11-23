@@ -113,6 +113,23 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
     }
 
+    public function export()
+    {
+        return $this->parameters[TEMPLATE_DIRECTORY];
+    }
+
+    public function import($values)
+    {
+        $this->parameters[TEMPLATE_DIRECTORY] = $values;
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
+    }
+
+    public function clear()
+    {
+        $this->parameters[TEMPLATE_DIRECTORY] = array();
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
+    }
+
     /**
      * 現在の位置のパラメータを取得する。
      *
