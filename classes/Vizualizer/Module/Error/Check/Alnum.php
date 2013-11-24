@@ -36,6 +36,7 @@ class Vizualizer_Module_Error_Check_Alnum extends Vizualizer_Plugin_Module
      */
     function execute($params)
     {
+        $post = Vizualizer::request();
         if (!empty($post[$params->get("key")]) && !ctype_alnum($post[$params->get("key")])) {
             throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "は半角英数字で入力してください。"));
         }

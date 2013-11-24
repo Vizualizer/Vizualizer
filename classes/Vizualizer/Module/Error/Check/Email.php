@@ -33,6 +33,7 @@ class Vizualizer_Module_Error_Check_Email extends Vizualizer_Plugin_Module
 
     function execute($params)
     {
+        $post = Vizualizer::request();
         if (!empty($post[$params->get("key")])) {
             if (preg_match("/^[a-zA-Z0-9!$&*.=^`|~#%'+\\/?_{}-]+@([a-zA-Z0-9_-]+\\.)+[a-zA-Z]{2,4}$/", $post[$params->get("key")]) == 0) {
                 throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "は正しいメールアドレスではありません。"));

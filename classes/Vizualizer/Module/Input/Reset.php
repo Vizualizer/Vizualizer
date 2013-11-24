@@ -34,9 +34,15 @@ class Vizualizer_Module_Input_Reset extends Vizualizer_Plugin_Module
     function execute($params)
     {
         $post = Vizualizer::request();
-        $search = $post["search"];
+        $keys = explode(",", $params->get("except", "search"));
+        $values = array();
+        foreach($keys as $key){
+            $values[$key] = $post[$key];
+        }
         $post->clear();
-        $post->set("search", $search);
+        foreach($keys as $key){
+            $post->set($key, $values[$key]);
+        }
     }
 }
 ?>

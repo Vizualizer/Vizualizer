@@ -33,6 +33,7 @@ class Vizualizer_Module_Error_Check_Require extends Vizualizer_Plugin_Module
 
     function execute($params)
     {
+        $post = Vizualizer::request();
         if ((!isset($post[$params->get("key")]) || $post[$params->get("key")] == "") && empty($errors[$params->get("key")])) {
             throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "が未入力です。"));
         }

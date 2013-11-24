@@ -16,16 +16,15 @@
  * Type: function<br>
  * Name: redirect<br>
  * Purpose: redirect page module.<br>
- * 
+ *
  * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
  * @param array $params parameters
- * @param object $smarty Smarty object
  * @param object $template template object
  * @return string null
  */
-function smarty_function_redirect($params, $smarty, $template)
+function smarty_function_redirect($params, $template)
 {
-    if (!empty($params["url"]) && !empty($_POST)) {
+    if (!empty($params["url"])) {
         header("Location: " . $params["url"]);
         exit();
     }

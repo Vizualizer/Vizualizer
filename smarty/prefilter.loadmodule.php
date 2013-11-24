@@ -78,32 +78,6 @@ function smarty_prefilter_loadmodule($source, $smarty)
                     $modules .= "}-->\r\n";
                     $source = str_replace($tag, "", $source);
                     break;
-                // モジュール呼び出し用メタタグの解析
-                case "beginloop":
-                    $definition .= "<!--{define_module name=\"" . $param["content"] . "\"}-->\r\n";
-                    $modules .= "<!--{loadmodule name=\"" . $param["content"] . "\"";
-                    foreach ($param as $name => $value) {
-                        if ($name != "name" && $name != "content") {
-                            $modules .= " " . $name . "=\"" . $value . "\"";
-                        }
-                    }
-                    $modules .= "}-->\r\n";
-                    $modules .= "<!--{while \$smarty.server.ATTRIBUTES." . $param["loop"] . " != null}-->\r\n";
-                    $source = str_replace($tag, "", $source);
-                    break;
-                // モジュール呼び出し用メタタグの解析
-                case "endloop":
-                    $definition .= "<!--{define_module name=\"" . $param["content"] . "\"}-->\r\n";
-                    $modules .= "<!--{loadmodule name=\"" . $param["content"] . "\"";
-                    foreach ($param as $name => $value) {
-                        if ($name != "name" && $name != "content") {
-                            $modules .= " " . $name . "=\"" . $value . "\"";
-                        }
-                    }
-                    $modules .= "}-->\r\n";
-                    $modules .= "<!--{/while}-->\r\n";
-                    $source = str_replace($tag, "", $source);
-                    break;
                 // リダイレクト用メタタグの解析
                 case "redirect":
                     $redirect = "<!--{" . $param["name"] . " url=\"" . $param["content"] . "\"}-->\r\n";

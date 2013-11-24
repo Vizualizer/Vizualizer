@@ -33,6 +33,7 @@ class Vizualizer_Module_Error_Check_FutureDay extends Vizualizer_Plugin_Module
 
     function execute($params)
     {
+        $post = Vizualizer::request();
         if (!empty($post[$params->get("key")])) {
             if (time() < strtotime($post[$params->get("key")])) {
                 throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "は未来の日付です。"));

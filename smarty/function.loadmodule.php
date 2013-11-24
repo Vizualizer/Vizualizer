@@ -130,26 +130,25 @@ function smarty_function_loadmodule($params, $template)
     // エラー配列をスタックさせる
     if (is_array($errors) && !empty($errors)) {
         $attr = Vizualizer::attr();
+        // エラー用配列が配列になっていない場合は初期化
+        $errorData = $attr[Vizualizer::ERROR_KEY];
+        if (!is_array($errorData)) {
+            $errorData = array();
+        }
+        // エラー内容をマージさせる。
+        foreach($errors as $key => $message){
+            if($key != "" && !array_key_exists($key, $errorData)){
+                $errorData[$key] = $message;
+            }
+        }
         $templateEngine = $attr["template"];
         if (!empty($error)) {
             // errorパラメータが渡っている場合はスタックさせたエラーを全て出力してエラー画面へ
-            $templateEngine->assign("ERRORS", $errors);
+            $templateEngine->assign("ERRORS", $errorData);
             unset($attr[Vizualizer::ERROR_KEY]);
             $templateEngine->display($error);
             exit;
         } else {
-            // エラー用配列が配列になっていない場合は初期化
-            $errorData = $attr[Vizualizer::ERROR_KEY];
-            if (!is_array($errorData)) {
-                $errorData = array();
-            }
-
-            // エラー内容をマージさせる。
-            foreach($errors as $key => $message){
-                if($key != "" && !array_key_exists($key, $errorData)){
-                    $errorData[$key] = $message;
-                }
-            }
             $attr[Vizualizer::ERROR_KEY] = $errorData;
         }
     }
