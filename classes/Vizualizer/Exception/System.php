@@ -32,21 +32,14 @@ class Vizualizer_Exception_System extends Exception
 {
 
     /**
-     * エラーの元となった例外
-     */
-    var $source;
-
-    /**
      * コンストラクタ
      *
      * @param $message 例外のメッセージ
      * @param $code 例外のエラーコード
      * @param $source 例外の原因となった例外
      */
-    public function __construct($message = "", $code = 0, $source = null)
+    public function __construct($message = "", $code = 0, $previous = null)
     {
-        parent::__construct($message, $code);
-        
-        $this->source = $source;
+        parent::__construct($message, $code, $previous);
     }
 }

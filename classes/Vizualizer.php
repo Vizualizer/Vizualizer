@@ -41,6 +41,30 @@ class Vizualizer
     const INPUT_KEY = "INPUT_DATA";
 
     /**
+     * エラーリスト保存用の定数
+     * @var string
+     */
+    const ERROR_KEY = "ERROR_LIST_KEY";
+
+    /**
+     * システムエラーのタイプ
+     * @var string
+     */
+    const ERROR_TYPE_SYSTEM = "SYSTEM";
+
+    /**
+     * データベースエラーのタイプ
+     * @var string
+     */
+    const ERROR_TYPE_DATABASE = "DATABASE";
+
+    /**
+     * 不明なエラーのタイプ
+     * @var string
+     */
+    const ERROR_TYPE_UNKNOWN = "UNKNOWN";
+
+    /**
      * リクエストパラメータのインスタンス用
      */
     private static $parameters;
@@ -116,6 +140,7 @@ class Vizualizer
         // テンプレートを生成
         $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
         $template = new $templateClass();
+        $template->assign("ERRORS", array());
 
         // テンプレートを表示
         $attr = Vizualizer::attr();

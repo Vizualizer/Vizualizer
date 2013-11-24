@@ -23,22 +23,28 @@
  */
 
 /**
- * データベースエラー時の例外クラスです。
+ * チェックしたエラーの内容をコミットして、リダイレクトさせる。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Exception_Database extends Vizualizer_Exception_System
+class Vizualizer_Module_Error_Redirect extends Vizualizer_Plugin_Module
 {
 
-    /**
-     * コンストラクタ
-     *
-     * @param $err この例外の原因となったデータベースの例外
-     * @param $code この例外のエラーコード
-     */
-    public function __construct($err, $code = 0)
+    function execute($params)
     {
-        parent::__construct($err->getMessage(), $code, $err);
+        $post = Vizualizer::request();
+        $attr = Vizualizer::attr();
+        $errors = $attr[Vizualizer::ERROR_KEY];
+        if (!empty($errors) && ($params->check("url") || $params->check("urlkey"))) {
+            VizualizerSession::set("LAST_ERRORS", array(Vizualizer::ERROR_KEY => $errors, Vizualizer::INPUT_KEY => $post));
+            if ($params->check("url")) {
+                header("Location: " . $params->get("url"));
+                exit();
+            } else {
+                header("Location: " . $post[$params->get("urlkey")]);
+                exit();
+            }
+        }
     }
 }

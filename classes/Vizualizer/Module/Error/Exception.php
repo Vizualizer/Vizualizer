@@ -23,22 +23,20 @@
  */
 
 /**
- * データベースエラー時の例外クラスです。
+ * チェックしたエラーの内容を確定して、例外を発生させる。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Exception_Database extends Vizualizer_Exception_System
+class Vizualizer_Module_Error_Exception extends Vizualizer_Plugin_Module
 {
 
-    /**
-     * コンストラクタ
-     *
-     * @param $err この例外の原因となったデータベースの例外
-     * @param $code この例外のエラーコード
-     */
-    public function __construct($err, $code = 0)
+    function execute($params)
     {
-        parent::__construct($err->getMessage(), $code, $err);
+        $attr = Vizualizer::attr();
+        $errors = $attr[Vizualizer::ERROR_KEY];
+        if (!empty($errors)) {
+            throw new Vizualizer_Exception_Invalid("", "");
+        }
     }
 }

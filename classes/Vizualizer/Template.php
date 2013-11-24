@@ -109,7 +109,6 @@ abstract class Vizualizer_Template
         $templateEngine->assign("attr", $attr);
         $templateEngine->assign("sessionName", session_name());
         $templateEngine->assign("sessionId", session_id());
-        $templateEngine->assign("ERRORS", array());
 
         // display template
         Vizualizer_Logger::writeDebug("Template Dir : " . var_export($this->template_dir, true));

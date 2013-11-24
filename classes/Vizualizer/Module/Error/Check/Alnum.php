@@ -23,22 +23,21 @@
  */
 
 /**
- * データベースエラー時の例外クラスです。
+ * 半角英数かどうかのチェックを行う。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Exception_Database extends Vizualizer_Exception_System
+class Vizualizer_Module_Error_Check_Alnum extends Vizualizer_Plugin_Module
 {
 
     /**
-     * コンストラクタ
-     *
-     * @param $err この例外の原因となったデータベースの例外
-     * @param $code この例外のエラーコード
+     * モジュールのエンドポイント
      */
-    public function __construct($err, $code = 0)
+    function execute($params)
     {
-        parent::__construct($err->getMessage(), $code, $err);
+        if (!empty($post[$params->get("key")]) && !ctype_alnum($post[$params->get("key")])) {
+            throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "は半角英数字で入力してください。"));
+        }
     }
 }

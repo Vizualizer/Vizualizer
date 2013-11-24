@@ -23,22 +23,20 @@
  */
 
 /**
- * データベースエラー時の例外クラスです。
+ * メールアドレスかどうかのチェックを行う。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Exception_Database extends Vizualizer_Exception_System
+class Vizualizer_Module_Error_Check_Email extends Vizualizer_Plugin_Module
 {
 
-    /**
-     * コンストラクタ
-     *
-     * @param $err この例外の原因となったデータベースの例外
-     * @param $code この例外のエラーコード
-     */
-    public function __construct($err, $code = 0)
+    function execute($params)
     {
-        parent::__construct($err->getMessage(), $code, $err);
+        if (!empty($post[$params->get("key")])) {
+            if (preg_match("/^[a-zA-Z0-9!$&*.=^`|~#%'+\\/?_{}-]+@([a-zA-Z0-9_-]+\\.)+[a-zA-Z]{2,4}$/", $post[$params->get("key")]) == 0) {
+                throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "は正しいメールアドレスではありません。"));
+            }
+        }
     }
 }

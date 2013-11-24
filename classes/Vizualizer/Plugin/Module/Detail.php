@@ -37,7 +37,7 @@ abstract class Vizualizer_Plugin_Module_Detail extends Vizualizer_Plugin_Module
         $loader = new Vizualizer_Plugin($type);
         $model = $loader->loadModel($name);
         $model->findByPrimaryKey($value);
-        
+
         $attr = Vizualizer::attr();
         $attr[$result] = $model;
     }

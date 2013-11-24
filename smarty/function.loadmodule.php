@@ -113,38 +113,44 @@ function smarty_function_loadmodule($params, $template)
         // 入力エラーなどの例外（ただし、メッセージリストを空にすると例外処理を行わない）
         Vizualizer_Logger::writeError($e->getMessage(), $e);
         $errors = $e->getErrors();
+    } catch (Vizualizer_Exception_Database $e) {
+        // システムエラーの例外処理
+        Vizualizer_Logger::writeError($e->getMessage(), $e);
+        $errors = array(Vizualizer::ERROR_TYPE_DATABASE => $e->getMessage());
     } catch (Vizualizer_Exception_System $e) {
         // システムエラーの例外処理
         Vizualizer_Logger::writeError($e->getMessage(), $e);
-        $errors = array($e->getMessage());
+        $errors = array(Vizualizer::ERROR_TYPE_SYSTEM => $e->getMessage());
     } catch (Exception $e) {
-        // システムエラーの例外処理
+        // 不明なエラーの例外処理
         Vizualizer_Logger::writeError($e->getMessage(), $e);
-        $errors = array($e->getMessage());
+        $errors = array(Vizualizer::ERROR_TYPE_UNKNOWN => $e->getMessage());
     }
 
     // エラー配列をスタックさせる
-    if ($errors !== null) {
+    if (is_array($errors) && !empty($errors)) {
         $attr = Vizualizer::attr();
         $templateEngine = $attr["template"];
         if (!empty($error)) {
             // errorパラメータが渡っている場合はスタックさせたエラーを全て出力してエラー画面へ
             $templateEngine->assign("ERRORS", $errors);
-            unset($attr["ERRORS"]);
+            unset($attr[Vizualizer::ERROR_KEY]);
             $templateEngine->display($error);
-            exit();
+            exit;
         } else {
             // エラー用配列が配列になっていない場合は初期化
-            if (!is_array($attr["ERRORS"])) {
-                $attr["ERRORS"] = array();
+            $errorData = $attr[Vizualizer::ERROR_KEY];
+            if (!is_array($errorData)) {
+                $errorData = array();
             }
 
             // エラー内容をマージさせる。
-            if (is_array($attr["ERRORS"])) {
-                $attr["ERRORS"] = array_merge($attr["ERRORS"], $errors);
-            } else {
-                $attr["ERRORS"] = $errors;
+            foreach($errors as $key => $message){
+                if($key != "" && !array_key_exists($key, $errorData)){
+                    $errorData[$key] = $message;
+                }
             }
+            $attr[Vizualizer::ERROR_KEY] = $errorData;
         }
     }
 }
