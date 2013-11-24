@@ -30,7 +30,6 @@
  */
 class Vizualizer_Database_Factory
 {
-
     const MODE_WRITE = "write";
     const MODE_READ = "read";
 
@@ -73,10 +72,10 @@ class Vizualizer_Database_Factory
      */
     private static function getConfigure($code = "default")
     {
-        if(!array_key_exists($code, self::$configures)){
+        if (!array_key_exists($code, self::$configures)) {
             $code = "default";
         }
-        if(array_key_exists($code, self::$configures)){
+        if (array_key_exists($code, self::$configures)) {
             return self::$configures[$code];
         }
         return array();
@@ -90,12 +89,12 @@ class Vizualizer_Database_Factory
      */
     private static function getConnection($code = "default", $mode = self::MODE_WRITE)
     {
-
+        
         // DBのコネクションが設定されていない場合は接続する。
         if (!array_key_exists($code . "_" . $mode, self::$connections)) {
             $confs = Vizualizer_Database_Factory::getConfigure($code);
             $conf = $confs[$mode];
-
+            
             try {
                 // 設定に応じてDBに接続
                 switch ($conf["dbtype"]) {
@@ -113,8 +112,9 @@ class Vizualizer_Database_Factory
 
     /**
      * トランザクションを開始して、書き込み用の接続を取得する。
+     * 
      * @param string $code
-     * @return Vizualizer_Database_Connection|boolean
+     * @return Vizualizer_Database_Connection boolean
      */
     public static function begin($code = "default")
     {
@@ -128,10 +128,12 @@ class Vizualizer_Database_Factory
 
     /**
      * 読み込み用の接続を取得する。
+     * 
      * @param unknown $code
-     * @return Vizualizer_Database_Connection|boolean
+     * @return Vizualizer_Database_Connection boolean
      */
-    public static function conn($code = "default"){
+    public static function conn($code = "default")
+    {
         $connection = self::getConnection($code, self::MODE_READ);
         if ($connection instanceof Vizualizer_Database_Connection) {
             return $connection;
@@ -141,6 +143,7 @@ class Vizualizer_Database_Factory
 
     /**
      * トランザクションをコミットする。
+     * 
      * @param Vizualizer_Database_Connection $connection
      */
     public static function commit($connection)
@@ -152,6 +155,7 @@ class Vizualizer_Database_Factory
 
     /**
      * トランザクションをロールバックする。
+     * 
      * @param Vizualizer_Database_Connection $connection
      */
     public static function rollback($connection)
@@ -171,5 +175,4 @@ class Vizualizer_Database_Factory
             unset(self::$connections[$code]);
         }
     }
-
 }

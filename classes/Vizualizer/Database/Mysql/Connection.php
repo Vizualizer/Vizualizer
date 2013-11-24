@@ -33,6 +33,8 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
 
     private $connection;
 
+    private $inTransaction;
+
     /**
      * コンストラクタ
      *
@@ -46,6 +48,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
         $this->connection = mysqli_connect($configure["host"], $configure["user"], $configure["password"], $configure["database"], $configure["port"]);
         mysqli_set_charset($this->connection, "UTF-8");
         mysqli_query($this->connection, $configure["query"]);
+        $this->inTransaction = false;
     }
 
     /**
@@ -119,7 +122,10 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function begin()
     {
-        $this->query("BEGIN");
+        if(!$this->inTransaction){
+            $this->query("BEGIN");
+            $this->inTransaction = true;
+        }
     }
 
     /**
@@ -127,7 +133,10 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function commit()
     {
-        $this->query("COMMIT");
+        if($this->inTransaction){
+            $this->query("COMMIT");
+            $this->inTransaction = false;
+        }
     }
 
     /**
@@ -135,7 +144,10 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function rollback()
     {
-        $this->query("ROLLBACK");
+        if($this->inTransaction){
+            $this->query("ROLLBACK");
+            $this->inTransaction = false;
+        }
     }
 
     /**
@@ -201,6 +213,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function close()
     {
         if ($this->connection != null) {
+            $this->rollback();
             mysqli_close($this->connection);
             $this->connection = null;
         }

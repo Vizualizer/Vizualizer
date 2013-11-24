@@ -41,18 +41,18 @@ abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
             $model->findByPrimaryKey($post[$key]);
 
             // トランザクションデータベースの取得
-            Vizualizer_Database_Factory::begin(strtolower($type));
+            $connection = Vizualizer_Database_Factory::begin(strtolower($type));
 
             try {
                 $model->delete();
 
                 // エラーが無かった場合、処理をコミットする。
-                Vizualizer_Database_Factory::commit(strtolower($type));
+                Vizualizer_Database_Factory::commit($connection);
 
                 $this->removeInput("delete");
                 $this->removeInput($key);
             } catch (Exception $e) {
-                Vizualizer_Database_Factory::rollBack(strtolower($type));
+                Vizualizer_Database_Factory::rollback($connection);
                 throw $e;
             }
         }

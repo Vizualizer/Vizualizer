@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
  *
@@ -27,72 +28,86 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Plugin_Table_Column{
-	/**
-	 * @var string テーブルのモジュール名
-	 */
-	private $module;
+class Vizualizer_Plugin_Table_Column
+{
 
-	/**
-	 * @var string テーブルの名称
-	 */
-	private $table;
+    /**
+     *
+     * @var string テーブルのモジュール名
+     */
+    private $module;
 
-	/**
-	 * @var string フィールド名
-	 */
-	private $field;
+    /**
+     *
+     * @var string テーブルの名称
+     */
+    private $table;
 
-	/**
-	 * @var boolean NULL可能かどうかのフラグ
-	 */
-	private $canNull;
+    /**
+     *
+     * @var string フィールド名
+     */
+    private $field;
 
-	/**
-	 * @var boolean 主キーかどうかのフラグ
-	 */
-	private $isKey;
+    /**
+     *
+     * @var boolean NULL可能かどうかのフラグ
+     */
+    private $canNull;
 
-	/**
-	 * @var boolean 自動採番かどうかのフラグ
-	 */
-	private $isAutoIncrement;
+    /**
+     *
+     * @var boolean 主キーかどうかのフラグ
+     */
+    private $isKey;
 
-	/**
-	 * データベースのフィールドインスタンスを生成する。
-	 * @param Vizualizer_Plugin_Table $table フィールドを保有しているテーブルのインスタンス
-	 * @param string $column フィールドのカラム名
-	 */
-	public function __construct($table, $column){
-		$this->module = $table->getModuleName();
-		$this->table = $table->_C;
-		$this->field = $column["Field"];
-		$this->canNull = (($column["Null"] == "YES")?true:false);
-		$this->isKey = (($column["Key"] == "PRI")?true:false);
-		$this->isAutoIncrement = (($column["Extra"] == "auto_increment")?true:false);
-	}
+    /**
+     *
+     * @var boolean 自動採番かどうかのフラグ
+     */
+    private $isAutoIncrement;
 
-	/**
-	 * テーブルのカラムの詳細情報を取得
-	 * @param string $name カラム種別
-	 * @return string カラム詳細
-	 */
-	public function __get($name){
-		if(isset($this->$name)){
-			return $this->$name;
-		}
-		return null;
-	}
+    /**
+     * データベースのフィールドインスタンスを生成する。
+     * 
+     * @param Vizualizer_Plugin_Table $table フィールドを保有しているテーブルのインスタンス
+     * @param string $column フィールドのカラム名
+     */
+    public function __construct($table, $column)
+    {
+        $this->module = $table->getModuleName();
+        $this->table = $table->_C;
+        $this->field = $column["Field"];
+        $this->canNull = (($column["Null"] == "YES") ? true : false);
+        $this->isKey = (($column["Key"] == "PRI") ? true : false);
+        $this->isAutoIncrement = (($column["Extra"] == "auto_increment") ? true : false);
+    }
 
-	/**
-	 * フィールドを文字列として扱った場合にフィールド名となるようにする。
-	 * @return string クラスの文字列表現
-	 */
-	public function __toString(){
-		// DBの接続を取得する。
-		$connection = Vizualizer_Database_Factory::conn($this->module);
+    /**
+     * テーブルのカラムの詳細情報を取得
+     * 
+     * @param string $name カラム種別
+     * @return string カラム詳細
+     */
+    public function __get($name)
+    {
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+        return null;
+    }
 
-		// カラム名をエスケープする。
-		return $this->table.".".$connection->escapeIdentifier($this->field);
-	}
+    /**
+     * フィールドを文字列として扱った場合にフィールド名となるようにする。
+     * 
+     * @return string クラスの文字列表現
+     */
+    public function __toString()
+    {
+        // DBの接続を取得する。
+        $connection = Vizualizer_Database_Factory::conn($this->module);
+        
+        // カラム名をエスケープする。
+        return $this->table . "." . $connection->escapeIdentifier($this->field);
+    }
 }

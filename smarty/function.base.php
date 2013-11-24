@@ -11,8 +11,8 @@
  */
 function smarty_function_base($params, $template)
 {
-    if (substr(VIZUALIZER_SUBDIR, - 1) == "/") {
-        return substr(VIZUALIZER_SUBDIR, 0, - 1);
+    if (substr(VIZUALIZER_SUBDIR, -1) == "/") {
+        return substr(VIZUALIZER_SUBDIR, 0, -1);
     }
     return VIZUALIZER_SUBDIR;
 }

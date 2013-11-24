@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of CLAY Framework for view-module based system.
  *
@@ -31,27 +32,27 @@ function smarty_function_assign_summery($params, $smarty, $template)
         return;
     }
     
-	$title = $params['title'];
-	$key = $params['key'];
+    $title = $params['title'];
+    $key = $params['key'];
     $summery = array();
-    foreach($params['value'] as $data){
-    	if(is_array($data)){
-    		if(!isset($summery[$data[$title]][$key])){
-    			$summery[$data[$title]][$title] = $data[$title];
-	    		$summery[$data[$title]][$key] = 0;
-    		}
-    		$summery[$data[$title]][$key] += $data[$key];
-    	}else{
-    		if(!isset($summery[$data->$title][$key])){
-    			$summery[$data->$title][$title] = $data->$title;
-	    		$summery[$data->$title][$key] = 0;
-    		}
-    		$summery[$data->$title][$key] += $data->$key;
-    	}
+    foreach ($params['value'] as $data) {
+        if (is_array($data)) {
+            if (!isset($summery[$data[$title]][$key])) {
+                $summery[$data[$title]][$title] = $data[$title];
+                $summery[$data[$title]][$key] = 0;
+            }
+            $summery[$data[$title]][$key] += $data[$key];
+        } else {
+            if (!isset($summery[$data->$title][$key])) {
+                $summery[$data->$title][$title] = $data->$title;
+                $summery[$data->$title][$key] = 0;
+            }
+            $summery[$data->$title][$key] += $data->$key;
+        }
     }
     $result = array();
-    foreach($summery as $data){
-    	$result[] = $data;
+    foreach ($summery as $data) {
+        $result[] = $data;
     }
     $template->assign($params['var'], $result);
 }

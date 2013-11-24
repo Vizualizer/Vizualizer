@@ -31,9 +31,16 @@
 abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
 {
 
+    private $condition = array();
+
     private $countColumn = "";
 
     private $groupBy = "";
+
+    protected function addCondition($key, $value)
+    {
+        $this->condition[$key] = $value;
+    }
 
     protected function setCountColumn($countColumn)
     {
@@ -50,7 +57,6 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
         $post = Vizualizer::request();
         if (!$params->check("search") || isset($post[$params->get("search")])) {
             $loader = new Vizualizer_Plugin($type);
-            $loader->LoadSetting();
 
             // ページャの初期化
             $pagerMode = $params->get("_pager_mode", Vizualizer_Pager::PAGE_SLIDE);
@@ -69,7 +75,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
             $pager->importTemplates($params);
 
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
-            $conditions = array();
+            $conditions = $this->condition;
             if (is_array($post["search"])) {
                 foreach ($post["search"] as $key => $value) {
                     if (!$this->isEmpty($value)) {

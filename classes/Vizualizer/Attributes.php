@@ -36,31 +36,21 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      *
      * @var int
      */
-    private $index;
+    private static $index = 0;
 
     /**
      * 属性のキー配列
      *
      * @var array
      */
-    private $keys;
+    private static $keys = array();
 
     /**
      * 属性の配列
      *
      * @var array
      */
-    private $attributes;
-
-    /**
-     * パラメータオブジェクトを初期化する。
-     */
-    public function __construct()
-    {
-        $this->index = 0;
-        
-        $this->attributes = array();
-    }
+    private static $attributes = array();
 
     /**
      * 現在の位置のパラメータを取得する。
@@ -148,7 +138,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
 
     /**
      * 指定されたキーのパラメータを削除する。
-     * 
+     *
      * @param mixed $offset 削除するパラメータのキー
      */
     public function offsetUnset($offset)

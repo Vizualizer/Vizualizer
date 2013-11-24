@@ -32,11 +32,6 @@ class Vizualizer_Exception_Database extends Vizualizer_Exception_System
 {
 
     /**
-     * エラーオブジェクト
-     */
-    private $err;
-
-    /**
      * コンストラクタ
      *
      * @param $err この例外の原因となったデータベースの例外
@@ -44,17 +39,6 @@ class Vizualizer_Exception_Database extends Vizualizer_Exception_System
      */
     public function __construct($err, $code = 0)
     {
-        $this->err = $err;
-        parent::__construct($err->getMessage(), $code);
-    }
-
-    /**
-     * データベース例外を取得します。
-     *
-     * @return Exception この例外の原因となったデータベースの例外
-     */
-    public function getError()
-    {
-        return $this->err;
+        parent::__construct($err->getMessage(), $code, $err);
     }
 }

@@ -16,7 +16,7 @@
  * Type: function<br>
  * Name: end_session<br>
  * Purpose: end session module.<br>
- * 
+ *
  * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
  * @param array $params parameters
  * @param object $smarty Smarty object
@@ -25,16 +25,6 @@
  */
 function smarty_function_end_session($params, $template)
 {
-    // POSTの内容をセッションに戻す
-    $post = Vizualizer::request();
-    $inputData = Vizualizer_Session::get("INPUT_DATA");
-    if (is_array($post)) {
-        $inputData = array(TEMPLATE_DIRECTORY => array());
-        foreach ($post as $key => $value) {
-            $inputData[TEMPLATE_DIRECTORY][$key] = $value;
-        }
-    }
-    
     // テンプレートに各種変数を割り当て
     $attr = Vizualizer::attr();
     $template = $attr["template"];
@@ -43,7 +33,7 @@ function smarty_function_end_session($params, $template)
     $template->assign("attr", $attr);
     $template->assign("sessionName", session_name());
     $template->assign("sessionId", session_id());
-    
+
     Vizualizer_Logger::writeDebug("Page Session Ended.");
 }
 ?>

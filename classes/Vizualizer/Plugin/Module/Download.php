@@ -42,7 +42,6 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
     {
         if (!$params->check("search") || isset($_POST[$params->get("search")])) {
             $loader = new Vizualizer_Plugin($type);
-            $loader->LoadSetting();
 
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
             $conditions = array();

@@ -44,10 +44,24 @@ class Vizualizer_Exception_Invalid extends Vizualizer_Exception_System
      * @param $errors 入力エラーのメッセージリスト
      * @param $code この例外のエラーコード
      */
-    public function __construct($errors, $code = 0)
+    public function __construct($key, $message)
     {
-        $this->errors = $errors;
-        parent::__construct(implode("\r\n", $errors), $code);
+        $this->addError($key, $message);
+        parent::__construct(implode("\r\n", $this->errors));
+    }
+
+    /**
+     * 入力エラーを追加する。
+     *
+     * @param string $key
+     * @param string $message
+     */
+    public function addError($key, $message)
+    {
+        if (!is_array($this->errors)) {
+            $this->errors = array();
+        }
+        $this->errors[$key] = $message;
     }
 
     /**

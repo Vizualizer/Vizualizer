@@ -33,7 +33,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * テーブルのカラムを取得する。
-     * 
+     *
      * @param string $table テーブル名
      * @return array カラムのリスト
      * @throws Clay_Exception_System
@@ -42,7 +42,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * テーブルのキーを取得する。
-     * 
+     *
      * @param string $table テーブル名
      * @return array キーのリスト
      */
@@ -50,7 +50,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * テーブルのインデックスを取得する。
-     * 
+     *
      * @param string $table テーブル名
      * @return array インデックスのリスト
      */
@@ -73,7 +73,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * 値のエスケープ処理
-     * 
+     *
      * @param string $value エスケープする値
      * @return string エスケープした値
      */
@@ -81,7 +81,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * 識別子のエスケープ処理
-     * 
+     *
      * @param string $value エスケープする識別子
      * @return string エスケープした識別子
      */
@@ -89,7 +89,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * クエリの実行
-     * 
+     *
      * @param string $query 実行するクエリ
      * @return Vizualizer_Database_Result 実行結果
      */
@@ -97,7 +97,7 @@ interface Vizualizer_Database_Connection
 
     /**
      * 最後に挿入した自動採番を取得
-     * 
+     *
      * @return int 最後の自動採番値
      */
     public function lastInsertId();

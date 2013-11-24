@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
  * 
@@ -27,41 +28,47 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Query_Truncate{
-	/** 
-	 * @var string 接続に使用するモジュール名 
-	 */
-	private $module;
+class Vizualizer_Query_Truncate
+{
 
-	private $tables;
+    /**
+     *
+     * @var string 接続に使用するモジュール名
+     */
+    private $module;
 
-	public function __construct($table){
-		$this->module = $table->getModuleName();
-		$this->tables = $table->_T;
-	}
+    private $tables;
 
-	public function buildQuery(){
-		// クエリのビルド
-		$sql = "TRUNCATE ".$this->tables;
+    public function __construct($table)
+    {
+        $this->module = $table->getModuleName();
+        $this->tables = $table->_T;
+    }
 
-		return $sql;
-	}
+    public function buildQuery()
+    {
+        // クエリのビルド
+        $sql = "TRUNCATE " . $this->tables;
+        
+        return $sql;
+    }
 
-	public function execute(){
-		// クエリのビルド
-		$sql = $this->buildQuery();
-
-		// クエリを実行する。
-		try{
-			$connection = Vizualizer_Database_Factory::getConnection($this->module);
-			Vizualizer_Logger::writeDebug($sql);
-			$result = $connection->query($sql);
-		}catch(Exception $e){
-			Vizualizer_Logger::writeError($sql, $e);
-			throw new Vizualizer_Exception_Database($e);
-		}
-
-		return $result;
-	}
+    public function execute()
+    {
+        // クエリのビルド
+        $sql = $this->buildQuery();
+        
+        // クエリを実行する。
+        try {
+            $connection = Vizualizer_Database_Factory::getConnection($this->module);
+            Vizualizer_Logger::writeDebug($sql);
+            $result = $connection->query($sql);
+        } catch (Exception $e) {
+            Vizualizer_Logger::writeError($sql, $e);
+            throw new Vizualizer_Exception_Database($e);
+        }
+        
+        return $result;
+    }
 }
  

@@ -95,10 +95,10 @@ class Vizualizer_Plugin_Table
     {
         // モジュール名を保存
         $this->module = strtolower($module);
-
+        
         // テーブル名を保存
         $this->tableName = $tableName;
-
+        
         // 初期化処理
         $this->initialize();
     }
@@ -107,11 +107,11 @@ class Vizualizer_Plugin_Table
     {
         // DBの接続を取得する。
         $connection = Vizualizer_Database_Factory::conn($this->module);
-
+        
         // 構成されたカラム情報を元に設定値を生成
         $this->_B = $this->_T = $this->_C = $connection->escapeIdentifier($this->tableName);
         $this->_W = $this->_C . ".*";
-
+        
         // テーブル構成のキャッシュがある場合にはキャッシュからテーブル情報を取得
         $tableConfigure = Vizualizer_Cache_Factory::create("table_" . $this->tableName);
         if ($tableConfigure->options == "") {
@@ -123,17 +123,17 @@ class Vizualizer_Plugin_Table
                 // テーブルの定義を再取得
                 $options = $connection->columns($this->_T);
             }
-
+            
             // テーブルの主キーを取得
             $keys = $connection->keys($this->_T);
-
+            
             // テーブルのインデックスを取得
             $indexes = $connection->indexes($this->_T);
-
+            
             // テーブルの設定をデータキャッシュに登録する。
-            $tableConfigure->import(array("options" => $options,"keys" => $keys));
+            $tableConfigure->import(array("options" => $options, "keys" => $keys));
         }
-
+        
         // カラム情報を設定
         $this->_COLUMNS = array();
         $this->_FIELDS = array();
@@ -194,7 +194,7 @@ class Vizualizer_Plugin_Table
     {
         // DBの接続を取得する。
         $connection = Vizualizer_Database_Factory::getConnection($this->module, true);
-
+        
         // エイリアスの設定に応じて、テーブル内の各変数を調整
         $this->_C = $connection->escapeIdentifier($tableName);
         $this->_T = $this->_B . " AS " . $connection->escapeIdentifier($tableName);
@@ -229,7 +229,7 @@ class Vizualizer_Plugin_Table
 
     public function __sleep()
     {
-        return array("tableName","module");
+        return array("tableName", "module");
     }
 
     public function __wakeup()

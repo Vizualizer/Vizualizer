@@ -39,7 +39,7 @@ interface Vizualizer_Database_Result
 
     /**
      * クエリ結果の全件を取得する。
-     * 
+     *
      * @return array クエリ結果
      */
     public function fetchAll();

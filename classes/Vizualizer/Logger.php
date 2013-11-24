@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,12 +30,18 @@
  */
 class Vizualizer_Logger
 {
+    // ログの種別
+    const LOG_ERROR = "error";
+    const LOG_ALERT = "alert";
+    const LOG_INFO = "info";
+    const LOG_DEBUG = "debug";
 
     /**
      * メッセージログを出力する。
      *
-     * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     * @param string $prefix ログの種別
+     * @param string $message エラーメッセージ
+     * @param Exception $exception エラーの原因となった例外オブジェクト
      */
     private static function writeMessage($prefix, $message, $exception = null)
     {
@@ -62,7 +68,7 @@ class Vizualizer_Logger
                     }
                     rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
                 }
-                
+
                 // ログファイルに記載
                 $logFile = $logHome . $siteCode . ".log";
                 if (($fp = fopen($logFile, "a+")) !== FALSE) {
@@ -88,7 +94,7 @@ class Vizualizer_Logger
      */
     public static function writeError($message, $exception = null)
     {
-        Vizualizer_Logger::writeMessage("error", $message, $exception);
+        self::writeMessage(self::LOG_ERROR, $message, $exception);
     }
 
     /**
@@ -99,7 +105,7 @@ class Vizualizer_Logger
      */
     public static function writeAlert($message)
     {
-        Vizualizer_Logger::writeMessage("alert", $message);
+        self::writeMessage(self::LOG_ALERT, $message);
     }
 
     /**
@@ -110,7 +116,7 @@ class Vizualizer_Logger
      */
     public static function writeInfo($message)
     {
-        Vizualizer_Logger::writeMessage("info", $message);
+        self::writeMessage(self::LOG_INFO, $message);
     }
 
     /**
@@ -122,8 +128,7 @@ class Vizualizer_Logger
     public static function writeDebug($message)
     {
         if (Vizualizer_Configure::get("debug")) {
-            Vizualizer_Logger::writeMessage("debug", $message);
+            self::writeMessage(self::LOG_DEBUG, $message);
         }
     }
 }
- 

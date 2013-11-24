@@ -36,7 +36,7 @@ class Vizualizer_Autoloader
      */
     public static function register()
     {
-        return spl_autoload_register(array('Vizualizer_Autoloader','load'));
+        return spl_autoload_register(array('Vizualizer_Autoloader', 'load'));
     }
 
     /**

@@ -32,7 +32,7 @@ abstract class Vizualizer_Template
 {
     // コアとなるテンプレートエンジンのインスタンス
     protected $core;
-    
+
     // テンプレートディレクトリのパス
     protected $template_dir;
 
@@ -47,21 +47,21 @@ abstract class Vizualizer_Template
             $monthSelect[sprintf("%02d", $i)] = $i . "月";
         }
         $this->assign("SelectionMonth", $monthSelect);
-        
+
         // 日のセレクタのアサイン処理
         $daySelect = array();
         for ($i = 1; $i <= 31; $i ++) {
             $daySelect[sprintf("%02d", $i)] = $i . "日";
         }
         $this->assign("SelectionDay", $daySelect);
-        
+
         // 時間のセレクタのアサイン処理
         $hourSelect = array();
         for ($i = 0; $i <= 23; $i ++) {
             $hourSelect[sprintf("%02d", $i) . ":00"] = $i . ":00";
         }
         $this->assign("SelectionHour", $hourSelect);
-        
+
         // 30分単位時間のセレクタのアサイン処理
         $halfHourSelect = array();
         for ($i = 0; $i <= 23; $i ++) {
@@ -101,7 +101,7 @@ abstract class Vizualizer_Template
             header("Cache-Control: post-check=0, pre-check=0", false);
             header("Pragma: no-cache");
         }
-        
+
         $attr = Vizualizer::attr();
         $templateEngine = $attr["template"];
         $templateEngine->assign("configure", Vizualizer_Configure::values());
@@ -109,7 +109,7 @@ abstract class Vizualizer_Template
         $templateEngine->assign("attr", $attr);
         $templateEngine->assign("sessionName", session_name());
         $templateEngine->assign("sessionId", session_id());
-        
+
         // display template
         Vizualizer_Logger::writeDebug("Template Dir : " . var_export($this->template_dir, true));
         Vizualizer_Logger::writeDebug("Template Name : " . $template);
@@ -118,7 +118,7 @@ abstract class Vizualizer_Template
             $content = $this->core->fetch($template, $cache_id, $compile_id, $parent, false);
             // カタカナを半角にする。
             $content = mb_convert_kana($content, "k");
-            
+
             // ソフトバンク以外の場合は、SJISエンコーディングに変換
             if (Vizualizer_Configure::get("device")->getDeviceType() != "Softbank") {
                 header("Content-Type: text/html; charset=Shift_JIS");
@@ -139,4 +139,3 @@ abstract class Vizualizer_Template
         }
     }
 }
- 

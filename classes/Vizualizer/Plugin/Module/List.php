@@ -31,7 +31,14 @@
 abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
 {
 
+    private $condition = array();
+
     private $groupBy = "";
+
+    protected function addCondition($key, $value)
+    {
+        $this->condition[$key] = $value;
+    }
 
     protected function setGroupBy($groupBy)
     {
@@ -47,7 +54,7 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
             $model = $loader->loadModel($name);
 
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
-            $conditions = array();
+            $conditions = $this->condition;
             if (is_array($post["search"])) {
                 foreach ($post["search"] as $key => $value) {
                     if (!$this->isEmpty($value)) {
@@ -74,9 +81,11 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
                 $attr[$result] = array();
                 if ($params->check("select")) {
                     list ($select_key, $select_value) = explode("|", $params->get("select"));
+                    $selection = array();
                     foreach ($models as $model) {
-                        $attr[$result][$model->$select_key] = $model->$select_value;
+                        $selection[$model->$select_key] = $model->$select_value;
                     }
+                    $attr[$result] = $selection;
                 }
             }
         }

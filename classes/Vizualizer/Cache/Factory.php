@@ -33,9 +33,10 @@ class Vizualizer_Cache_Factory
 
     /**
      * ファクトリクラスを生成する。
+     * 
      * @param string $file
      * @param int $expires
-     * @return Vizualizer_Cache_Memory|Vizualizer_Cache_File
+     * @return Vizualizer_Cache_Memory Vizualizer_Cache_File
      */
     public static function create($file, $expires = 3600)
     {

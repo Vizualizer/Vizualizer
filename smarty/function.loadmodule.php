@@ -57,11 +57,11 @@ function smarty_function_loadmodule($params, $template)
         return;
     }
 
-    if (! empty($params["if"])) {
+    if (!empty($params["if"])) {
         $result = true;
         $expression = '$result = ' . str_replace('_POST', '$_POST', $params["if"]) . ';';
         eval($expression);
-        if (! $result) {
+        if (!$result) {
             return;
         }
     }
@@ -78,27 +78,28 @@ function smarty_function_loadmodule($params, $template)
 
     // モジュールのクラスが利用可能か調べる。
     $errors = null;
+
     try {
         // モジュール用のクラスをリフレクション
-        list($namespace, $class) = explode(".", $name, 2);
+        list ($namespace, $class) = explode(".", $name, 2);
         $loader = new Vizualizer_Plugin($namespace);
         $object = $loader->loadModule($class);
         if (method_exists($object, "execute")) {
             Vizualizer_Logger::writeDebug("=========== " . $name . " start ===========");
             // 検索条件と並べ替えキー以外を無効化する。
             if (isset($params["clear"]) && $params["clear"] == "1") {
-                if (isset($params["sort_key"]) && ! empty($params["sort_key"])) {
-                    $_POST = array("search" => $_POST["search"],$params["sort_key"] => $_POST[$params["sort_key"]]);
+                if (isset($params["sort_key"]) && !empty($params["sort_key"])) {
+                    $_POST = array("search" => $_POST["search"], $params["sort_key"] => $_POST[$params["sort_key"]]);
                 } else {
                     $_POST = array("search" => $_POST["search"]);
                 }
             }
-            if (! empty($params["key_prefix"])) {
+            if (!empty($params["key_prefix"])) {
                 $object->key_prefix = $params["key_prefix"];
             } else {
                 $object->key_prefix = "";
             }
-            if (! empty($params["continue"])) {
+            if (!empty($params["continue"])) {
                 $object->continue = $params["continue"];
             } else {
                 $object->continue = "";
@@ -112,34 +113,44 @@ function smarty_function_loadmodule($params, $template)
         // 入力エラーなどの例外（ただし、メッセージリストを空にすると例外処理を行わない）
         Vizualizer_Logger::writeError($e->getMessage(), $e);
         $errors = $e->getErrors();
+    } catch (Vizualizer_Exception_Database $e) {
+        // システムエラーの例外処理
+        Vizualizer_Logger::writeError($e->getMessage(), $e);
+        $errors = array(Vizualizer::ERROR_TYPE_DATABASE => $e->getMessage());
     } catch (Vizualizer_Exception_System $e) {
         // システムエラーの例外処理
         Vizualizer_Logger::writeError($e->getMessage(), $e);
-        $errors = array($e->getMessage());
+        $errors = array(Vizualizer::ERROR_TYPE_SYSTEM => $e->getMessage());
     } catch (Exception $e) {
-        // システムエラーの例外処理
+        // 不明なエラーの例外処理
         Vizualizer_Logger::writeError($e->getMessage(), $e);
-        $errors = array($e->getMessage());
+        $errors = array(Vizualizer::ERROR_TYPE_UNKNOWN => $e->getMessage());
     }
 
     // エラー配列をスタックさせる
-    if ($errors !== null) {
+    if (is_array($errors) && !empty($errors)) {
         $attr = Vizualizer::attr();
         $templateEngine = $attr["template"];
-        if (! empty($error)) {
+        if (!empty($error)) {
             // errorパラメータが渡っている場合はスタックさせたエラーを全て出力してエラー画面へ
             $templateEngine->assign("ERRORS", $errors);
-            unset($attr["ERRORS"]);
+            unset($attr[Vizualizer::ERROR_KEY]);
             $templateEngine->display($error);
-            exit();
+            exit;
         } else {
             // エラー用配列が配列になっていない場合は初期化
-            if (! is_array($attr["ERRORS"])) {
-                $attr["ERRORS"] = array();
+            $errorData = $attr[Vizualizer::ERROR_KEY];
+            if (!is_array($errorData)) {
+                $errorData = array();
             }
 
             // エラー内容をマージさせる。
-            $attr["ERRORS"] = array_merge($attr["ERRORS"], $errors);
+            foreach($errors as $key => $message){
+                if($key != "" && !array_key_exists($key, $errorData)){
+                    $errorData[$key] = $message;
+                }
+            }
+            $attr[Vizualizer::ERROR_KEY] = $errorData;
         }
     }
 }

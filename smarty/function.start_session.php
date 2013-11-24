@@ -30,27 +30,28 @@ function smarty_function_start_session($params, $template)
     @session_start();
     header("HTTP/1.1 200 OK");
     Vizualizer_Session::startup();
-    
+
     // POSTにINPUT=NEWが渡った場合は、入力をクリアする。
     $post = Vizualizer::request();
-    $inputData = Vizualizer_Session::get("INPUT_DATA");
+    /*
+    $inputData = Vizualizer_Session::get(Vizualizer::INPUT_KEY);
     if (is_array($inputData)) {
         if (array_key_exists(TEMPLATE_DIRECTORY, $inputData)) {
             if (isset($post["INPUT"]) && $post["INPUT"] == "NEW") {
                 unset($inputData[TEMPLATE_DIRECTORY]);
             }
-            
+
             // INPUT_DATAのセッションの内容をPOSTに戻す。（POST優先）
             if (is_array($inputData[TEMPLATE_DIRECTORY])) {
                 foreach ($inputData[TEMPLATE_DIRECTORY] as $key => $value) {
-                    if (! isset($post[$key])) {
+                    if (!isset($post[$key])) {
                         $post[$key] = $value;
                     }
                 }
             }
         }
-        Vizualizer_Session::set("INPUT_DATA", $inputData);
+        Vizualizer_Session::set(Vizualizer::INPUT_KEY, $inputData);
     }
+    */
     Vizualizer_Logger::writeDebug("Page Session Started.");
 }
-?>

@@ -43,7 +43,6 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
         $post = Vizualizer::request();
         if (!$params->check("search") || isset($post[$params->get("search")])) {
             $loader = new Vizualizer_Plugin($type);
-            $loader->LoadSetting();
 
             // カテゴリが選択された場合、カテゴリの商品IDのリストを使う
             $conditions = array();

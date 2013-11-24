@@ -32,78 +32,78 @@ class Vizualizer_Pager
 {
     // ページIDキー
     const PAGE_ID_KEY = "pageID";
-
+    
     // デフォルトのページサイズ
     const DEFAULT_PAGE_SIZE = 10;
-
+    
     // ページモード(全表示形式)
     const PAGE_ALL = 0;
-
+    
     // ページモード(ジャンプ形式)
     const PAGE_JUMP = 1;
-
+    
     // ページモード（スライド形式）
     const PAGE_SLIDE = 2;
-
+    
     // 表示モード（前へなどのボタン無効化時に属性付加）
     const DISPLAY_ATTR = 0;
-
+    
     // 表示モード（前へなどのボタン無効化時に非表示
     const DISPLAY_HIDE = 1;
-
+    
     // ページモード
     protected $pageMode;
-
+    
     // 表示モード
     protected $displayMode;
-
+    
     // ページの表示数
     protected $displayPages;
-
+    
     // ページャー全体のテンプレート文字列
     // {1}：最初のページ、{2}：前のページ、{3}：ページリスト、{4}：次のページ、{5}：最後のページ
     protected $pagerText = "<div class=\"pagination\"><ul>{1}{2}{3}{4}{5}</ul></div>";
-
+    
     // ページ番号リンクのセパレータ
     protected $separator = "";
-
+    
     // 最初のページ用のテンプレート
     // {1}：ページリンク
     // {2}：表示モードが属性の場合にdisabledが入る
     protected $firstPageText = "<li class=\"{2}\"><a href=\"{1}\">&lt;&lt;</a></li>";
-
+    
     // 最後のページ用のテンプレート
     // {1}：ページリンク
     // {2}：表示モードが属性の場合にdisabledが入る
     protected $lastPageText = "<li class=\"{2}\"><a href=\"{1}\">&gt;&gt;</a></li>";
-
+    
     // 前のページ用のテンプレート
     // {1}：ページリンク
     // {2}：表示モードが属性の場合にdisabledが入る
     protected $prevPageText = "<li class=\"{2}\"><a href=\"{1}\">Prev</a></li>";
-
+    
     // 次のページ用のテンプレート
     // {1}：ページリンク
     // {2}：表示モードが属性の場合にdisabledが入る
     protected $nextPageText = "<li class=\"{2}\"><a href=\"{1}\">Next</a></li>";
-
+    
     // 現在ページ番号用のテンプレート
     // {1}：ページリンク、{2}：ページ番号
     protected $currentPageText = "<li class=\"active\"><a href=\"{1}\">{2}</a></li>";
-
+    
     // ページ番号用のテンプレート
     // {1}：ページリンク、{2}：ページ番号
     protected $pageText = "<li><a href=\"{1}\">{2}</a></li>";
-
+    
     // ページ表示用のクエリ文字列
     protected $queryString;
-
+    
     // 現在のページID
     protected $currentPageId;
-
+    
     // ページのサイズ
     protected $pageSize;
-
+    
     // データのサイズ
     protected $dataSize;
 
@@ -401,10 +401,10 @@ class Vizualizer_Pager
     {
         // すべての引数を取得
         $args = func_get_args();
-
+        
         // $textを$argsから取り除く
         array_shift($args);
-
+        
         $replacePairs = array();
         foreach ($args as $i => $arg) {
             $replacePairs['{' . ($i + 1) . '}'] = $arg;

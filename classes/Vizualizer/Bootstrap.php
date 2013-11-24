@@ -30,6 +30,7 @@
  */
 class Vizualizer_Bootstrap
 {
+
     /**
      * 実行するブートストラップの処理リスト
      */
@@ -37,6 +38,7 @@ class Vizualizer_Bootstrap
 
     /**
      * ブートストラップを登録するメソッド
+     * 
      * @param int $order 実行順
      * @param string $bootstrap 実行するブートストラップの名前
      * @return boolean 登録成功ならtrue、実行順に登録済みで失敗したらfalse
@@ -49,7 +51,7 @@ class Vizualizer_Bootstrap
         }
         return false;
     }
-    
+
     /**
      * 初期化処理を起動するためのメソッドです。
      * この中で各Bootstrapモジュールを呼び出します。
@@ -58,27 +60,28 @@ class Vizualizer_Bootstrap
     {
         sort(self::$bootstraps);
         reset(self::$bootstraps);
-        foreach(self::$bootstraps as $bootstrap){
+        foreach (self::$bootstraps as $bootstrap) {
             // クラス名を生成
-            $class = "Vizualizer_Bootstrap_".$bootstrap;
+            $class = "Vizualizer_Bootstrap_" . $bootstrap;
             // 開始メソッドを実行
             $class::start();
         }
         
         // 終了時に自動的に終了処理が呼ばれるように設定
-        register_shutdown_function(array("Vizualizer","shutdown"));
+        register_shutdown_function(array("Vizualizer", "shutdown"));
     }
-    
+
     /**
      * 終了処理を起動するためのメソッドです。
      * この中で各Bootstrapモジュールの終了を行います。
      */
-    public static function shutdown(){
+    public static function shutdown()
+    {
         rsort(self::$bootstraps);
         reset(self::$bootstraps);
-        foreach(self::$bootstraps as $bootstrap){
+        foreach (self::$bootstraps as $bootstrap) {
             // クラス名を生成
-            $class = "Vizualizer_Bootstrap_".$bootstrap;
+            $class = "Vizualizer_Bootstrap_" . $bootstrap;
             // 開始メソッドを実行
             $class::stop();
         }

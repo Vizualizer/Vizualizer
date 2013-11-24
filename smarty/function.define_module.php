@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of CLAY Framework for view-module based system.
  *

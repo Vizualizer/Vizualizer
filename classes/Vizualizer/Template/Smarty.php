@@ -41,39 +41,39 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
     public function __construct()
     {
         // コアの処理を設定する。
-        if (! defined("SMARTY_LOCAL_SCOPE")) {
+        if (!defined("SMARTY_LOCAL_SCOPE")) {
             define('SMARTY_LOCAL_SCOPE', 0);
         }
         $this->core = new Smarty();
-        
+
         $attributes = Vizualizer::attr();
-        
+
         // テンプレートのディレクトリとコンパイルのディレクトリをフレームワークのパス上に展開
         $this->template_dir = $this->core->template_dir = array(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/");
-        if (! is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty")) {
+        if (!is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty")) {
             mkdir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty");
         }
-        if (! is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/")) {
+        if (!is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/")) {
             mkdir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/");
         }
-        if (! is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/")) {
+        if (!is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/")) {
             mkdir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/");
         }
         $this->core->compile_dir = VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/";
-        
+
         // プラグインのディレクトリを追加する。
         $this->core->addPluginsDir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR);
-        
+
         // デリミタを変更する。
         $this->core->left_delimiter = "<!--{";
         $this->core->right_delimiter = "}-->";
-        
+
         // モジュール呼び出し用のフィルタを設定する。
-        if (! isset($this->core->autoload_filters["pre"])) {
+        if (!isset($this->core->autoload_filters["pre"])) {
             $this->core->autoload_filters["pre"] = array();
         }
         $this->core->autoload_filters["pre"][] = "loadmodule";
-        
+
         // デフォルトのアサインを設定
         $this->initialAssign();
     }
