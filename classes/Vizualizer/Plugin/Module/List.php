@@ -48,6 +48,11 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
     protected function executeImpl($params, $type, $name, $result, $defaultSortKey = "create_time")
     {
         $post = Vizualizer::request();
+        // セレクトモードの時は通常の検索条件を適用しない
+        if ($params->check("mode", "normal") == "select") {
+            $savedPost = $post->export();
+            Vizualizer::request()->set("search", array());
+        }
         if (!$params->check("search") || isset($post[$params->get("search")])) {
             // サイトデータを取得する。
             $loader = new Vizualizer_Plugin($type);
@@ -87,6 +92,9 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
                     }
                     $attr[$result] = $selection;
                 }
+            }
+            if ($params->check("mode", "normal") == "select") {
+                Vizualizer::request()->import($savedPost);
             }
         }
     }

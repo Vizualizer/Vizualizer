@@ -41,7 +41,7 @@ class Vizualizer_Bootstrap_Configure
         if (!isset($_SERVER["SERVER_NAME"])) {
             $_SERVER["SERVER_NAME"] = "localhost";
         }
-        
+
         // デフォルトの設定
         Vizualizer_Configure::set("timezone", "Asia/Tokyo");
         Vizualizer_Configure::set("locale", "ja_JP.UTF-8");
@@ -58,50 +58,59 @@ class Vizualizer_Bootstrap_Configure
         Vizualizer_Configure::set("debug", true);
         Vizualizer_Configure::set("display_error", "On");
         Vizualizer_Configure::set("session_manager", "");
-        
+
         // プラグインとテンプレートのパス
-        Vizualizer_Configure::set("site_home", VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "templates");
-        Vizualizer_Configure::set("log_root", VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "logs");
+        if(!file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "templates")){
+            mkdir(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "templates");
+            chmod(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "templates", 0777);
+        }
+        Vizualizer_Configure::set("site_home", VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "templates");
+        if(!file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs")){
+            mkdir(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs");
+            chmod(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs", 0777);
+        }
+        Vizualizer_Configure::set("log_root", VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs");
+        Vizualizer_Configure::set("upload_root", VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "upload");
         Vizualizer_Configure::set("max_logs", 100);
-        
+
         // データベースの接続設定
         Vizualizer_Configure::set("database", array());
-        
+
         // memcacheのホスト設定
         Vizualizer_Configure::set("memcache", "");
-        
+
         // セッションマネージャー設定
         Vizualizer_Configure::set("sessionManager", "");
-        
+
         // JSONインターフェイス用キー設定
         Vizualizer_Configure::set("json_key", "");
-        
+
         // Facebookのプロトコル
         Vizualizer_Configure::set("facebook_protocol", "http");
-        
+
         // FacebookのAPP ID
         Vizualizer_Configure::set("facebook_app_id", "");
-        
+
         // FacebookのAPP Secret
         Vizualizer_Configure::set("facebook_app_secret", "");
-        
+
         // サイトコード
         Vizualizer_Configure::set("site_code", "test");
-        
+
         // FacebookのAPP Secret
         Vizualizer_Configure::set("site_name", "テストサイト");
-        
+
         // FacebookのAPP Secret
         Vizualizer_Configure::set("site_domain", $_SERVER["SERVER_NAME"]);
-        
+
         // デフォルトのテンプレート
         Vizualizer_Configure::set("template", "Smarty");
-        
+
         // 設定ファイルを読み込み
         if (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . Vizualizer_Configure::get("site_domain") . ".php")) {
             require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . Vizualizer_Configure::get("site_domain") . ".php");
         }
-        
+
         // データベースを初期化する。
         Vizualizer_Database_Factory::initialize(Vizualizer_Configure::get("database"));
     }

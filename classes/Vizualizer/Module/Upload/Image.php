@@ -25,7 +25,7 @@
 /**
  * 画像をアップロードを処理するためのクラスです。
  *
- * @package VizualizerAdmin
+ * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
 class Vizualizer_Module_Upload_Image extends Vizualizer_Plugin_Module
@@ -45,9 +45,9 @@ class Vizualizer_Module_Upload_Image extends Vizualizer_Plugin_Module
                 if ($_FILES[$key1]["error"] == 0) {
                     Vizualizer_Logger::writeDebug(var_export($_FILES, true));
                     // 保存先のディレクトリを構築
-                    $saveDir = "/" . $params->get("base", "upload") . "/" . sha1("site" . Vizualizer_Configure::get("site_id")) . "/" . $key1 . "/";
-                    if (!file_exists(Vizualizer_Configure::get("site_home") . $saveDir)) {
-                        mkdir(Vizualizer_Configure::get("site_home") . $saveDir, 0777, true);
+                    $saveDir = Vizualizer_Configure::get("upload_root") . "/" . sha1("site" . Vizualizer_Configure::get("site_id")) . "/" . $key1 . "/";
+                    if (!file_exists($saveDir)) {
+                        mkdir($saveDir, 0777, true);
                     }
                     // 保存するファイル名を構築
                     $info = pathinfo($_FILES[$key1]["name"]);

@@ -71,12 +71,24 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         }
         if (is_array($_GET)) {
             foreach ($_GET as $name => $value) {
-                $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
+                if (is_array($value)) {
+                    foreach ($value as $name2 => $value2) {
+                        $this->parameters[TEMPLATE_DIRECTORY][$name][$name2] = $value2;
+                    }
+                } else {
+                    $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
+                }
             }
         }
         if (is_array($_POST)) {
             foreach ($_POST as $name => $value) {
-                $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
+                if (is_array($value)) {
+                    foreach ($value as $name2 => $value2) {
+                        $this->parameters[TEMPLATE_DIRECTORY][$name][$name2] = $value2;
+                    }
+                } else {
+                    $this->parameters[TEMPLATE_DIRECTORY][$name] = $value;
+                }
             }
         }
 
@@ -105,6 +117,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     {
         $this->parameters[TEMPLATE_DIRECTORY][$key] = $value;
         Vizualizer_Session::set(Vizualizer::INPUT_KEY, $this->parameters);
+        $this->keys = array_keys($this->parameters[TEMPLATE_DIRECTORY]);
     }
 
     public function remove($key)

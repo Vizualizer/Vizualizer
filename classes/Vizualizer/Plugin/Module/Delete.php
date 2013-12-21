@@ -53,7 +53,7 @@ abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
                 $this->removeInput($key);
             } catch (Exception $e) {
                 Vizualizer_Database_Factory::rollback($connection);
-                throw $e;
+                throw new Vizualizer_Exception_Database($e);
             }
         }
     }

@@ -45,7 +45,6 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
                 $model->findByPrimaryKey($post[$this->key_prefix . $primary_key]);
             }
             foreach ($post as $key => $value) {
-                echo $key." => ".$value."<br>\r\n";
                 if (!empty($this->key_prefix)) {
                     if (substr($key, 0, strlen($this->key_prefix)) == $this->key_prefix) {
                         $key = preg_replace("/^" . $this->key_prefix . "/", "", $key);
@@ -62,21 +61,17 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
             try {
                 $model->save();
                 if (!empty($this->key_prefix)) {
-                    $post[$this->key_prefix . $primary_key] = $model->$primary_key;
+                    $post->set($this->key_prefix . $primary_key, $model->$primary_key);
                 } else {
-                    $post[$primary_key] = $model->$primary_key;
+                    $post->set($primary_key, $model->$primary_key);
                 }
 
                 // エラーが無かった場合、処理をコミットする。
                 Vizualizer_Database_Factory::commit($connection);
-                if ($this->continue != "1") {
-                    $this->removeInput("add");
-                    $this->removeInput("save");
-                    $this->reload();
-                }
+
             } catch (Exception $e) {
                 Vizualizer_Database_Factory::rollback($connection);
-                throw $e;
+                throw new Vizualizer_Exception_Database($e);
             }
         }
     }
