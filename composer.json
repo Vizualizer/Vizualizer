@@ -3,9 +3,8 @@
 	"description": "Visual Framework in PHP",
 	"keywords": ["PHP", "Framework", "MySQL"],
 	"type": "framework",
-	"license": "Apache v2",
+	"license": "Apache-2.0",
 	"homepage": "https://github.com/NAONAOx1126/Vizualizer",
-	 "minimum-stability" : "dev",
 	"authors": [
 		{
 			"name": "NAONAOx1126",
