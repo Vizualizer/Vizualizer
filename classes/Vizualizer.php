@@ -36,30 +36,35 @@ class Vizualizer
 
     /**
      * 入力パラメータ保存用の定数
+     *
      * @var string
      */
     const INPUT_KEY = "INPUT_DATA";
 
     /**
      * エラーリスト保存用の定数
+     *
      * @var string
      */
     const ERROR_KEY = "ERROR_LIST_KEY";
 
     /**
      * システムエラーのタイプ
+     *
      * @var string
      */
     const ERROR_TYPE_SYSTEM = "SYSTEM";
 
     /**
      * データベースエラーのタイプ
+     *
      * @var string
      */
     const ERROR_TYPE_DATABASE = "DATABASE";
 
     /**
      * 不明なエラーのタイプ
+     *
      * @var string
      */
     const ERROR_TYPE_UNKNOWN = "UNKNOWN";
@@ -89,16 +94,15 @@ class Vizualizer
             define('VIZUALIZER_CLASSES_DIR', VIZUALIZER_ROOT . "/classes");
         }
         /*
-        // ライブラリのクラス自動ローダーを初期化する。
-        require (VIZUALIZER_CLASSES_DIR . DIRECTORY_SEPARATOR . "Vizualizer" . DIRECTORY_SEPARATOR . "Autoloader.php");
-        Vizualizer_Autoloader::register();
-        */
+         * // ライブラリのクラス自動ローダーを初期化する。 require (VIZUALIZER_CLASSES_DIR .
+         * DIRECTORY_SEPARATOR . "Vizualizer" . DIRECTORY_SEPARATOR .
+         * "Autoloader.php"); Vizualizer_Autoloader::register();
+         */
         // パラメータをnullで初期化
         self::$parameters = null;
 
         // 属性を初期化
         self::$attributes = null;
-
     }
 
     /**
@@ -111,31 +115,50 @@ class Vizualizer
             define('VIZUALIZER_SITE_ROOT', realpath($siteRoot));
         }
 
-        // システムのルートURLへのサブディレクトリを設定
-        if (!defined('VIZUALIZER_SUBDIR')) {
-            if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
-                define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, -1), "", VIZUALIZER_SITE_ROOT));
-            } else {
-                define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_SITE_ROOT));
+        // インストールの処理を実行
+        if ($_SERVER["argc"] == 3 && $_SERVER["argv"][1] == "install") {
+            // Bootstrapを実行する。
+            Vizualizer_Bootstrap::register(10, "PhpVersion");
+            Vizualizer_Bootstrap::register(20, "Configure");
+            Vizualizer_Bootstrap::register(30, "ErrorMessage");
+            Vizualizer_Bootstrap::register(40, "Timezone");
+            Vizualizer_Bootstrap::register(50, "Locale");
+            Vizualizer_Bootstrap::register(60, "UserAgent");
+            Vizualizer_Bootstrap::startup();
+            try {
+                $class = $_SERVER["argv"][2];
+                $class::install();
+                echo "Package " . $_SERVER["argv"][2] . " installed successfully\r\n";
+            } catch (Exception $e) {
+                echo "Package " . $_SERVER["argv"][2] . " install failed\r\n";
             }
-        }
+            exit();
+        } else {
+            // システムのルートURLへのサブディレクトリを設定
+            if (!defined('VIZUALIZER_SUBDIR')) {
+                if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
+                    define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, -1), "", VIZUALIZER_SITE_ROOT));
+                } else {
+                    define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_SITE_ROOT));
+                }
+            }
 
-        // システムのルートURLを設定
-        if (!defined('VIZUALIZER_URL')) {
-            define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
+            // システムのルートURLを設定
+            if (!defined('VIZUALIZER_URL')) {
+                define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
+            }
+            // Bootstrapを実行する。
+            Vizualizer_Bootstrap::register(10, "PhpVersion");
+            Vizualizer_Bootstrap::register(20, "Configure");
+            Vizualizer_Bootstrap::register(30, "ErrorMessage");
+            Vizualizer_Bootstrap::register(40, "Timezone");
+            Vizualizer_Bootstrap::register(50, "Locale");
+            Vizualizer_Bootstrap::register(60, "UserAgent");
+            Vizualizer_Bootstrap::register(70, "SessionId");
+            Vizualizer_Bootstrap::register(80, "Session");
+            Vizualizer_Bootstrap::register(90, "TemplateName");
+            Vizualizer_Bootstrap::startup();
         }
-
-        // Bootstrapを実行する。
-        Vizualizer_Bootstrap::register(10, "PhpVersion");
-        Vizualizer_Bootstrap::register(20, "Configure");
-        Vizualizer_Bootstrap::register(30, "ErrorMessage");
-        Vizualizer_Bootstrap::register(40, "Timezone");
-        Vizualizer_Bootstrap::register(50, "Locale");
-        Vizualizer_Bootstrap::register(60, "UserAgent");
-        Vizualizer_Bootstrap::register(70, "SessionId");
-        Vizualizer_Bootstrap::register(80, "Session");
-        Vizualizer_Bootstrap::register(90, "TemplateName");
-        Vizualizer_Bootstrap::startup();
 
         // テンプレートを生成
         $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
