@@ -99,7 +99,7 @@ class Vizualizer_Geocoding_Google
             $baseUrl = "http://maps.google.com/maps/api/geocode/json?sensor=false&address=";
 
             // 追加ヘッダ情報を設定
-            $options = array("http" => array("header" => "Accept-Language: " . $language));
+            $options = array("http" => array("header" => "Accept-Language: " . $this->language));
             $context = stream_context_create($options);
 
             // コンテンツを取得
@@ -134,5 +134,13 @@ class Vizualizer_Geocoding_Google
             $results[] = $item->formatted_address;
         }
         return $results;
+    }
+
+    public function getLatLng($address){
+        $data = $this->getAddressData($address);
+        if(count($data) > 0){
+            $location = $data[0]->geometry->location;
+        }
+        return $location->lat.",".$location->lng;
     }
 }

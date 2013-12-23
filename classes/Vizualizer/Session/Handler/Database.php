@@ -54,10 +54,10 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
         $this->table = $loader->loadTable($name);
         $this->id_key = $id_key;
         $this->data_key = $data_key;
-        
+
         // 初期化時にクラスのローディングを行う。
-        $select = new Clay_Query_Select($this->table);
-        $insert = new Clay_Query_Replace($this->table);
+        $select = new Vizualizer_Query_Select($this->table);
+        $insert = new Vizualizer_Query_Replace($this->table);
     }
 
     /**
@@ -92,13 +92,13 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
     {
         $id_key = $this->id_key;
         $data_key = $this->data_key;
-        
+
         // セッションデータを取得する。
         $select = new Vizualizer_Query_Select($this->table);
         $select->addColumn($this->table->_W);
         $select->addWhere($this->table->$id_key . " = ?", array($id));
         $result = $select->execute();
-        
+
         return $result[0][$data_key];
     }
 
@@ -113,13 +113,13 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
     {
         $id_key = $this->id_key;
         $data_key = $this->data_key;
-        
+
         // セッションに値を設定
         try {
             $insert = new Vizualizer_Query_Replace($this->table);
             $sqlval = array($id_key => $id, $data_key => $sess_data);
             $sqlval["create_time"] = $sqlval["update_time"] = date("Y-m-d H:i:s");
-            Clay_Logger::writeDebug($insert->showQuery($sqlval));
+            Vizualizer_Logger::writeDebug($insert->showQuery($sqlval));
             $insert->execute($sqlval);
             return true;
         } catch (Exception $e) {
@@ -136,12 +136,12 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
     function destroy($id)
     {
         $id_key = $this->id_key;
-        
+
         // セッションに値を設定
         try {
             $delete = new Vizualizer_Query_Delete($this->table);
             $delete->addWhere($this->table->$id_key . " = ?", array($id));
-            Clay_Logger::writeDebug($delete->showQuery());
+            Vizualizer_Logger::writeDebug($delete->showQuery());
             $delete->execute();
             return true;
         } catch (Exception $e) {
@@ -159,12 +159,12 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
     function clean($maxlifetime)
     {
         $limit = date("Y-m-d H:i:s", strtotime("-" . $maxlifetime . " secs"));
-        
+
         // セッションに値を設定
         try {
             $delete = new Vizualizer_Query_Delete($this->table);
             $delete->addWhere($this->table->update_time . " < ?", array($limit));
-            Clay_Logger::writeDebug($delete->showQuery());
+            Vizualizer_Logger::writeDebug($delete->showQuery());
             $delete->execute();
             return true;
         } catch (Exception $e) {
@@ -172,4 +172,4 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
         }
     }
 }
- 
+
