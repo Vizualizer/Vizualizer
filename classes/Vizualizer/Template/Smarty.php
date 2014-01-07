@@ -50,16 +50,16 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
 
         // テンプレートのディレクトリとコンパイルのディレクトリをフレームワークのパス上に展開
         $this->template_dir = $this->core->template_dir = array(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/");
-        if (!is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty")) {
-            mkdir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty");
+        if (!is_dir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty")) {
+            mkdir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty");
         }
-        if (!is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/")) {
-            mkdir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/");
+        if (!is_dir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/")) {
+            mkdir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . "/");
         }
-        if (!is_dir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/")) {
-            mkdir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/");
+        if (!is_dir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/")) {
+            mkdir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/");
         }
-        $this->core->compile_dir = VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/";
+        $this->core->compile_dir = VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty" . DIRECTORY_SEPARATOR . Vizualizer_Configure::get("site_code") . $attributes["userTemplate"] . "/";
 
         // プラグインのディレクトリを追加する。
         $this->core->addPluginsDir(VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR);

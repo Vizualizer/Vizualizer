@@ -47,7 +47,7 @@ class Vizualizer_Cache_File extends Vizualizer_Cache_Base
      */
     public function __construct($server, $file, $expires)
     {
-        $this->cacheRoot = VIZUALIZER_ROOT . DIRECTORY_SEPARATOR . "cache";
+        $this->cacheRoot = VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache";
         $this->init($server, $file, $expires);
     }
 

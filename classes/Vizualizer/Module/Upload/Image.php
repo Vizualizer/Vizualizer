@@ -53,10 +53,10 @@ class Vizualizer_Module_Upload_Image extends Vizualizer_Plugin_Module
                     $info = pathinfo($_FILES[$key1]["name"]);
                     $saveFile = sha1(uniqid($_FILES[$key1]["name"])) . (!empty($info["extension"]) ? "." . $info["extension"] : "");
                     // 保存するファイルを移動
-                    move_uploaded_file($_FILES[$key1]["tmp_name"], Vizualizer_Configure::get("site_home") . $saveDir . $saveFile);
+                    move_uploaded_file($_FILES[$key1]["tmp_name"], $saveDir . $saveFile);
                     // 登録した内容をPOSTに設定
                     $post[$key1 . "_name"] = $_FILES[$key1]["name"];
-                    $post[$key1] = VIZUALIZER_SUBDIR . "/_contents/" . $_SERVER["SERVER_NAME"] . $saveDir . $saveFile;
+                    $post[$key1] = str_replace(VIZUALIZER_SITE_ROOT, VIZUALIZER_SUBDIR, $saveDir . $saveFile);
                 }
             }
             if ($params->check("reload")) {

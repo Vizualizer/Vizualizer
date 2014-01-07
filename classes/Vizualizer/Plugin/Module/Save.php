@@ -43,6 +43,9 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
             }
             if (!empty($post[$this->key_prefix . $primary_key])) {
                 $model->findByPrimaryKey($post[$this->key_prefix . $primary_key]);
+                if (!($model->$primary_key > 0)) {
+                    $model = $loader->loadModel($name, array($primary_key => $_POST[$this->key_prefix . $primary_key]));
+                }
             }
             foreach ($post as $key => $value) {
                 if (!empty($this->key_prefix)) {
@@ -68,7 +71,6 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
 
                 // エラーが無かった場合、処理をコミットする。
                 Vizualizer_Database_Factory::commit($connection);
-
             } catch (Exception $e) {
                 Vizualizer_Database_Factory::rollback($connection);
                 throw new Vizualizer_Exception_Database($e);

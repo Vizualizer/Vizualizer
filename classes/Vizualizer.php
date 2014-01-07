@@ -93,11 +93,16 @@ class Vizualizer
         if (!defined('VIZUALIZER_CLASSES_DIR')) {
             define('VIZUALIZER_CLASSES_DIR', VIZUALIZER_ROOT . "/classes");
         }
-        /*
-         * // ライブラリのクラス自動ローダーを初期化する。 require (VIZUALIZER_CLASSES_DIR .
-         * DIRECTORY_SEPARATOR . "Vizualizer" . DIRECTORY_SEPARATOR .
-         * "Autoloader.php"); Vizualizer_Autoloader::register();
-         */
+
+        // キャッシュのベースディレクトリを設定
+        if (!defined('VIZUALIZER_CACHE_ROOT')) {
+            $cacheBase = VIZUALIZER_ROOT;
+            while(!is_writable($cacheBase)){
+                $cacheBase = realpath($cacheBase."/../");
+            }
+            define('VIZUALIZER_CACHE_ROOT', $cacheBase);
+        }
+
         // パラメータをnullで初期化
         self::$parameters = null;
 
@@ -132,7 +137,7 @@ class Vizualizer
             } catch (Exception $e) {
                 echo "Package " . $_SERVER["argv"][2] . " install failed\r\n";
             }
-            exit();
+            exit;
         } else {
             // システムのルートURLへのサブディレクトリを設定
             if (!defined('VIZUALIZER_SUBDIR')) {

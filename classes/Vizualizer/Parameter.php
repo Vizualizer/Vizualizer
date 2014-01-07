@@ -227,6 +227,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     public function offsetSet($offset, $value)
     {
         $this->parameters[TEMPLATE_DIRECTORY][$offset] = $value;
+        $this->keys = array_keys($this->parameters[TEMPLATE_DIRECTORY]);
     }
 
     /**
@@ -238,6 +239,7 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
     {
         if ($this->offsetExists($offset)) {
             unset($this->parameters[TEMPLATE_DIRECTORY][$offset]);
+            $this->keys = array_keys($this->parameters[TEMPLATE_DIRECTORY]);
         }
     }
 

@@ -65,11 +65,11 @@ class Vizualizer_Bootstrap_Configure
             chmod(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "templates", 0777);
         }
         Vizualizer_Configure::set("site_home", VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "templates");
-        if(!file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs")){
-            mkdir(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs");
-            chmod(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs", 0777);
+        if(!file_exists(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_logs")){
+            mkdir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_logs");
+            chmod(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_logs", 0777);
         }
-        Vizualizer_Configure::set("log_root", VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "logs");
+        Vizualizer_Configure::set("log_root", VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_logs");
         Vizualizer_Configure::set("upload_root", VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "upload");
         Vizualizer_Configure::set("max_logs", 100);
 

@@ -85,7 +85,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
             }
 
             // 追加の検索条件があれば設定
-            if ($params->check("wkey") && $params->check("wvalue")) {
+            if ($params->check("wkey")) {
                 $conditions[$params->check("wkey")] = $params->check("wvalue");
             }
 
