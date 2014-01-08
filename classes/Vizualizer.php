@@ -121,7 +121,7 @@ class Vizualizer
         }
 
         // インストールの処理を実行
-        if ($_SERVER["argc"] == 3 && $_SERVER["argv"][1] == "install") {
+        if (array_key_exists("argc", $_SERVER) && $_SERVER["argc"] == 3 && $_SERVER["argv"][1] == "install") {
             // Bootstrapを実行する。
             Vizualizer_Bootstrap::register(10, "PhpVersion");
             Vizualizer_Bootstrap::register(20, "Configure");
