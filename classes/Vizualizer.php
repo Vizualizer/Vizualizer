@@ -139,6 +139,14 @@ class Vizualizer
             }
             exit;
         } else {
+            // ドキュメントルートを調整
+            if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
+                $_SERVER["DOCUMENT_ROOT"] = substr($_SERVER["DOCUMENT_ROOT"], 0, -1);
+            }
+            if(preg_match("@^".$_SERVER["DOCUMENT_ROOT"]."@", VIZUALIZER_SITE_ROOT) == 0){
+                $_SERVER['DOCUMENT_ROOT'] = str_replace($_SERVER['SCRIPT_NAME'], "", $_SERVER['SCRIPT_FILENAME']);
+            }
+
             // システムのルートURLへのサブディレクトリを設定
             if (!defined('VIZUALIZER_SUBDIR')) {
                 if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
