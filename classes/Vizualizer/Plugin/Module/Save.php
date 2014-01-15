@@ -38,13 +38,10 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
             // サイトデータを取得する。
             $loader = new Vizualizer_Plugin($type);
             $model = $loader->loadModel($name);
-            if (!empty($this->key_prefix)) {
-                $key = $this->key_prefix . $key;
-            }
             if (!empty($post[$this->key_prefix . $primary_key])) {
                 $model->findByPrimaryKey($post[$this->key_prefix . $primary_key]);
                 if (!($model->$primary_key > 0)) {
-                    $model = $loader->loadModel($name, array($primary_key => $_POST[$this->key_prefix . $primary_key]));
+                    $model = $loader->loadModel($name, array($primary_key => $post[$this->key_prefix . $primary_key]));
                 }
             }
             foreach ($post as $key => $value) {

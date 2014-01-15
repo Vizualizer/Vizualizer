@@ -30,6 +30,11 @@
  */
 class Vizualizer_Parameter implements Iterator, ArrayAccess
 {
+    /**
+     * パラメータのリフレッシュを行うかどうかのフラグ
+     * @var boolean
+     */
+    public static $enableRefresh = true;
 
     /**
      * パラメータのインデックス
@@ -64,10 +69,12 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         if (!is_array($this->parameters)) {
             $this->parameters = array();
         }
-        if (isset($this->parameters[TEMPLATE_DIRECTORY])) {
-            $this->parameters = array(TEMPLATE_DIRECTORY => $this->parameters[TEMPLATE_DIRECTORY]);
-        } else {
-            $this->parameters = array(TEMPLATE_DIRECTORY => array());
+        if(Vizualizer_Parameter::$enableRefresh){
+            if (isset($this->parameters[TEMPLATE_DIRECTORY])) {
+                $this->parameters = array(TEMPLATE_DIRECTORY => $this->parameters[TEMPLATE_DIRECTORY]);
+            } else {
+                $this->parameters = array(TEMPLATE_DIRECTORY => array());
+            }
         }
         if (is_array($_GET)) {
             foreach ($_GET as $name => $value) {
@@ -150,7 +157,11 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
      */
     public function current()
     {
-        return $this->parameters[TEMPLATE_DIRECTORY][$this->key()];
+        if(array_key_exists($this->key(), $this->parameters[TEMPLATE_DIRECTORY])){
+            return $this->parameters[TEMPLATE_DIRECTORY][$this->key()];
+        }else{
+            return null;
+        }
     }
 
     /**

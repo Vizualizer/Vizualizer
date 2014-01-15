@@ -173,15 +173,34 @@ class Vizualizer
             Vizualizer_Bootstrap::startup();
         }
 
-        // テンプレートを生成
-        $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
-        $template = new $templateClass();
-        $template->assign("ERRORS", array());
-
-        // テンプレートを表示
         $attr = Vizualizer::attr();
-        $attr["template"] = $template;
-        $template->display(substr($attr["templateName"], 1));
+        $info = pathinfo($attr["templateName"]);
+        switch($info["extension"]){
+            case "html":
+            case "htm":
+            case "xml":
+                // テンプレートを生成
+                $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                $template = new $templateClass();
+                $template->assign("ERRORS", array());
+
+                // テンプレートを表示
+                $attr["template"] = $template;
+                $template->display(substr($attr["templateName"], 1));
+                break;
+            case "php":
+                eval(file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]));
+                break;
+            case "json":
+                break;
+            default:
+                if(($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE){
+                    while($buffer = fread($fp, 8192)){
+                        echo $buffer;
+                    }
+                }
+                break;
+        }
     }
 
     /**

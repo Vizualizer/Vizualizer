@@ -45,7 +45,7 @@ class Vizualizer_Module_Upload_Image extends Vizualizer_Plugin_Module
                 if ($_FILES[$key1]["error"] == 0) {
                     Vizualizer_Logger::writeDebug(var_export($_FILES, true));
                     // 保存先のディレクトリを構築
-                    $saveDir = Vizualizer_Configure::get("upload_root") . "/" . sha1("site" . Vizualizer_Configure::get("site_id")) . "/" . $key1 . "/";
+                    $saveDir = Vizualizer_Configure::get("upload_root") . "/images/" . sha1("site" . Vizualizer_Configure::get("site_id")) . "/" . $key1 . "/";
                     if (!file_exists($saveDir)) {
                         mkdir($saveDir, 0777, true);
                     }
