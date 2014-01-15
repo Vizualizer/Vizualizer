@@ -121,7 +121,7 @@ class Vizualizer
         }
 
         // インストールの処理を実行
-        if (array_key_exists("argc", $_SERVER) && $_SERVER["argc"] == 3 && $_SERVER["argv"][1] == "install") {
+        if (array_key_exists("argc", $_SERVER) && $_SERVER["argc"] > 2) {
             // Bootstrapを実行する。
             Vizualizer_Bootstrap::register(10, "PhpVersion");
             Vizualizer_Bootstrap::register(20, "Configure");
@@ -130,12 +130,23 @@ class Vizualizer
             Vizualizer_Bootstrap::register(50, "Locale");
             Vizualizer_Bootstrap::register(60, "UserAgent");
             Vizualizer_Bootstrap::startup();
-            try {
-                $class = $_SERVER["argv"][2];
-                $class::install();
-                echo "Package " . $_SERVER["argv"][2] . " installed successfully\r\n";
-            } catch (Exception $e) {
-                echo "Package " . $_SERVER["argv"][2] . " install failed\r\n";
+
+            $class = $_SERVER["argv"][2];
+            if($_SERVER["argv"][1] == "install"){
+                try {
+                    $class::install();
+                    echo "Package " . $_SERVER["argv"][2] . " installed successfully\r\n";
+                } catch (Exception $e) {
+                    echo "Package " . $_SERVER["argv"][2] . " install failed\r\n";
+                }
+            }elseif($_SERVER["argv"][1] == "batch"){
+                try {
+                    $batch = new $class();
+                    $batch->execute($_SERVER["argv"]);
+                    echo "Batch " . $_SERVER["argv"][2] . " executed successfully\r\n";
+                } catch (Exception $e) {
+                    echo "Batch " . $_SERVER["argv"][2] . " execution failed\r\n";
+                }
             }
             exit;
         } else {
@@ -194,6 +205,13 @@ class Vizualizer
             case "json":
                 break;
             default:
+                // 特別にヘッダを渡す必要のあるものはここに記載
+                $headers = array(
+                    "css" => "text/css", "js" => "text/javascript"
+                );
+                if(array_key_exists($info["extension"], $headers)){
+                    header("Content-Type: ".$headers[$info["extension"]]);
+                }
                 if(($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE){
                     while($buffer = fread($fp, 8192)){
                         echo $buffer;

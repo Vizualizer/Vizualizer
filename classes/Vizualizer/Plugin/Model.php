@@ -314,14 +314,6 @@ class Vizualizer_Plugin_Model
             $value = implode("-", $value);
         }
         if (in_array($key, $this->columns)) {
-            if (is_array($value)) {
-                foreach ($value as $item) {
-                    if (empty($item)) {
-                        return $select;
-                    }
-                }
-                $value = implode("-", $value);
-            }
             switch ($op) {
                 case "eq":
                     if ($value == null) {
