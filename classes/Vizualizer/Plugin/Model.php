@@ -153,7 +153,7 @@ class Vizualizer_Plugin_Model
         $insert = new Vizualizer_Query_InsertIgnore($this->access);
         $sqlvals = array();
         foreach ($this->columns as $column) {
-            if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
+            if (array_key_exists($column, $this->values) && (!empty($this->values[$column]) || is_numeric($this->values[$column]))) {
                 $sqlvals[$column] = $this->values[$column];
             }
         }
@@ -455,10 +455,12 @@ class Vizualizer_Plugin_Model
                         $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
                         $updateWhere = true;
                     } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
-                        if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
-                            $update->addSets($this->access->$column . " = ?", array($this->values[$column]));
-                        } else {
-                            $update->addSets($this->access->$column . " = NULL", array());
+                        if(array_key_exists($column, $this->values) && (!empty($this->values[$column]) || is_numeric($this->values[$column])) || array_key_exists($column, $this->values_org) && (!empty($this->values_org[$column]) || is_numeric($this->values_org[$column]))){
+                            if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
+                                $update->addSets($this->access->$column . " = ?", array($this->values[$column]));
+                            } else {
+                                $update->addSets($this->access->$column . " = NULL", array());
+                            }
                         }
                         $updateSet = true;
                     }
