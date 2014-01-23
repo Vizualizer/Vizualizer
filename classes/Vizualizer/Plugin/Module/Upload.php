@@ -69,6 +69,7 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
                                 $model = $loader->loadModel($name);
                                 $model = $this->check($line, $model, $data);
                                 $model->save();
+                                $line ++;
                             }
                             if(count($this->errors) > 0){
                                 throw new InvalidException($this->errors);
