@@ -68,7 +68,9 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
                             while(($data = fgetcsv($fp)) !== FALSE){
                                 $model = $loader->loadModel($name);
                                 $model = $this->check($line, $model, $data);
-                                $model->save();
+                                if($model != null){
+                                    $model->save();
+                                }
                                 $line ++;
                             }
                             if(count($this->errors) > 0){
