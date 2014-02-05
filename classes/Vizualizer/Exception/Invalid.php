@@ -46,7 +46,13 @@ class Vizualizer_Exception_Invalid extends Vizualizer_Exception_System
      */
     public function __construct($key, $message)
     {
-        $this->addError($key, $message);
+        if(is_array($message)){
+            foreach($message as $index => $value){
+                $this->addError($key, $value);
+            }
+        }else{
+            $this->addError($key, $message);
+        }
         parent::__construct(implode("\r\n", $this->errors));
     }
 

@@ -28,26 +28,39 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Module
+abstract class Vizualizer_Plugin_Module_Upload extends Vizualizer_Plugin_Module
 {
+
     /**
-     *
      */
     protected $errors = array();
 
     /**
      * エラーチェックを行い、OKであればtrue、NGであればfalseを返す。
+     *
      * @param $title CSVのタイトル行データ
      */
     protected abstract function checkTitle($title);
 
     /**
      * エラーチェックを行い、登録するモデルを返す。
+     *
      * @param $line CSVの行番号
      * @param $model 登録に使用するモデルクラス
      * @param $data CSVの行データ
      */
     protected abstract function check($line, $model, $data);
+
+    private function getCsvData($handle)
+    {
+        $data = fgetcsv($handle);
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = mb_convert_encoding($value, "UTF-8", "Shift_JIS");
+            }
+        }
+        return $data;
+    }
 
     protected function executeImpl($params, $type, $name, $key)
     {
@@ -55,26 +68,26 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
             $loader = new Vizualizer_Plugin($type);
 
             // アップされたファイルのデータを取得する。
-            if($_FILES[$key]["error"] == UPLOAD_ERR_OK){
-                if(($fp = fopen($_FILES[$key]["tmp_name"])) !== FALSE){
+            if ($_FILES[$key]["error"] == UPLOAD_ERR_OK) {
+                if (($fp = fopen($_FILES[$key]["tmp_name"], "r")) !== FALSE) {
                     // １行目はタイトル行とする。
-                    $data = fgetcsv($fp);
-                    if($this->checkTitle($data)){
+                    $data = $this->getCsvData($fp);
+                    if ($this->checkTitle($data)) {
                         $line = 2;
                         // トランザクションの開始
                         $connection = Vizualizer_Database_Factory::begin(strtolower($type));
 
                         try {
-                            while(($data = fgetcsv($fp)) !== FALSE){
+                            while (($data = $this->getCsvData($fp)) !== FALSE) {
                                 $model = $loader->loadModel($name);
                                 $model = $this->check($line, $model, $data);
-                                if($model != null){
+                                if ($model != null) {
                                     $model->save();
                                 }
                                 $line ++;
                             }
-                            if(count($this->errors) > 0){
-                                throw new InvalidException($this->errors);
+                            if (count($this->errors) > 0) {
+                                throw new Vizualizer_Exception_Invalid($key, $this->errors);
                             }
                             // エラーが無かった場合、処理をコミットする。
                             Vizualizer_Database_Factory::commit($connection);
@@ -82,8 +95,8 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
                             Vizualizer_Database_Factory::rollback($connection);
                             throw new Vizualizer_Exception_Database($e);
                         }
-                    }else{
-                        throw new InvalidException(array("アップされたファイルのタイトル行が正しくありません"));
+                    } else {
+                        throw new Vizualizer_Exception_Invalid($key, array("アップされたファイルのタイトル行が正しくありません"));
                     }
                     fclose($fp);
                 }
