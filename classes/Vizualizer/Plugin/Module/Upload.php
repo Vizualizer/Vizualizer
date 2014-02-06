@@ -56,7 +56,7 @@ abstract class Vizualizer_Plugin_Module_Upload extends Vizualizer_Plugin_Module
         $data = fgetcsv($handle);
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $data[$key] = mb_convert_encoding($value, "UTF-8", "Shift_JIS");
+                $data[$key] = $this->trim(mb_convert_encoding($value, "UTF-8", "Shift_JIS"));
             }
         }
         return $data;

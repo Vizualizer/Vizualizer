@@ -77,4 +77,12 @@ abstract class Vizualizer_Plugin_Module
         $attr = Vizualizer::attr();
         $this->redirectInside($attr["templateName"]);
     }
+
+    protected function trim($str){
+        // 先頭の半角、全角スペースを、空文字に置き換える
+        $str = preg_replace('/^[　]+/u', '', $str);
+        // 最後の半角、全角スペースを、空文字に置き換える
+        $str = preg_replace('/[　]+$/u', '', $str);
+        return trim($str);
+    }
 }

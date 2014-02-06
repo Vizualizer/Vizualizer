@@ -43,7 +43,7 @@ abstract class Vizualizer_Plugin_Module_UploadExcel extends Vizualizer_Plugin_Mo
     protected function getValue($sheet, $cell){
         $value = $sheet->getCell($cell)->getCalculatedValue();
         $values = explode("※", $value);
-        return trim($values[0]);
+        return $this->trim($values[0]);
     }
 
     /**
