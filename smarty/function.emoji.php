@@ -1,13 +1,25 @@
 <?php
 
 /**
- * This file is part of CLAY Framework for view-module based system.
+ * Copyright (C) 2012 Vizualizer All Rights Reserved.
  *
- * @author    Naohisa Minagawa <info@clay-system.jp>
- * @copyright Copyright (c) 2010, Naohisa Minagawa
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @author    Naohisa Minagawa <info@vizualizer.jp>
+ * @copyright Copyright (c) 2010, Vizualizer
  * @license http://www.apache.org/licenses/LICENSE-2.0.html Apache License, Version 2.0
  * @since PHP 5.3
- * @version   3.0.0
+ * @version   1.0.0
  */
 function smarty_function_emoji($params, $smarty, $template)
 {
@@ -16,10 +28,10 @@ function smarty_function_emoji($params, $smarty, $template)
         trigger_error("emoji: missing code parameter", E_USER_WARNING);
         return;
     }
-    
+
     // パラメータを変数にコピー
     $code = $params['code'];
-    
+
     if (preg_match("/[0-9]{1,3}/", $code) && is_numeric($code) && 0 < $code && $code < 253) {
         // 変換表を配列に格納
         $emoji_array = array();
@@ -29,11 +41,11 @@ function smarty_function_emoji($params, $smarty, $template)
             $line = rtrim($line);
             $emoji_array[] = explode(",", $line);
         }
-        
+
         if (Net_UserAgent_Mobile::isMobile()) {
             // モバイルユーザーエージェントのインスタンスを取得
             $agent = Net_UserAgent_Mobile::singleton();
-            
+
             if ($agent->isDoCoMo()) {
                 // DoCoMo
                 echo mb_convert_encoding($emoji_array[$code][1], "UTF-8", "SJIS");
@@ -171,7 +183,7 @@ class Emoji
                 }
                 $idx += 5;
             }             // 絵文字 (utf8バイナリ)
-            else 
+            else
                 if (($c1 == 0xEE) && ((($c2 == 0x80 && (0x81 <= $c3 && $c3 <= 0xEF)) || ($c2 == 0x81 && (0x80 <= $c3 && $c3 <= 0x9A))) || (($c2 == 0x84 && (0x81 <= $c3 && $c3 <= 0xEF)) || ($c2 == 0x85 && (0x80 <= $c3 && $c3 <= 0x9A))) || (($c2 == 0x88 && (0x81 <= $c3 && $c3 <= 0xEF)) || ($c2 == 0x89 && (0x80 <= $c3 && $c3 <= 0x9A))) || (($c2 == 0x8C && (0x81 <= $c3 && $c3 <= 0xEF)) || ($c2 == 0x8D && (0x80 <= $c3 && $c3 <= 0x9A))) || (($c2 == 0x90 && (0x81 <= $c3 && $c3 <= 0xEF)) || ($c2 == 0x91 && (0x80 <= $c3 && $c3 <= 0x9A))) || (($c2 == 0x94 && (0x81 <= $c3 && $c3 <= 0xBE))))) {
                     if ($c = $this->_softbank_char_utf82sjis($c2, $c3)) {
                         if ($buf != "") {
@@ -182,11 +194,11 @@ class Emoji
                     }
                     $idx += 3;
                 }                 // 絵文字ではない
-                else 
+                else
                     if ($c1 >= 0xE0) { // 3byte
                         $buf .= chr($c1) . chr($c2) . chr($c3);
                         $idx += 3;
-                    } else 
+                    } else
                         if ($c1 >= 0x80) { // 2byte
                             $buf .= chr($c1) . chr($c2);
                             $idx += 2;
@@ -270,7 +282,7 @@ class Emoji
             $r1 = 0xF9;
             $r2 = ($c3 + 0x01);
         }         // 2
-        else 
+        else
             if ($c2 == 0x84 && (0x81 <= $c3 && $c3 <= 0xBF)) {
                 $r1 = 0xF7;
                 $r2 = ($c3 == 0xBF) ? 0x80 : ($c3 - 0x40);
@@ -278,7 +290,7 @@ class Emoji
                 $r1 = 0xF7;
                 $r2 = ($c3 + 0x01);
             }             // 3
-            else 
+            else
                 if ($c2 == 0x88 && (0x81 <= $c3 && $c3 <= 0xBF)) {
                     $r1 = 0xF7;
                     $r2 = ($c3 + 0x20);
@@ -286,7 +298,7 @@ class Emoji
                     $r1 = 0xF7;
                     $r2 = ($c3 + 0x60);
                 }                 // 4
-                else 
+                else
                     if ($c2 == 0x8C && (0x81 <= $c3 && $c3 <= 0xBF)) {
                         $r1 = 0xF9;
                         $r2 = ($c3 + 0x20);
@@ -294,7 +306,7 @@ class Emoji
                         $r1 = 0xF9;
                         $r2 = ($c3 + 0x60);
                     }                     // 5
-                    else 
+                    else
                         if ($c2 == 0x90 && (0x81 <= $c3 && $c3 <= 0xBF)) {
                             $r1 = 0xFB;
                             $r2 = ($c3 - 0x40);
@@ -302,7 +314,7 @@ class Emoji
                             $r1 = 0xFB;
                             $r2 = ($c3 + 0x01);
                         }                         // 6
-                        else 
+                        else
                             if ($c2 == 0x94 && (0x81 <= $c3 && $c3 <= 0xB1)) {
                                 $r1 = 0xFB;
                                 $r2 = ($c3 + 0x20);
