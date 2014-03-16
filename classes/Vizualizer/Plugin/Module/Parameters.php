@@ -23,22 +23,34 @@
  */
 
 /**
- * Smarty {redirect} function plugin
+ * モジュール呼び出しに使用するパラメータ用クラス。
  *
- * Type: function<br>
- * Name: redirect<br>
- * Purpose: redirect page module.<br>
- *
- * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
- * @param array $params parameters
- * @param object $template template object
- * @return string null
+ * @package Vizualizer
+ * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-function smarty_function_redirect($params, $template)
+class Vizualizer_Plugin_Module_Parameters
 {
-    if (!empty($params["url"])) {
-        header("Location: " . $params["url"]);
-        exit();
+
+    var $params;
+
+    function __construct($params)
+    {
+        $this->params = $params;
+    }
+
+    function check($name)
+    {
+        if (isset($this->params[$name])) {
+            return $this->params[$name];
+        }
+        return null;
+    }
+
+    function get($name, $default = "")
+    {
+        if (isset($this->params[$name]) && $this->params[$name] != null && $this->params[$name] != "") {
+            return $this->params[$name];
+        }
+        return $default;
     }
 }
-?>

@@ -53,11 +53,21 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     private $modelClass;
 
     /**
+     * モデルオブジェクト
+     */
+    private $modelObject;
+
+    /**
      * DBの結果オブジェクト
      *
      * @var Vizualizer_Query_Select_Result
      */
     private $result;
+
+    /**
+     * 結果キャッシュオブジェクト
+     */
+    private $resultCache;
 
     /**
      * コンストラクタ
@@ -67,15 +77,22 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      */
     public function __construct($modelClass, Vizualizer_Query_Select_Result $result)
     {
+        // プロパティを初期化
         $this->modelClass = $modelClass;
+        $this->modelObject = new $modelClass();
         $this->result = $result;
+        $this->resultCache = array();
+        $this->result->rewind();
+
+        // 最初の位置に移動
         $this->rewind();
     }
 
     /**
      * デストラクタ
      */
-    public function __destruct(){
+    public function __destruct()
+    {
         $this->result->close();
     }
 
@@ -86,8 +103,9 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      */
     public function current()
     {
-        $modelClass = $this->modelClass;
-        return new $modelClass($this->currentData);
+        $modelObject = clone $this->modelObject;
+        $modelObject->setValues($this->currentData);
+        return $modelObject;
     }
 
     /**
@@ -105,8 +123,11 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      */
     public function next()
     {
+        if (!array_key_exists($this->index, $this->resultCache)) {
+            $this->resultCache[$this->index] = $this->result->next();
+        }
+        $this->currentData = $this->resultCache[$this->index];
         $this->index ++;
-        $this->currentData = $this->result->next();
     }
 
     /**
@@ -115,8 +136,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     public function rewind()
     {
         $this->index = 0;
-        $this->result->rewind();
-        $this->currentData = $this->result->next();
+        $this->next();
     }
 
     /**
