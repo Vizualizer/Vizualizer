@@ -76,6 +76,18 @@ class Vizualizer_Plugin_Model
     }
 
     /**
+     * データベースモデルを複製する。
+     * この処理はコンストラクタがDBにアクセスしているため、それによる負荷上昇の軽減用に使用する。
+     */
+    public function __clone(){
+        $this->values_org = array();
+        $this->values = array();
+        $this->groupBy = "";
+        $this->limit = "";
+        $this->offset = "";
+    }
+
+    /**
      * データベースのカラムのデータを取得する。
      */
     public function __get($name)
@@ -393,7 +405,7 @@ class Vizualizer_Plugin_Model
      * 配列になっているデータを一括でモデルに設定する。
      * 元データも設定しなおすため、実質的にデータの初期化処理と同じ扱いとなる。
      */
-    protected function setValues($values)
+    public function setValues($values)
     {
         $this->values_org = array();
         $this->values = array();
