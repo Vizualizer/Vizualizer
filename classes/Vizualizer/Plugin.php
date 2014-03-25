@@ -30,6 +30,10 @@
  */
 class Vizualizer_Plugin
 {
+    /**
+     * プレフィックス利用フラグ
+     */
+    private $prefix;
 
     /**
      * 読み込む先のネームスペース
@@ -44,8 +48,9 @@ class Vizualizer_Plugin
     /**
      * コンストラクタです。
      */
-    public function __construct($namespace)
+    public function __construct($namespace, $prefix = true)
     {
+        $this->prefix = $prefix;
         $this->namespace = strtoupper(substr($namespace, 0, 1)) . strtolower(substr($namespace, 1));
         $this->tables = array();
     }
@@ -60,7 +65,7 @@ class Vizualizer_Plugin
     {
         try {
             $names = explode(".", $name);
-            $className = "Vizualizer" . $this->namespace . "_" . $type . "_" . implode("_", $names);
+            $className = ($this->prefix?"Vizualizer":"") . $this->namespace . "_" . $type . "_" . implode("_", $names);
             if (class_exists($className)) {
                 Vizualizer_Logger::writeDebug("Loading: " . $className . "(" . memory_get_usage() . ")");
                 return new $className($params);
