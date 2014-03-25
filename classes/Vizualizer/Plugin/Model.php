@@ -447,9 +447,13 @@ class Vizualizer_Plugin_Model
             }
 
             // データ作成日／更新日は自動的に設定する。
-            $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
-            if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
-                $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+            try{
+                $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                    $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                }
+            }catch(Exception $e){
+                // Adminパッケージを使っていない場合は、登録者／更新者IDの設定をスキップする。
             }
             $this->create_time = $this->update_time = date("Y-m-d H:i:s");
 
