@@ -52,9 +52,17 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
         foreach($this->getFlows() as $flow){
             if(method_exists($this, $flow)){
                 Vizualizer_Logger::writeInfo("Execute Module : ".$flow);
-                $data = $this->$flow($params, $data);
+                try{
+                    $data = $this->$flow($params, $data);
+                }catch(Exception $e){
+                    // 例外発生時にはエラーログを出力し、バッチ自体を終了させる。
+                    Vizualizer_Logger::writeError("Batch failed in ".$flow.".", $e);
+                    break;
+                }
             }else{
+                // 必要なモジュールが無かった場合はエラーログを出力し、終了させる。
                 Vizualizer_Logger::writeAlert("Module ".$flow." was not found.");
+                break;
             }
         }
         Vizualizer_Logger::writeInfo("Batch ".$this->getName()." End.");
