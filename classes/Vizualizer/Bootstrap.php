@@ -38,7 +38,7 @@ class Vizualizer_Bootstrap
 
     /**
      * ブートストラップを登録するメソッド
-     * 
+     *
      * @param int $order 実行順
      * @param string $bootstrap 実行するブートストラップの名前
      * @return boolean 登録成功ならtrue、実行順に登録済みで失敗したらfalse
@@ -58,7 +58,7 @@ class Vizualizer_Bootstrap
      */
     public static function startup()
     {
-        sort(self::$bootstraps);
+        ksort(self::$bootstraps);
         reset(self::$bootstraps);
         foreach (self::$bootstraps as $bootstrap) {
             // クラス名を生成
@@ -66,7 +66,7 @@ class Vizualizer_Bootstrap
             // 開始メソッドを実行
             $class::start();
         }
-        
+
         // 終了時に自動的に終了処理が呼ばれるように設定
         register_shutdown_function(array("Vizualizer", "shutdown"));
     }
