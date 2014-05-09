@@ -73,11 +73,11 @@ abstract class Vizualizer_Plugin_Module_DownloadExcel extends Vizualizer_Plugin_
         $sheet->setCellValue($cell, $value);
     }
 
-    protected function executeImpl($params, $type, $name, $result)
+    protected function executeImpl($params, $type)
     {
         if (!$params->check("download") || isset($_POST[$params->get("download")])) {
             $loader = new Vizualizer_Plugin($type);
-            
+
             if ($params->check("template")) {
                 // テンプレートファイルを読み込み
                 $book = PHPExcel_IOFactory::load($params->get("template"));
@@ -85,10 +85,10 @@ abstract class Vizualizer_Plugin_Module_DownloadExcel extends Vizualizer_Plugin_
                 // Excelファイルを新規作成
                 $book = new PHPExcel();
             }
-            
+
             // データを処理する。
             $book = $this->process($params, $book);
-            
+
             // ダウンロードを実行する
             header('Content-Type: application/octet-stream');
             header('Content-Disposition: attachment;filename="' . $params->get("file", "download") . '.xlsx"');
