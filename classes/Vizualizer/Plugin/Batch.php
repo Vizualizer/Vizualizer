@@ -40,6 +40,14 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
     }
 
     /**
+     * デーモン化したバッチの1回あたりの待機時間
+     */
+    public function getDaemonInterval()
+    {
+        return 10;
+    }
+
+    /**
      * バッチの名前を取得する
      */
     public abstract function getName();
@@ -68,8 +76,12 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                     executeImpl($params);
                 }
 
-                // 一周回ったら10秒ウェイト
-                sleep(10);
+                // 一周回ったら所定秒数ウェイト
+                if($this->getDaemonInterval() > 10){
+                    sleep($this->getDaemonInterval());
+                }else{
+                    sleep(60);
+                }
             }
 
             fclose($fp);
