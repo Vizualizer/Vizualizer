@@ -73,7 +73,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 }
 
                 while (true) {
-                    executeImpl($params);
+                    $this->executeImpl($params);
                 }
 
                 // 一周回ったら所定秒数ウェイト
@@ -86,7 +86,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
 
             fclose($fp);
         } else {
-            executeImpl($params);
+            $this->executeImpl($params);
         }
         Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " End.");
     }
@@ -99,6 +99,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
      */
     protected function executeImpl($params)
     {
+        $data = array();
         foreach ($this->getFlows() as $flow) {
             if (method_exists($this, $flow)) {
                 Vizualizer_Logger::writeInfo("Execute Module : " . $flow);
