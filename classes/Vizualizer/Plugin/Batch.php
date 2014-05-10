@@ -30,6 +30,15 @@
  */
 abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
 {
+
+    /**
+     * バッチをデーモン化する場合には、ここで名前を返す
+     */
+    public function getDaemonName()
+    {
+        return "";
+    }
+
     /**
      * バッチの名前を取得する
      */
@@ -45,26 +54,54 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
      * このメソッド以外がモジュールとして呼ばれることはありません。
      *
      * @param array $params モジュールの受け取るパラメータ
-     * @access public
      */
-    public function execute($params){
-        Vizualizer_Logger::writeInfo("Batch ".$this->getName()." Start.");
-        foreach($this->getFlows() as $flow){
-            if(method_exists($this, $flow)){
-                Vizualizer_Logger::writeInfo("Execute Module : ".$flow);
-                try{
+    public function execute($params)
+    {
+        Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
+        if ($this->getDaemonName() != "") {
+            if (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
+                if (!flock($fp, LOCK_EX | LOCK_NB)) {
+                    die("プログラムは既に実行中です。");
+                }
+
+                while (true) {
+                    executeImpl($params);
+                }
+
+                // 一周回ったら10秒ウェイト
+                sleep(10);
+            }
+
+            fclose($fp);
+        } else {
+            executeImpl($params);
+        }
+        Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " End.");
+    }
+
+    /**
+     * デフォルト実行のメソッドの本体になります。
+     * このメソッド以外がモジュールとして呼ばれることはありません。
+     *
+     * @param array $params モジュールの受け取るパラメータ
+     */
+    protected function executeImpl($params)
+    {
+        foreach ($this->getFlows() as $flow) {
+            if (method_exists($this, $flow)) {
+                Vizualizer_Logger::writeInfo("Execute Module : " . $flow);
+                try {
                     $data = $this->$flow($params, $data);
-                }catch(Exception $e){
+                } catch (Exception $e) {
                     // 例外発生時にはエラーログを出力し、バッチ自体を終了させる。
-                    Vizualizer_Logger::writeError("Batch failed in ".$flow.".", $e);
+                    Vizualizer_Logger::writeError("Batch failed in " . $flow . ".", $e);
                     break;
                 }
-            }else{
+            } else {
                 // 必要なモジュールが無かった場合はエラーログを出力し、終了させる。
-                Vizualizer_Logger::writeAlert("Module ".$flow." was not found.");
+                Vizualizer_Logger::writeAlert("Module " . $flow . " was not found.");
                 break;
             }
         }
-        Vizualizer_Logger::writeInfo("Batch ".$this->getName()." End.");
     }
 }
