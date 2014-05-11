@@ -214,7 +214,7 @@ class Vizualizer_Plugin_Model
         try{
             if (class_exists("VizualizerAdmin")) {
                 $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
-                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0 && $operator["administrator_flg"] == "1" && !empty($this->access->operator_id)) {
+                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0 && $operator["administrator_flg"] != "1" && !empty($this->access->operator_id)) {
                     $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
                 }
             }
