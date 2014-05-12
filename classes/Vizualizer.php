@@ -84,6 +84,12 @@ class Vizualizer
      */
     final public static function initialize()
     {
+        // 出力バッファをリセットする。
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        ob_start();
+
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
