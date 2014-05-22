@@ -73,14 +73,18 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 }
 
                 while (true) {
-                    $this->executeImpl($params);
-                }
+                    echo "==== START ".$this->getName()." ROUTINE ======\r\n";
 
-                // 一周回ったら所定秒数ウェイト
-                if($this->getDaemonInterval() > 10){
-                    sleep($this->getDaemonInterval());
-                }else{
-                    sleep(60);
+                    $this->executeImpl($params);
+
+                    echo "==== END ".$this->getName()." ROUTINE ======\r\n";
+
+                    // 一周回ったら所定秒数ウェイト
+                    if($this->getDaemonInterval() > 10){
+                        sleep($this->getDaemonInterval());
+                    }else{
+                        sleep(60);
+                    }
                 }
             }
 
