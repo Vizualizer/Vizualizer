@@ -68,10 +68,19 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
         Vizualizer_Logger::$logFilePrefix = "batch_";
         Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
         if ($this->getDaemonName() != "") {
-            if (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
+            if ($params[3] == "stop") {
+                if (($fp = fopen($this->getDaemonName() . ".unlock", "w+")) !== FALSE) {
+                    fclose($fp);
+                }
+            }elseif (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
                 if (!flock($fp, LOCK_EX | LOCK_NB)) {
                     Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
                     die("プログラムは既に実行中です。");
+                }
+
+                if (file_exists($this->getDaemonName() . ".unlock")) {
+                    // 実行前にunlockファイルがある場合は予め削除する。
+                    unlink($this->getDaemonName() . ".unlock");
                 }
 
                 while (true) {
@@ -81,6 +90,12 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
 
                     echo "==== END ".$this->getName()." ROUTINE ======\r\n";
 
+                    if (file_exists($this->getDaemonName() . ".unlock")) {
+                        // unlockファイルがある場合はループを終了
+                        unlink($this->getDaemonName() . ".unlock");
+                        break;
+                    }
+
                     // 一周回ったら所定秒数ウェイト
                     if($this->getDaemonInterval() > 10){
                         sleep($this->getDaemonInterval());
@@ -88,9 +103,8 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                         sleep(60);
                     }
                 }
+                fclose($fp);
             }
-
-            fclose($fp);
         } else {
             $this->executeImpl($params);
         }
