@@ -30,6 +30,23 @@
  */
 abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
 {
+
+    /**
+     * バッチをデーモン化する場合には、ここで名前を返す
+     */
+    public function getDaemonName()
+    {
+        return "";
+    }
+
+    /**
+     * デーモン化したバッチの1回あたりの待機時間
+     */
+    public function getDaemonInterval()
+    {
+        return 10;
+    }
+
     /**
      * バッチの名前を取得する
      */
@@ -45,18 +62,79 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
      * このメソッド以外がモジュールとして呼ばれることはありません。
      *
      * @param array $params モジュールの受け取るパラメータ
-     * @access public
      */
-    public function execute($params){
-        Vizualizer_Logger::writeInfo("Batch ".$this->getName()." Start.");
-        foreach($this->getFlows() as $flow){
-            if(method_exists($this, $flow)){
-                Vizualizer_Logger::writeInfo("Execute Module : ".$flow);
-                $data = $this->$flow($params, $data);
-            }else{
-                Vizualizer_Logger::writeAlert("Module ".$flow." was not found.");
+    public function execute($params)
+    {
+        Vizualizer_Logger::$logFilePrefix = "batch_";
+        Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
+        if ($this->getDaemonName() != "") {
+            if ($params[3] == "stop") {
+                if (($fp = fopen($this->getDaemonName() . ".unlock", "w+")) !== FALSE) {
+                    fclose($fp);
+                }
+            }elseif (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
+                if (!flock($fp, LOCK_EX | LOCK_NB)) {
+                    Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
+                    die("プログラムは既に実行中です。");
+                }
+
+                if (file_exists($this->getDaemonName() . ".unlock")) {
+                    // 実行前にunlockファイルがある場合は予め削除する。
+                    unlink($this->getDaemonName() . ".unlock");
+                }
+
+                while (true) {
+                    echo "==== START ".$this->getName()." ROUTINE ======\r\n";
+
+                    $this->executeImpl($params);
+
+                    echo "==== END ".$this->getName()." ROUTINE ======\r\n";
+
+                    if (file_exists($this->getDaemonName() . ".unlock")) {
+                        // unlockファイルがある場合はループを終了
+                        unlink($this->getDaemonName() . ".unlock");
+                        break;
+                    }
+
+                    // 一周回ったら所定秒数ウェイト
+                    if($this->getDaemonInterval() > 10){
+                        sleep($this->getDaemonInterval());
+                    }else{
+                        sleep(60);
+                    }
+                }
+                fclose($fp);
+            }
+        } else {
+            $this->executeImpl($params);
+        }
+        Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " End.");
+    }
+
+    /**
+     * デフォルト実行のメソッドの本体になります。
+     * このメソッド以外がモジュールとして呼ばれることはありません。
+     *
+     * @param array $params モジュールの受け取るパラメータ
+     */
+    protected function executeImpl($params)
+    {
+        $data = array();
+        foreach ($this->getFlows() as $flow) {
+            if (method_exists($this, $flow)) {
+                Vizualizer_Logger::writeInfo("Execute Module : " . $flow);
+                try {
+                    $data = $this->$flow($params, $data);
+                } catch (Exception $e) {
+                    // 例外発生時にはエラーログを出力し、バッチ自体を終了させる。
+                    Vizualizer_Logger::writeError("Batch failed in " . $flow . ".", $e);
+                    break;
+                }
+            } else {
+                // 必要なモジュールが無かった場合はエラーログを出力し、終了させる。
+                Vizualizer_Logger::writeAlert("Module " . $flow . " was not found.");
+                break;
             }
         }
-        Vizualizer_Logger::writeInfo("Batch ".$this->getName()." End.");
     }
 }

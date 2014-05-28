@@ -84,6 +84,12 @@ class Vizualizer
      */
     final public static function initialize()
     {
+        // 出力バッファをリセットする。
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        ob_start();
+
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
@@ -97,8 +103,13 @@ class Vizualizer
         // キャッシュのベースディレクトリを設定
         if (!defined('VIZUALIZER_CACHE_ROOT')) {
             $cacheBase = VIZUALIZER_ROOT;
-            while(!is_writable($cacheBase)){
-                $cacheBase = realpath($cacheBase."/../");
+            while (!is_writable($cacheBase)) {
+                // ルートディレクトリまで書き込みできない場合はエラー終了。
+                if ($cacheBase == "/") {
+                    die("ログ／キャッシュ用に書き込み可能なディレクトリが必要です");
+                    break;
+                }
+                $cacheBase = realpath($cacheBase . "/../");
             }
             define('VIZUALIZER_CACHE_ROOT', $cacheBase);
         }
@@ -132,14 +143,14 @@ class Vizualizer
             Vizualizer_Bootstrap::startup();
 
             $class = $_SERVER["argv"][2];
-            if($_SERVER["argv"][1] == "install"){
+            if ($_SERVER["argv"][1] == "install") {
                 try {
                     $class::install();
                     echo "Package " . $_SERVER["argv"][2] . " installed successfully\r\n";
                 } catch (Exception $e) {
                     echo "Package " . $_SERVER["argv"][2] . " install failed\r\n";
                 }
-            }elseif($_SERVER["argv"][1] == "batch"){
+            } elseif ($_SERVER["argv"][1] == "batch") {
                 try {
                     $batch = new $class();
                     $batch->execute($_SERVER["argv"]);
@@ -148,13 +159,13 @@ class Vizualizer
                     echo "Batch " . $_SERVER["argv"][2] . " execution failed\r\n";
                 }
             }
-            exit;
+            exit();
         } else {
             // ドキュメントルートを調整
             if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
                 $_SERVER["DOCUMENT_ROOT"] = substr($_SERVER["DOCUMENT_ROOT"], 0, -1);
             }
-            if(preg_match("@^".$_SERVER["DOCUMENT_ROOT"]."@", VIZUALIZER_SITE_ROOT) == 0){
+            if (preg_match("@^" . $_SERVER["DOCUMENT_ROOT"] . "@", VIZUALIZER_SITE_ROOT) == 0) {
                 $_SERVER['DOCUMENT_ROOT'] = str_replace($_SERVER['SCRIPT_NAME'], "", $_SERVER['SCRIPT_FILENAME']);
             }
 
@@ -186,7 +197,7 @@ class Vizualizer
 
         $attr = Vizualizer::attr();
         $info = pathinfo($attr["templateName"]);
-        switch($info["extension"]){
+        switch ($info["extension"]) {
             case "html":
             case "htm":
             case "xml":
@@ -203,17 +214,42 @@ class Vizualizer
                 eval(file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]));
                 break;
             case "json":
+                if (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
+                    $post = Vizualizer::request();
+                    // コールバックを取得
+                    $callback = "";
+                    if (!empty($post["callback"])) {
+                        $callback = $post["callback"];
+                        $post->remove("callback");
+                    }
+                    $post->remove("_");
+
+                    // JSONモジュールを実行する。
+                    $loader = new Vizualizer_Plugin(substr($info["dirname"], 1));
+                    $json = $loader->loadJson($info["filename"]);
+                    $result = json_encode($json->execute());
+
+                    // バッファをクリアしてJSONの結果を出力する。
+                    ob_end_clean();
+                    header("Content-Type: application/json; charset=utf-8");
+                    if (!empty($callback)) {
+                        echo $callback . "(" . $result . ");";
+                    } else {
+                        echo $result;
+                    }
+                } else {
+                    header("HTTP/1.0 404 Not Found");
+                    exit();
+                }
                 break;
             default:
                 // 特別にヘッダを渡す必要のあるものはここに記載
-                $headers = array(
-                    "css" => "text/css", "js" => "text/javascript"
-                );
-                if(array_key_exists($info["extension"], $headers)){
-                    header("Content-Type: ".$headers[$info["extension"]]);
+                $headers = array("css" => "text/css", "js" => "text/javascript");
+                if (array_key_exists($info["extension"], $headers)) {
+                    header("Content-Type: " . $headers[$info["extension"]]);
                 }
-                if(($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE){
-                    while($buffer = fread($fp, 8192)){
+                if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
+                    while ($buffer = fread($fp, 8192)) {
                         echo $buffer;
                     }
                 }

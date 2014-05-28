@@ -148,4 +148,14 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     {
         return ($this->currentData !== NULL);
     }
+
+    /**
+     * 結果のモデルの件数を取得する。
+     *
+     * @return int 結果件数
+     */
+    public function count()
+    {
+        return $this->result->count();
+    }
 }

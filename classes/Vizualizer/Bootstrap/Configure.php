@@ -39,7 +39,12 @@ class Vizualizer_Bootstrap_Configure
     {
         // SERVER_NAMEが未設定の場合はlocalhostを割当
         if (!isset($_SERVER["SERVER_NAME"])) {
-            $_SERVER["SERVER_NAME"] = "localhost";
+            $serverName = getenv("PHP_SERVER_NAME");
+            if (!empty($serverName)) {
+                $_SERVER["SERVER_NAME"] = $serverName;
+            }else{
+                $_SERVER["SERVER_NAME"] = "localhost";
+            }
         }
 
         // デフォルトの設定

@@ -30,6 +30,10 @@
  */
 class Vizualizer_Plugin
 {
+    /**
+     * プラグイン呼び出しマップ
+     */
+    public static $callmap = array();
 
     /**
      * 読み込む先のネームスペース
@@ -60,7 +64,7 @@ class Vizualizer_Plugin
     {
         try {
             $names = explode(".", $name);
-            $className = "Vizualizer" . $this->namespace . "_" . $type . "_" . implode("_", $names);
+            $className = (!in_array($this->namespace, self::$callmap)?("Vizualizer" . $this->namespace):(self::$callmap[$this->namespace])) . "_" . $type . "_" . implode("_", $names);
             if (class_exists($className)) {
                 Vizualizer_Logger::writeDebug("Loading: " . $className . "(" . memory_get_usage() . ")");
                 return new $className($params);
