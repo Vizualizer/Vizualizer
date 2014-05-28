@@ -76,6 +76,11 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                     die("プログラムは既に実行中です。");
                 }
 
+                if (file_exists($this->getDaemonName() . ".unlock")) {
+                    // 実行前にunlockファイルがある場合は予め削除する。
+                    unlink($this->getDaemonName() . ".unlock");
+                }
+
                 while (true) {
                     echo "==== START ".$this->getName()." ROUTINE ======\r\n";
 
