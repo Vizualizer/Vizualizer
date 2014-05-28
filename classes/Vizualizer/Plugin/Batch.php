@@ -65,10 +65,12 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
      */
     public function execute($params)
     {
+        Vizualizer_Logger::$logFilePrefix = "batch_";
         Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
         if ($this->getDaemonName() != "") {
             if (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
                 if (!flock($fp, LOCK_EX | LOCK_NB)) {
+                    Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
                     die("プログラムは既に実行中です。");
                 }
 
