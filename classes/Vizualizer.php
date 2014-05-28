@@ -104,6 +104,11 @@ class Vizualizer
         if (!defined('VIZUALIZER_CACHE_ROOT')) {
             $cacheBase = VIZUALIZER_ROOT;
             while (!is_writable($cacheBase)) {
+                // ルートディレクトリまで書き込みできない場合はエラー終了。
+                if ($cacheBase == "/") {
+                    die("ログ／キャッシュ用に書き込み可能なディレクトリが必要です");
+                    break;
+                }
                 $cacheBase = realpath($cacheBase . "/../");
             }
             define('VIZUALIZER_CACHE_ROOT', $cacheBase);

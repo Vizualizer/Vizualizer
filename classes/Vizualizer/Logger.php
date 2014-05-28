@@ -30,6 +30,8 @@
  */
 class Vizualizer_Logger
 {
+    public static $logFilePrefix = "";
+
     // ログの種別
     const LOG_ERROR = "error";
     const LOG_ALERT = "alert";
@@ -47,9 +49,9 @@ class Vizualizer_Logger
     {
         try {
             if (Vizualizer_Configure::get("site_code") !== null && Vizualizer_Configure::get("site_code") !== "") {
-                $siteCode = Vizualizer_Configure::get("site_code");
+                $siteCode = self::$logFilePrefix . Vizualizer_Configure::get("site_code");
             } else {
-                $siteCode = "default";
+                $siteCode = self::$logFilePrefix . "default";
             }
             // ログディレクトリが無い場合は自動的に作成
             $logHome = Vizualizer_Configure::get("log_root") . DIRECTORY_SEPARATOR;
