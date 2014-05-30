@@ -47,7 +47,7 @@ abstract class Vizualizer_Plugin_Module
 
     protected function isEmpty($value)
     {
-        return (!isset($value) || $value === null || $value === "");
+        return (!isset($value) || $value === FALSE || $value === null || $value === "");
     }
 
     protected function encryptPassword($login_id, $plain_password)
