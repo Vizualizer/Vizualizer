@@ -115,7 +115,7 @@ abstract class Vizualizer_Template
         Vizualizer_Logger::writeDebug("Template Name : " . $template);
         if (Vizualizer_Configure::get("device")->isFuturePhone()) {
             // モバイルの時は出力するHTMLをデータとして取得
-            $content = $this->core->fetch($template, $cache_id, $compile_id, $parent, false);
+            $content = trim($this->core->fetch($template, $cache_id, $compile_id, $parent));
             // カタカナを半角にする。
             $content = mb_convert_kana($content, "k");
 
@@ -135,7 +135,7 @@ abstract class Vizualizer_Template
             }
         } else {
             header("Content-Type: text/html; charset=UTF-8");
-            $this->fetch($template, $cache_id, $compile_id, $parent, true);
+            echo trim($this->fetch($template, $cache_id, $compile_id, $parent));
         }
     }
 }
