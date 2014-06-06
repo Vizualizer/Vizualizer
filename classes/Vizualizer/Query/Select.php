@@ -247,8 +247,8 @@ class Vizualizer_Query_Select
         $sql .= (!empty($this->groups) ? " GROUP BY " . implode(", ", $this->groups) : "");
         $sql .= (!empty($this->having) ? " HAVING " . implode(", ", $this->having) : "");
         $sql .= (!empty($this->orders) ? " ORDER BY " . implode(", ", $this->orders) : "");
-        $sql .= (($this->limit !== null) ? " LIMIT " . $this->limit : "");
-        $sql .= (($this->offset !== null) ? " OFFSET " . $this->offset : "");
+        $sql .= ((is_numeric($this->limit) && $this->limit >= 0) ? " LIMIT " . $this->limit : "");
+        $sql .= ((is_numeric($this->offset) && $this->offset >= 0) ? " OFFSET " . $this->offset : "");
 
         return $sql;
     }

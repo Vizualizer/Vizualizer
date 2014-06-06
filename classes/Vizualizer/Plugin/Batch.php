@@ -65,10 +65,15 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
      */
     public function execute($params)
     {
+        // 出力バッファをリセットする。
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
         Vizualizer_Logger::$logFilePrefix = "batch_";
         Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
         if ($this->getDaemonName() != "") {
-            if ($params[3] == "stop") {
+            if (count($params) > 3 && $params[3] == "stop") {
                 if (($fp = fopen($this->getDaemonName() . ".unlock", "w+")) !== FALSE) {
                     fclose($fp);
                 }
