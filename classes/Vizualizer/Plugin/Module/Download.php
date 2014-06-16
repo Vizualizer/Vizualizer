@@ -38,6 +38,10 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
         $this->groupBy = $groupBy;
     }
 
+    protected function filterData($data){
+        return $data;
+    }
+
     protected function executeImpl($params, $type, $name, $result, $defaultSortKey = "create_time")
     {
         if (!$params->check("search") || isset($_POST[$params->get("search")])) {
@@ -74,9 +78,11 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
             if ($this->groupBy) {
                 $model->setGroupBy($this->groupBy);
             }
-            $result = $model->getAllBy($conditions, $sortOrder, $sortReverse);
+            $result = $model->findAllBy($conditions, $sortOrder, $sortReverse);
 
-            $titles = explode(",", $params->get("titles"));
+            if($params->check("titles")){
+                $titles = explode(",", $params->get("titles"));
+            }
             $columns = explode(",", $params->get("columns"));
 
             // ヘッダを送信
@@ -85,19 +91,25 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
 
             ob_end_clean();
 
-            // CSVヘッダを出力
-            echo mb_convert_encoding("\"" . implode("\",\"", $titles) . "\"\r\n", "Shift_JIS", "UTF-8");
+            ob_start();
 
-            while ($data = $result->next()) {
+            // CSVヘッダを出力
+            $out = fopen("php://output", "w");
+            if($params->check("titles")){
+                fputcsv($out, $titles);
+            }
+
+            foreach ($result as $data) {
 
                 // データが０件以上の場合は繰り返し
+                $output = array();
                 foreach ($columns as $index => $column) {
-                    if ($index > 0)
-                        echo ",";
-                    echo "\"" . mb_convert_encoding($data[$column], "Shift_JIS", "UTF-8") . "\"";
+                    $output[] = $this->filterData($data->$column);
                 }
-                echo "\r\n";
+                fputcsv($out, $output);
             }
+            fclose($out);
+            echo mb_convert_encoding(ob_get_clean(), "Shift_JIS", "UTF-8");
             exit();
         }
     }
