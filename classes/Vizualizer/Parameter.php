@@ -75,6 +75,8 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
             } else {
                 $this->parameters = array(TEMPLATE_DIRECTORY => array());
             }
+        }else{
+            $this->parameters[TEMPLATE_DIRECTORY] = array();
         }
         if (is_array($_GET)) {
             foreach ($_GET as $name => $value) {
