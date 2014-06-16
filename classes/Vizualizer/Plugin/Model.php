@@ -462,7 +462,11 @@ class Vizualizer_Plugin_Model
                 if (class_exists("VizualizerAdmin")) {
                     $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
                     if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
-                        $this->operator_id = $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                        if ($this->operator_id > 0) {
+                            $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                        }else{
+                            $this->operator_id = $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                        }
                     }
                 }
             }catch(Exception $e){

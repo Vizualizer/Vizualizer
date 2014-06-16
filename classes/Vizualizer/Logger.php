@@ -65,10 +65,10 @@ class Vizualizer_Logger
                     $logHistorys = Vizualizer_Configure::get("max_logs");
                     for ($index = $logHistorys - 1; $index > 0; $index --) {
                         if (file_exists($logHome . $siteCode . "_" . $index . ".log")) {
-                            rename($logHome . $siteCode . "_" . $index . ".log", $logHome . $siteCode . "_" . ($index + 1) . ".log");
+                            @rename($logHome . $siteCode . "_" . $index . ".log", $logHome . $siteCode . "_" . ($index + 1) . ".log");
                         }
                     }
-                    rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
+                    @rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
                 }
 
                 // ログファイルに記載

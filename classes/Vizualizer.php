@@ -215,6 +215,7 @@ class Vizualizer
                 break;
             case "json":
                 if (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
+                    Vizualizer_Parameter::$enableRefresh = false;
                     $post = Vizualizer::request();
                     // コールバックを取得
                     $callback = "";
