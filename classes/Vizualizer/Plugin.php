@@ -109,7 +109,8 @@ class Vizualizer_Plugin
      */
     function loadTable($name)
     {
-        return $this->load("Table", $name);
+        $tableName = ltrim(strtolower(preg_replace('/[A-Z]/', '_\0', $name)), '_');
+        return new Vizualizer_Plugin_Table(strtolower($this->namespace)."_".$tableName, strtolower($this->namespace));
     }
 
     /**
