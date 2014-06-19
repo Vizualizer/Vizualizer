@@ -65,11 +65,6 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     private $result;
 
     /**
-     * 結果キャッシュオブジェクト
-     */
-    private $resultCache;
-
-    /**
      * コンストラクタ
      *
      * @param string $modelClass
@@ -81,8 +76,6 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
         $this->modelClass = $modelClass;
         $this->modelObject = new $modelClass();
         $this->result = $result;
-        $this->resultCache = array();
-        $this->result->rewind();
 
         // 最初の位置に移動
         $this->rewind();
@@ -123,10 +116,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      */
     public function next()
     {
-        if (!array_key_exists($this->index, $this->resultCache)) {
-            $this->resultCache[$this->index] = $this->result->next();
-        }
-        $this->currentData = $this->resultCache[$this->index];
+        $this->currentData = $this->result->next();
         $this->index ++;
     }
 
@@ -135,7 +125,8 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
      */
     public function rewind()
     {
-        $this->index = 0;
+        $this->result->rewind();
+        $this->index = -1;
         $this->next();
     }
 
