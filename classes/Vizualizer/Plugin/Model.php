@@ -384,26 +384,30 @@ class Vizualizer_Plugin_Model
                         $value = array($value);
                     }
                     $placeholders = "";
-                    foreach ($value as $v) {
-                        if (!empty($placeholders)) {
-                            $placeholders .= ",";
+                    if(!empty($value)){
+                        foreach ($value as $v) {
+                            if (!empty($placeholders)) {
+                                $placeholders .= ",";
+                            }
+                            $placeholders .= "?";
                         }
-                        $placeholders .= "?";
+                        $select->addWhere($fullkey . " in (" . $placeholders . ")", $value);
                     }
-                    $select->addWhere($fullkey . " in (" . $placeholders . ")", $value);
                     break;
                 case "nin":
                     if (!is_array($value)) {
                         $value = array($value);
                     }
                     $placeholders = "";
-                    foreach ($value as $v) {
-                        if (!empty($placeholders)) {
-                            $placeholders .= ",";
+                    if(!empty($value)){
+                        foreach ($value as $v) {
+                            if (!empty($placeholders)) {
+                                $placeholders .= ",";
+                            }
+                            $placeholders .= "?";
                         }
-                        $placeholders .= "?";
+                        $select->addWhere($fullkey . " NOT IN (" . $placeholders . ")", $value);
                     }
-                    $select->addWhere($fullkey . " NOT IN (" . $placeholders . ")", $value);
                     break;
                 default:
                     break;
