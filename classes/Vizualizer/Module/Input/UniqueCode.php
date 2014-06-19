@@ -23,27 +23,30 @@
  */
 
 /**
- * デフォルトの入力値として当日の日付を設定します。
+ * グローバルユニークな文字列を設定します。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Module_Input_Today extends Vizualizer_Plugin_Module
+class Vizualizer_Module_Input_UniqueCode extends Vizualizer_Plugin_Module
 {
-
     function execute($params)
     {
         if ($params->check("result")) {
+            // リクエストパラメータを取得
             $post = Vizualizer::request();
+            // ユニークコードを取得
+            $code = Vizualizer_Data_UniqueCode::get($params->get("prefix", ""));
+            // ユニークコードをパラメータに設定
             if($params->check("parent")){
                 $parent = $post[$params->get("parent")];
                 if(empty($parent[$params->get("result")])){
-                    $parent[$params->get("result")] = date($params->get("format", "Y-m-d"));
+                    $parent[$params->get("result")] = $code;
                     $post->set($params->get("parent"), $parent);
                 }
             }else{
                 if(empty($post[$params->get("result")])){
-                    $post->set($params->get("result"), date($params->get("format", "Y-m-d")));
+                    $post->set($params->get("result"), $code);
                 }
             }
         }
