@@ -31,6 +31,7 @@
 class Vizualizer_Logger
 {
     public static $logFilePrefix = "";
+    public static $logOutputStandard = false;
 
     // ログの種別
     const LOG_ERROR = "error";
@@ -75,9 +76,18 @@ class Vizualizer_Logger
                 $logFile = $logHome . $siteCode . ".log";
                 if (($fp = fopen($logFile, "a+")) !== FALSE) {
                     fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $message . "\r\n");
+                    if(self::$logOutputStandard){
+                        echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $message . "\r\n";
+                    }
                     if ($exception != null) {
                         fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getMessage() . "\r\n");
+                        if(self::$logOutputStandard){
+                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getMessage() . "\r\n";
+                        }
                         fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getTraceAsString());
+                        if(self::$logOutputStandard){
+                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getTraceAsString();
+                        }
                     }
                     fclose($fp);
                     @chmod($logFile, 0666);
