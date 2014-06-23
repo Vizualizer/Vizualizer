@@ -164,13 +164,17 @@ class Vizualizer_Plugin_Model
     {
         $insert = new Vizualizer_Query_InsertIgnore($this->access);
         $sqlvals = array();
+        $insertSet = false;
         foreach ($this->columns as $column) {
             if (array_key_exists($column, $this->values) && (!empty($this->values[$column]) || is_numeric($this->values[$column]))) {
                 $sqlvals[$column] = $this->values[$column];
+                if($column != "create_time" && $column != "update_time"){
+                    $insertSet = true;
+                }
             }
         }
         // 何かしらの情報が登録されている場合のみ登録処理を実行する。
-        if (!empty($sqlvals)) {
+        if (!empty($sqlvals) && $insertSet) {
             // データ作成日／更新日は自動的に設定する。
             $sqlvals["create_time"] = $sqlvals["update_time"] = date("Y-m-d H:i:s");
             $insert->execute($sqlvals);
@@ -499,7 +503,9 @@ class Vizualizer_Plugin_Model
                                 $update->addSets($this->access->$column . " = NULL", array());
                             }
                         }
-                        $updateSet = true;
+                        if($column != "update_time"){
+                            $updateSet = true;
+                        }
                     }
                 }
                 // WHERE句とSET句の両方が設定されている場合のみ更新処理を実行
