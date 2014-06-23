@@ -71,6 +71,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
         }
 
         Vizualizer_Logger::$logFilePrefix = "batch_";
+        Vizualizer_Logger::$logOutputStandard = true;
         Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
         if ($this->getDaemonName() != "") {
             if (count($params) > 3 && $params[3] == "stop") {
@@ -89,11 +90,11 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 }
 
                 while (true) {
-                    echo "==== START ".$this->getName()." ROUTINE ======\r\n";
+                    Vizualizer_Logger::writeInfo("==== START ".$this->getName()." ROUTINE ======");
 
                     $this->executeImpl($params);
 
-                    echo "==== END ".$this->getName()." ROUTINE ======\r\n";
+                    Vizualizer_Logger::writeInfo("==== END ".$this->getName()." ROUTINE ======");
 
                     if (file_exists($this->getDaemonName() . ".unlock")) {
                         // unlockファイルがある場合はループを終了
