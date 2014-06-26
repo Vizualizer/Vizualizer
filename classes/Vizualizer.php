@@ -119,6 +119,7 @@ class Vizualizer
 
         // 属性を初期化
         self::$attributes = null;
+
     }
 
     /**
@@ -195,6 +196,13 @@ class Vizualizer
             Vizualizer_Bootstrap::startup();
         }
 
+        $prefilters = Vizualizer_Configure::get("prefilters");
+        if(is_array($prefilters) && !empty($prefilters)){
+            foreach($prefilters as $prefilter){
+                $prefilter::prefilter();
+            }
+        }
+
         $attr = Vizualizer::attr();
         $info = pathinfo($attr["templateName"]);
         switch ($info["extension"]) {
@@ -255,6 +263,12 @@ class Vizualizer
                     }
                 }
                 break;
+        }
+        $postfilters = Vizualizer_Configure::get("postfilters");
+        if(is_array($postfilters) && !empty($postfilters)){
+            foreach($postfilters as $postfilter){
+                $postfilter::postfilter();
+            }
         }
     }
 

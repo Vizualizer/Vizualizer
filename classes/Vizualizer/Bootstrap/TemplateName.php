@@ -101,6 +101,9 @@ class Vizualizer_Bootstrap_TemplateName
                     $attributes["templateName"] .= "index.htm";
                 } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.xml")) {
                     $attributes["templateName"] .= "index.xml";
+                } else {
+                    // いずれも存在しない場合はダミーとしてindex.htmlを設定しておく
+                    $attributes["templateName"] .= "index.html";
                 }
             }
         }
@@ -116,8 +119,15 @@ class Vizualizer_Bootstrap_TemplateName
                     $attributes["templateName"] .= "index.htm";
                 } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.xml")) {
                     $attributes["templateName"] .= "index.xml";
+                } else {
+                    // いずれも存在しない場合はダミーとしてindex.htmlを設定しておく
+                    $attributes["templateName"] .= "index.html";
                 }
             }
+        }
+        if (substr($attributes["templateName"], -1) == DIRECTORY_SEPARATOR) {
+            // いずれも存在しない場合はダミーとしてindex.htmlを設定しておく
+            $attributes["templateName"] .= "index.html";
         }
 
         // テンプレートの存在するパスを取得する。
