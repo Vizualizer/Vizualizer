@@ -85,6 +85,15 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
 
     public function fetch($template, $cache_id = null, $compile_id = null, $parent = null, $display = false)
     {
-        return $this->core->fetch($template, $cache_id, $compile_id, $parent, $display);
+        $attributes = Vizualizer::attr();
+        if(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/" . $template)) {
+            return $this->core->fetch($template, $cache_id, $compile_id, $parent, $display);
+        } elseif(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/err404.html")) {
+            return $this->core->fetch("err404.html", $cache_id, $compile_id, $parent, $display);
+        }else{
+            header("HTTP/1.0 404 Not Found");
+            echo "ファイルが存在しません。";
+            exit;
+        }
     }
 }
