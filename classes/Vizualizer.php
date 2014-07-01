@@ -163,6 +163,7 @@ class Vizualizer
             exit();
         } else {
             // ドキュメントルートを調整
+            $_SERVER["DOCUMENT_ROOT"] = realpath($_SERVER["DOCUMENT_ROOT"]);
             if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
                 $_SERVER["DOCUMENT_ROOT"] = substr($_SERVER["DOCUMENT_ROOT"], 0, -1);
             }
