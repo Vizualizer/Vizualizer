@@ -38,12 +38,12 @@ class Vizualizer_Module_Input_Today extends Vizualizer_Plugin_Module
             if($params->check("parent")){
                 $parent = $post[$params->get("parent")];
                 if(empty($parent[$params->get("result")])){
-                    $parent[$params->get("result")] = date($params->get("format", "Y-m-d"));
+                    $parent[$params->get("result")] = Vizualizer::now()->date($params->get("format", "Y-m-d"));
                     $post->set($params->get("parent"), $parent);
                 }
             }else{
                 if(empty($post[$params->get("result")])){
-                    $post->set($params->get("result"), date($params->get("format", "Y-m-d")));
+                    $post->set($params->get("result"), Vizualizer::now()->date($params->get("format", "Y-m-d")));
                 }
             }
         }
