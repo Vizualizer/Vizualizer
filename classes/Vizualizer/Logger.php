@@ -63,13 +63,19 @@ class Vizualizer_Logger
             if (is_dir($logHome) && is_writable($logHome)) {
                 // 現在のログファイルが10MB以上の場合ローテーションする。
                 if (file_exists($logHome . $siteCode . ".log") && filesize($logHome . $siteCode . ".log") > 1024 * 1024 * 10) {
-                    $logHistorys = Vizualizer_Configure::get("max_logs");
-                    for ($index = $logHistorys - 1; $index > 0; $index --) {
-                        if (file_exists($logHome . $siteCode . "_" . $index . ".log")) {
-                            @rename($logHome . $siteCode . "_" . $index . ".log", $logHome . $siteCode . "_" . ($index + 1) . ".log");
+                    if(($fp = fopen($logHome . $siteCode . ".log", "r")) !== FALSE){
+                        if(flock($fp, LOCK_EX | LOCK_NB)){
+                            $logHistorys = Vizualizer_Configure::get("max_logs");
+                            for ($index = $logHistorys - 1; $index > 0; $index --) {
+                                if (file_exists($logHome . $siteCode . "_" . $index . ".log")) {
+                                    @rename($logHome . $siteCode . "_" . $index . ".log", $logHome . $siteCode . "_" . ($index + 1) . ".log");
+                                }
+                            }
+                            @rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
+                            flock($fp, LOCK_UN);
                         }
+                        fclose($fp);
                     }
-                    @rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
                 }
 
                 // ログファイルに記載
