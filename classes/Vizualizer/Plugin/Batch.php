@@ -90,9 +90,9 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 }
 
                 while (true) {
-                    Vizualizer_Logger::writeInfo("==== START ".$this->getName()." ROUTINE ======");
-
                     Vizualizer::now()->reset();
+
+                    Vizualizer_Logger::writeInfo("==== START ".$this->getName()." ROUTINE ======");
 
                     $this->executeImpl($params);
 
