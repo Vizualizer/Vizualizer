@@ -257,53 +257,6 @@ class Vizualizer_Sendmail
         $this->sendRaw($this->from, $this->fromAddress, $this->to, $this->subject, $body, $contentType, $transferEncoding);
     }
 
-    /**
-     * テキストメールを送信します。
-     *
-     * @parmas string $contentType メール全体のコンテンツタイプ。
-     *
-     * @param s string $suffix メールの最後に付加する文字列メール毎に違う文章を設定する際に利用。
-     * @access public
-     */
-    public function sendlog($contentType = "text/plain", $suffix = "")
-    {
-        $this->send($contentType, $suffix);
-
-        // メールログに書き込み
-        $this->logMail();
-    }
-
-    /**
-     * メールログに保存する。
-     */
-    protected function logMail()
-    {
-        /*
-        // ローダーを初期化
-        $loader = new Vizualizer_Plugin();
-        // メールログのテーブルモデルを読み込み
-        $maillogs = $loader->LoadTable("MaillogsTable");
-
-        // データベースINSERTモデルの読み込み
-        $insert = new Clay_Query_Insert($maillogs);
-
-        // 設定するデータ配列を定義
-        $values = array();
-        $values["mail_from"] = $this->fromAddress;
-        $values["mail_to"] = $this->toAddress;
-        $values["subject"] = $this->subject;
-        $values["body"] = $this->body;
-        $values["mail_time"] = date("Y-m-d H:i:s");
-
-        // INSERTの実行
-        try {
-            $insert->execute($values);
-        } catch (Exception $e) {
-            // メールログの書き込み失敗はエラーと見なさない。
-        }
-        */
-    }
-
     public function sendRaw($from, $fromAddress, $to, $subject, $body, $contentType = "text/plain", $transferEncoding = "7bit")
     {
         // メールヘッダを作成

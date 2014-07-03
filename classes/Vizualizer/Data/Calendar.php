@@ -94,6 +94,24 @@ class Vizualizer_Data_Calendar
     }
 
     /**
+     * カレンダーの時刻にgmdateを実行した文字列を取得する。
+     * @param string $format フォーマット
+     * @return string 書式化した時刻
+     */
+    public function gmDate($format)
+    {
+        return gmdate($format, $this->time);
+    }
+
+    /**
+     * カレンダーのtime値を取得する。
+     * @return int カレンダーのtime値
+     */
+    public function getTime(){
+        return $this->time;
+    }
+
+    /**
      * カレンダーを文字列として扱う場合はY-m-d H:i:s形式として扱う。
      */
     public function __toString(){
