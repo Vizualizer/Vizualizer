@@ -176,7 +176,7 @@ class Vizualizer_Plugin_Model
         // 何かしらの情報が登録されている場合のみ登録処理を実行する。
         if (!empty($sqlvals) && $insertSet) {
             // データ作成日／更新日は自動的に設定する。
-            $sqlvals["create_time"] = $sqlvals["update_time"] = Vizualizer_Date_Calendar::now()->date("Y-m-d H:i:s");
+            $sqlvals["create_time"] = $sqlvals["update_time"] = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
             $insert->execute($sqlvals);
             foreach ($this->primary_keys as $key) {
                 if (empty($this->values[$key])) {
@@ -480,7 +480,7 @@ class Vizualizer_Plugin_Model
             }catch(Exception $e){
                 // Adminパッケージを使っていない場合は、登録者／更新者IDの設定をスキップする。
             }
-            $this->create_time = $this->update_time = Vizualizer_Date_Calendar::now()->date("Y-m-d H:i:s");
+            $this->create_time = $this->update_time = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
 
             if (!is_array($result) || empty($result)) {
                 // 主キーのデータが無かった場合はデータを作成する。
@@ -528,7 +528,7 @@ class Vizualizer_Plugin_Model
         $insert = new Vizualizer_Query_InsertIgnore($this->access);
         foreach ($list as $index => $data) {
             // データ作成日／更新日は自動的に設定する。
-            $data["create_time"] = $data["update_time"] = Vizualizer_Date_Calendar::now()->date("Y-m-d H:i:s");
+            $data["create_time"] = $data["update_time"] = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
             $insert->execute($data);
             foreach ($this->primary_keys as $key) {
                 if (empty($data[$key])) {

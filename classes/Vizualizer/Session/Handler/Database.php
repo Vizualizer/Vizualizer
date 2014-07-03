@@ -118,7 +118,7 @@ class Vizualizer_Session_Handler_Database extends Clay_Session_Handler
         try {
             $insert = new Vizualizer_Query_Replace($this->table);
             $sqlval = array($id_key => $id, $data_key => $sess_data);
-            $sqlval["create_time"] = $sqlval["update_time"] = Vizualizer_Date_Calendar::now()->date("Y-m-d H:i:s");
+            $sqlval["create_time"] = $sqlval["update_time"] = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
             Vizualizer_Logger::writeDebug($insert->showQuery($sqlval));
             $insert->execute($sqlval);
             return true;
