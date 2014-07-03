@@ -75,18 +75,18 @@ class Vizualizer_Logger
                 // ログファイルに記載
                 $logFile = $logHome . $siteCode . ".log";
                 if (($fp = fopen($logFile, "a+")) !== FALSE) {
-                    fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $message . "\r\n");
+                    fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $message . "\r\n");
                     if(self::$logOutputStandard){
-                        echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $message . "\r\n";
+                        echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $message . "\r\n";
                     }
                     if ($exception != null) {
-                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getMessage() . "\r\n");
+                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getMessage() . "\r\n");
                         if(self::$logOutputStandard){
-                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getMessage() . "\r\n";
+                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getMessage() . "\r\n";
                         }
-                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getTraceAsString());
+                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getTraceAsString());
                         if(self::$logOutputStandard){
-                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getTraceAsString();
+                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getTraceAsString();
                         }
                     }
                     fclose($fp);
