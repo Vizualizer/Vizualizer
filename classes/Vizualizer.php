@@ -90,9 +90,6 @@ class Vizualizer
         }
         ob_start();
 
-        // システム実行時の時間を記録するため、カレンダーを取得する。
-        Vizualizer_Data_Calendar::get();
-
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
@@ -148,6 +145,9 @@ class Vizualizer
             Vizualizer_Bootstrap::register(50, "Locale");
             Vizualizer_Bootstrap::register(60, "UserAgent");
             Vizualizer_Bootstrap::startup();
+
+            // システム実行時の時間を記録するため、カレンダーを取得する。
+            Vizualizer_Data_Calendar::get();
 
             $class = $_SERVER["argv"][2];
             if ($_SERVER["argv"][1] == "install") {

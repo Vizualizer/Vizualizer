@@ -50,12 +50,23 @@ class Vizualizer_Data_Calendar
     }
 
     /**
+     * システム実行の基準時間をリセットする。
+     */
+    public static function reset(){
+        if(Vizualizer_Configure::get("SYSTEM_CURRENT_TIME") == null){
+            self::$calendar = new Vizualizer_Data_Calendar();
+        }else{
+            self::$calendar = new Vizualizer_Data_Calendar(strtotime(Vizualizer_Configure::get("SYSTEM_CURRENT_TIME")));
+        }
+    }
+
+    /**
      * システム実行の基準時間用のカレンダーを取得する。
      */
     public static function get()
     {
         if (self::$calendar == null) {
-            self::$calendar = self::now();
+            self::reset();
         }
         return self::$calendar;
     }
