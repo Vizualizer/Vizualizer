@@ -90,6 +90,9 @@ class Vizualizer
         }
         ob_start();
 
+        // システム実行時の時間を記録するため、カレンダーを取得する。
+        Vizualizer_Data_Calendar::get();
+
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
@@ -346,5 +349,12 @@ class Vizualizer
             self::$attributes = new Vizualizer_Attributes();
         }
         return self::$attributes;
+    }
+
+    /**
+     * システムの起動時間（基準時）を取得します。
+     */
+    public static function now(){
+        return Vizualizer_Data_Calendar::get();
     }
 }

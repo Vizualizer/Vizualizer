@@ -44,7 +44,7 @@ class Vizualizer_Data_Calendar
     /**
      * 現在時刻のカレンダーを取得する。
      */
-    public static function currentCalendar()
+    public static function now()
     {
         return new Vizualizer_Data_Calendar();
     }
@@ -52,10 +52,10 @@ class Vizualizer_Data_Calendar
     /**
      * システム実行の基準時間用のカレンダーを取得する。
      */
-    public static function getCalendar()
+    public static function get()
     {
         if (self::$calendar == null) {
-            self::$calendar = self::currentCalendar();
+            self::$calendar = self::now();
         }
         return self::$calendar;
     }
