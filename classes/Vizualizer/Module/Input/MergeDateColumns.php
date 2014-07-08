@@ -42,7 +42,7 @@ class Vizualizer_Module_Input_MergeDate extends Vizualizer_Plugin_Module
             $result .= sprintf("%02d", $post[$params->get("month")]);
             $result .= "-";
             $result .= sprintf("%02d", $post[$params->get("day")]);
-            if (date("Y-m-d", strtotime($result)) != $result) {
+            if (Vizualizer::now()->strToTime($result)->date("Y-m-d") != $result) {
                 throw new Vizualizer_Exception_Invalid($params->get("result"), $params->get("result_name") . $params->get("suffix", "は日付の指定が正しくありません。"));
             }
             if ($params->check("hour") && isset($post[$params->get("hour")]) && is_numeric($post[$params->get("hour")]) && $params->check("minute") && isset($post[$params->get("minute")]) && is_numeric($post[$params->get("minute")])) {
@@ -52,13 +52,13 @@ class Vizualizer_Module_Input_MergeDate extends Vizualizer_Plugin_Module
                 $result .= sprintf("%02d", $post[$params->get("hour")]);
                 $result .= ":";
                 $result .= sprintf("%02d", $post[$params->get("minute")]);
-                if (date("Y-m-d H:i", strtotime($result)) != $result) {
+                if (Vizualizer::now()->strToTime($result)->date("Y-m-d H:i") != $result) {
                     throw new Vizualizer_Exception_Invalid($params->get("result"), $params->get("result_name") . $params->get("suffix", "は日付の指定が正しくありません。"));
                 }
                 if ($params->check("second") && isset($post[$params->get("second")]) && is_numeric($post[$params->get("second")])) {
                     $result .= ":";
                     $result .= sprintf("%02d", $post[$params->get("second")]);
-                    if (date("Y-m-d H:i:s", strtotime($result)) != $result) {
+                    if (Vizualizer::now()->strToTime($result)->date("Y-m-d H:i:s") != $result) {
                         throw new Vizualizer_Exception_Invalid($params->get("result"), $params->get("result_name") . $params->get("suffix", "は日付の指定が正しくありません。"));
                     }
                 }
@@ -67,7 +67,7 @@ class Vizualizer_Module_Input_MergeDate extends Vizualizer_Plugin_Module
                     $result .= " ";
                 }
                 $result .= $post[$params->get("hourminute")];
-                if (date("Y-m-d H:i", strtotime($result)) != $result) {
+                if (Vizualizer::now()->strToTime($result)->date("Y-m-d H:i") != $result) {
                     throw new Vizualizer_Exception_Invalid($params->get("result"), $params->get("result_name") . $params->get("suffix", "は日付の指定が正しくありません。"));
                 }
             }

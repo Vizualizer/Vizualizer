@@ -87,7 +87,7 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
 
             // ヘッダを送信
             header("Content-Type: application/csv");
-            header("Content-Disposition: attachment; filename=\"" . $params->get("prefix", "csvfile") . date("YmdHis") . ".csv\"");
+            header("Content-Disposition: attachment; filename=\"" . $params->get("prefix", "csvfile") . Vizualizer::now()->date("YmdHis") . ".csv\"");
 
             ob_end_clean();
 

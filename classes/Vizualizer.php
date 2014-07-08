@@ -102,14 +102,17 @@ class Vizualizer
 
         // キャッシュのベースディレクトリを設定
         if (!defined('VIZUALIZER_CACHE_ROOT')) {
-            $cacheBase = VIZUALIZER_ROOT;
-            while (!is_writable($cacheBase)) {
-                // ルートディレクトリまで書き込みできない場合はエラー終了。
-                if ($cacheBase == "/") {
-                    die("ログ／キャッシュ用に書き込み可能なディレクトリが必要です");
-                    break;
+            $cacheBase = realpath(".");
+            if(!is_writable($cacheBase)){
+                $cacheBase = VIZUALIZER_ROOT;
+                while (!is_writable($cacheBase)) {
+                    // ルートディレクトリまで書き込みできない場合はエラー終了。
+                    if ($cacheBase == "/") {
+                        die("ログ／キャッシュ用に書き込み可能なディレクトリが必要です");
+                        break;
+                    }
+                    $cacheBase = realpath($cacheBase . "/../");
                 }
-                $cacheBase = realpath($cacheBase . "/../");
             }
             define('VIZUALIZER_CACHE_ROOT', $cacheBase);
         }
@@ -142,6 +145,9 @@ class Vizualizer
             Vizualizer_Bootstrap::register(50, "Locale");
             Vizualizer_Bootstrap::register(60, "UserAgent");
             Vizualizer_Bootstrap::startup();
+
+            // システム実行時の時間を記録するため、カレンダーを取得する。
+            Vizualizer_Data_Calendar::get();
 
             $class = $_SERVER["argv"][2];
             if ($_SERVER["argv"][1] == "install") {
@@ -343,5 +349,12 @@ class Vizualizer
             self::$attributes = new Vizualizer_Attributes();
         }
         return self::$attributes;
+    }
+
+    /**
+     * システムの起動時間（基準時）を取得します。
+     */
+    public static function now(){
+        return Vizualizer_Data_Calendar::get();
     }
 }

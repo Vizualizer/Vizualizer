@@ -23,29 +23,19 @@
  */
 
 /**
- * デフォルトの入力値として当日の日付を設定します。
+ * カラムの値をコピーするクラスです。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Module_Input_Today extends Vizualizer_Plugin_Module
+class Vizualizer_Module_Input_Copy extends Vizualizer_Plugin_Module
 {
 
     function execute($params)
     {
-        if ($params->check("result")) {
+        if ($params->check("target") && $params->check("result")) {
             $post = Vizualizer::request();
-            if($params->check("parent")){
-                $parent = $post[$params->get("parent")];
-                if(empty($parent[$params->get("result")])){
-                    $parent[$params->get("result")] = Vizualizer::now()->date($params->get("format", "Y-m-d"));
-                    $post->set($params->get("parent"), $parent);
-                }
-            }else{
-                if(empty($post[$params->get("result")])){
-                    $post->set($params->get("result"), Vizualizer::now()->date($params->get("format", "Y-m-d")));
-                }
-            }
+            $post->set($params->get("result"), $post[$params->get("target")]);
         }
     }
 }

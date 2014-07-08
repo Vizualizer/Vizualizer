@@ -63,30 +63,36 @@ class Vizualizer_Logger
             if (is_dir($logHome) && is_writable($logHome)) {
                 // 現在のログファイルが10MB以上の場合ローテーションする。
                 if (file_exists($logHome . $siteCode . ".log") && filesize($logHome . $siteCode . ".log") > 1024 * 1024 * 10) {
-                    $logHistorys = Vizualizer_Configure::get("max_logs");
-                    for ($index = $logHistorys - 1; $index > 0; $index --) {
-                        if (file_exists($logHome . $siteCode . "_" . $index . ".log")) {
-                            @rename($logHome . $siteCode . "_" . $index . ".log", $logHome . $siteCode . "_" . ($index + 1) . ".log");
+                    if(($fp = fopen($logHome . $siteCode . ".log", "r")) !== FALSE){
+                        if(flock($fp, LOCK_EX | LOCK_NB)){
+                            $logHistorys = Vizualizer_Configure::get("max_logs");
+                            for ($index = $logHistorys - 1; $index > 0; $index --) {
+                                if (file_exists($logHome . $siteCode . "_" . $index . ".log")) {
+                                    @rename($logHome . $siteCode . "_" . $index . ".log", $logHome . $siteCode . "_" . ($index + 1) . ".log");
+                                }
+                            }
+                            @rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
+                            flock($fp, LOCK_UN);
                         }
+                        fclose($fp);
                     }
-                    @rename($logHome . $siteCode . ".log", $logHome . $siteCode . "_1.log");
                 }
 
                 // ログファイルに記載
                 $logFile = $logHome . $siteCode . ".log";
                 if (($fp = fopen($logFile, "a+")) !== FALSE) {
-                    fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $message . "\r\n");
+                    fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $message . "\r\n");
                     if(self::$logOutputStandard){
-                        echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $message . "\r\n";
+                        echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $message . "\r\n";
                     }
                     if ($exception != null) {
-                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getMessage() . "\r\n");
+                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getMessage() . "\r\n");
                         if(self::$logOutputStandard){
-                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getMessage() . "\r\n";
+                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getMessage() . "\r\n";
                         }
-                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getTraceAsString());
+                        fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getTraceAsString());
                         if(self::$logOutputStandard){
-                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . date("Y-m-d H:i:s") . "][" . $prefix . "]" . $exception->getTraceAsString();
+                            echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $exception->getTraceAsString();
                         }
                     }
                     fclose($fp);

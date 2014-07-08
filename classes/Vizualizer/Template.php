@@ -92,7 +92,7 @@ abstract class Vizualizer_Template
         // キャッシュ無効にするヘッダを送信
         header("P3P: CP='UNI CUR OUR'");
         header("Expires: Thu, 01 Dec 1994 16:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Last-Modified: " . Vizualizer::now()->gmDate("D, d M Y H:i:s") . " GMT");
         if (array_key_exists("HTTPS", $_SERVER) && $_SERVER['HTTPS'] == 'on') {
             header("Cache-Control: must-revalidate");
             header("Cache-Control: post-check=0, pre-check=0", false);
