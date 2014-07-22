@@ -51,7 +51,14 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
         // セレクトモードの時は通常の検索条件を適用しない
         if ($params->check("mode", "normal") == "select") {
             $savedPost = $post->export();
-            Vizualizer::request()->set("search", array());
+            $selectSearch = array();
+            if($params->check("selectSearchKeys")){
+                $selectKeys = explode(",", $params->get("selectSearchKeys"));
+                foreach($selectKeys as $key){
+                    $selectSearch[$key] = $savedPost["search"][$key];
+                }
+            }
+            Vizualizer::request()->set("search", $selectSearch);
         }
         if (!$params->check("search") || isset($post[$params->get("search")])) {
             // サイトデータを取得する。
