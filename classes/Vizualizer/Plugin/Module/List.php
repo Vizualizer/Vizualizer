@@ -52,7 +52,7 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
         if ($params->check("mode", "normal") == "select") {
             $savedPost = $post->export();
             $selectSearch = array();
-            if($params->check("selectSearchKeys")){
+            if($params->check("selectSearchKeys") && isset($savedPost["search"])){
                 $selectKeys = explode(",", $params->get("selectSearchKeys"));
                 foreach($selectKeys as $key){
                     $selectSearch[$key] = $savedPost["search"][$key];
