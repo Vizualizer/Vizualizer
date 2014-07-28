@@ -35,7 +35,7 @@
  * @param object $template template object
  * @return string null
  */
-function smarty_function_uniqid($params, $smarty, $template)
+function smarty_function_now($params, $smarty, $template)
 {
     $time = Vizualizer::now();
     if(!empty($params["value"])){
