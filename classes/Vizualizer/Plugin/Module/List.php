@@ -55,7 +55,9 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
             if($params->check("selectSearchKeys") && isset($savedPost["search"])){
                 $selectKeys = explode(",", $params->get("selectSearchKeys"));
                 foreach($selectKeys as $key){
-                    $selectSearch[$key] = $savedPost["search"][$key];
+                    if(isset($savedPost["search"][$key])){
+                        $selectSearch[$key] = $savedPost["search"][$key];
+                    }
                 }
             }
             Vizualizer::request()->set("search", $selectSearch);
