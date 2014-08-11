@@ -343,14 +343,14 @@ class Vizualizer_Plugin_Model
         if (in_array($key, $this->columns)) {
             switch ($op) {
                 case "eq":
-                    if ($value == null) {
+                    if ($value === null) {
                         $select->addWhere($fullkey . " IS NULL");
                     } else {
                         $select->addWhere($fullkey . " = ?", array($value));
                     }
                     break;
                 case "ne":
-                    if ($value == null) {
+                    if ($value === null) {
                         $select->addWhere($fullkey . " IS NOT NULL");
                     } else {
                         $select->addWhere($fullkey . " != ?", array($value));
