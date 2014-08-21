@@ -118,6 +118,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     {
         $this->currentData = $this->result->next();
         $this->index ++;
+        return $this;
     }
 
     /**
