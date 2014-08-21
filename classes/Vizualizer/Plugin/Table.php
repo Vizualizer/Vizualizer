@@ -170,7 +170,10 @@ class Vizualizer_Plugin_Table
      */
     public function __get($name)
     {
-        return $this->_FIELDS[$name];
+        if(array_key_exists($name, $this->_FIELDS)){
+            return $this->_FIELDS[$name];
+        }
+        return null;
     }
 
     /**
@@ -181,7 +184,7 @@ class Vizualizer_Plugin_Table
      */
     public function __isset($name)
     {
-        return isset($this->_FIELDS[$name]);
+        return array_key_exists($name, $this->_FIELDS);
     }
 
     /**
