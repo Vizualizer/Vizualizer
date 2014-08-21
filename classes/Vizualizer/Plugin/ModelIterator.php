@@ -128,7 +128,7 @@ class Vizualizer_Plugin_ModelIterator implements Iterator
     {
         $this->result->rewind();
         $this->index = -1;
-        $this->next();
+        return $this->next();
     }
 
     /**
