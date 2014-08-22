@@ -495,6 +495,12 @@ class Vizualizer_Plugin_Model
                         // 主キーは更新条件
                         $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
                         $updateWhere = true;
+                    } elseif ($column == "create_operator_id" && $column == "create_time") {
+                        // 更新時は登録オペレータIDと登録日時は対象外
+                        continue;
+                    } elseif ($column == "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
+                        // 更新時は元の値が設定されているか、更新値が設定されていないオペレータIDは対象外
+                        continue;
                     } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
                         if(array_key_exists($column, $this->values) && (!empty($this->values[$column]) || is_numeric($this->values[$column])) || array_key_exists($column, $this->values_org) && (!empty($this->values_org[$column]) || is_numeric($this->values_org[$column]))){
                             if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
