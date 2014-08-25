@@ -34,16 +34,21 @@ class Vizualizer_Module_Input_Reset extends Vizualizer_Plugin_Module
     function execute($params)
     {
         $post = Vizualizer::request();
-        $keys = explode(",", $params->get("except", "search"));
-        // pageIDは常にリセット対象外とする。
+        $keys = explode(",", $params->get("except", ""));
+        // searchとpageIDは常にリセット対象外とする。
+        $keys[] = "search";
         $keys[] = "pageID";
         $values = array();
         foreach($keys as $key){
-            $values[$key] = $post[$key];
+            if(isset($post[$key])){
+                $values[$key] = $post[$key];
+            }
         }
         $post->clear();
         foreach($keys as $key){
-            $post->set($key, $values[$key]);
+            if(array_key_exists($key, $values)){
+                $post->set($key, $values[$key]);
+            }
         }
     }
 }
