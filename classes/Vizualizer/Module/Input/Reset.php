@@ -35,6 +35,8 @@ class Vizualizer_Module_Input_Reset extends Vizualizer_Plugin_Module
     {
         $post = Vizualizer::request();
         $keys = explode(",", $params->get("except", "search"));
+        // pageIDは常にリセット対象外とする。
+        $keys[] = "pageID";
         $values = array();
         foreach($keys as $key){
             $values[$key] = $post[$key];
