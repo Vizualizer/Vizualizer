@@ -604,7 +604,7 @@ class Vizualizer_Plugin_Model
             self::$cachedTime = Vizualizer::now()->date("YmdHis");
             self::$cached = array();
         }
-        if($value != null){
+        if($value !== null){
             // 値が設定されている場合にはキーに対応する値に設定
             self::$cached[$key] = $value;
         }
