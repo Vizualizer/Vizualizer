@@ -70,7 +70,7 @@ class Vizualizer_Logger
                             flock($fp, LOCK_UN);
                             fclose($fp);
                         }
-                        if(file_exists(file_exists($logHome . $siteCode . "_old.log"))){
+                        if(file_exists($logHome . $siteCode . "_old.log")){
                             $logHistorys = Vizualizer_Configure::get("max_logs");
                             for ($index = $logHistorys - 1; $index > 0; $index --) {
                                 if (file_exists($logHome . $siteCode . "_" . $index . ".log")) {
