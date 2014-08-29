@@ -81,6 +81,12 @@ class Vizualizer_Logger
                 // ログファイルに記載
                 $logFile = $logHome . $siteCode . ".log";
                 if (($fp = fopen($logFile, "a+")) !== FALSE) {
+                    if (class_exists("VizualizerAdmin")) {
+                        $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+                        if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                            $prefix .= "][".$operator["operator_id"];
+                        }
+                    }
                     fwrite($fp, "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $message . "\r\n");
                     if(self::$logOutputStandard){
                         echo "[" . $_SERVER["SERVER_NAME"] . "][" . Vizualizer_Data_Calendar::now() . "][" . $prefix . "]" . $message . "\r\n";
