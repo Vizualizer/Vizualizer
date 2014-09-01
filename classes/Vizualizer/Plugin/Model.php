@@ -54,6 +54,12 @@ class Vizualizer_Plugin_Model
     // 出力レコードオフセット
     protected $offset;
 
+    // キャッシュの有効時間
+    private static $cachedTime;
+
+    // モデルで利用するキャッシュ用の変数
+    private static $cached;
+
     /**
      * データベースモデルを初期化する。
      * 初期の値を配列で渡すことで、その値でモデルを構築する。
@@ -587,5 +593,25 @@ class Vizualizer_Plugin_Model
             $copy->$key = $value;
         }
         return $copy;
+    }
+
+    /**
+     * キャッシュを利用するためのメソッド
+     */
+    protected static function cacheData($key, $value = null){
+        if(!self::$cached || self::$cachedTime != Vizualizer::now()->date("YmdHis")){
+            // キャッシュデータが無いか、キャッシュ時間が更新されている場合は初期化
+            self::$cachedTime = Vizualizer::now()->date("YmdHis");
+            self::$cached = array();
+        }
+        if($value !== null){
+            // 値が設定されている場合にはキーに対応する値に設定
+            self::$cached[$key] = $value;
+        }
+        // キャッシュが存在する場合には値を返し、存在しない場合にはnullを返す。
+        if(array_key_exists($key, self::$cached)){
+            return self::$cached[$key];
+        }
+        return null;
     }
 }

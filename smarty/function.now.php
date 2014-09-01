@@ -23,11 +23,11 @@
  */
 
 /**
- * Smarty {uniqid} function plugin
+ * Smarty {now} function plugin
  *
  * Type: function<br>
  * Name: uniqid<br>
- * Purpose: output server unique id module.<br>
+ * Purpose: call vizualizer current time control function.<br>
  *
  * @author Naohisa Minagawa <minagawa at web-life dot co dot jp>
  * @param array $params parameters
@@ -35,8 +35,15 @@
  * @param object $template template object
  * @return string null
  */
-function smarty_function_uniqid($params, $template)
+function smarty_function_now($params, $template)
 {
-    return uniqid($params["prefix"]);
+    $time = Vizualizer::now();
+    if(!empty($params["value"])){
+        $time = $time->strToTime($params["value"]);
+    }
+    if(!empty($params["format"])){
+        return $time->date($params["format"]);
+    }
+    return $time->date("Y-m-d H:i:s");
 }
 ?>
