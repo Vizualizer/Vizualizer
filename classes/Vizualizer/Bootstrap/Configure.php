@@ -114,6 +114,9 @@ class Vizualizer_Bootstrap_Configure
         // 設定ファイルを読み込み
         if (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . Vizualizer_Configure::get("site_domain") . ".php")) {
             require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . Vizualizer_Configure::get("site_domain") . ".php");
+        } elseif (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure.php")) {
+            // ホスト別の設定が無い場合はデフォルトの設定ファイルを使用する。
+            require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure.php");
         }
 
         // データベースを初期化する。
