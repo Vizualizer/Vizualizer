@@ -61,7 +61,7 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
             $result = mysqli_fetch_assoc($this->resource);
             return $result;
         }
-        return NULL;
+        return null;
     }
 
     /**

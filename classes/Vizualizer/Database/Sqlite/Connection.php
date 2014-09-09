@@ -71,20 +71,29 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
             throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
         }
         $columns = array();
-        if(($data = $result->fetch()) === NULL){
+        if(($data = $result->fetch()) === null){
             throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
         }
-        $createTable = str_replace("\r\n", "", $data["sql"]);
-        if(preg_match("/^CREATE TABLE ".$table." \((.+)\)", $createTable, $params) == 0){
+        $createTable = str_replace("\n", "", $data["sql"]);
+        if(preg_match("/^create\\s+table\\s+".$table."\\s+\((.+)\)$/i", $createTable, $params) == 0){
             throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
         }
-        print_r($params);
-        exit;
-        while ($column = $result->fetch()) {
-            $columns[] = $column;
+        $columnDefinitions = explode(",", trim($params[1]));
+        foreach($columnDefinitions as $define){
+            if(preg_match("/^`(.+)`\\s+([a-z]+)(\\s+((primary key)|(not null)|(autoincrement)|(default\\s+(.+))))*$/i", trim($define), $params) > 0){
+                $column = array("Field" => $params[1], "Type" => $params[2]);
+                if(strtolower($params[5]) == "primary key"){
+                    $column["Key"] = "PRI";
+                }else{
+                    $column["Key"] = "";
+                }
+                // NullとExtraは実効としては使っていないため、空文字を設定
+                $column["Null"] = "";
+                $column["Extra"] = "";
+                $columns[] = $column;
+            }
         }
         $result->close();
-        exit;
         return $columns;
     }
 
@@ -96,12 +105,13 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
      */
     public function keys($table)
     {
-        $result = $this->query("SHOW INDEXES FROM " . $table . " WHERE Key_name = 'PRIMARY'");
         $keys = array();
-        while ($key = $result->fetch()) {
-            $keys[] = $key["Column_name"];
+        $columns = $this->columns($table);
+        foreach($columns as $column){
+            if($column["Key"] == "PRI"){
+                $keys[] = $column["Field"];
+            }
         }
-        $result->close();
         return $keys;
     }
 
@@ -113,15 +123,7 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
      */
     public function indexes($table)
     {
-        $result = $this->query("SHOW INDEXES FROM " . $table);
         $indexes = array();
-        while ($index = $result->fetch()) {
-            if (!isset($indexes[$index["Key_name"]]) || !is_array($indexes[$index["Key_name"]])) {
-                $indexes[$index["Key_name"]] = array();
-            }
-            $indexes[$index["Key_name"]][] = $index["Column_name"];
-        }
-        $result->close();
         return $indexes;
     }
 
