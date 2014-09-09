@@ -133,7 +133,7 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
     public function begin()
     {
         if(!$this->inTransaction){
-            $this->query("BEGIN TRANSACTION");
+            $this->execute("BEGIN TRANSACTION");
             $this->inTransaction = true;
         }
     }
@@ -144,7 +144,7 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
     public function commit()
     {
         if($this->inTransaction){
-            $this->query("COMMIT");
+            $this->execute("COMMIT");
             $this->inTransaction = false;
         }
     }
@@ -155,7 +155,7 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
     public function rollback()
     {
         if($this->inTransaction){
-            $this->query("ROLLBACK");
+            $this->execute("ROLLBACK");
             $this->inTransaction = false;
         }
     }
@@ -195,6 +195,21 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
 
     /**
      * クエリの実行
+     * 値の返却を行わないクエリを実行する。
+     *
+     * @param string $query 実行するクエリ
+     * @return Vizualizer_Database_Result 実行結果
+     */
+    public function execute($query)
+    {
+        if ($this->connection != null) {
+            $this->connection->exec($query);
+            return $this->connection->changes();
+        }
+    }
+
+    /**
+     * クエリの実行
      *
      * @param string $query 実行するクエリ
      * @return Vizualizer_Database_Result 実行結果
@@ -202,13 +217,22 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
     public function query($query)
     {
         if ($this->connection != null) {
-            $result = $this->connection->query($query);
-            if ($result === FALSE) {
-                return FALSE;
-            } elseif ($result !== TRUE) {
-                return new Vizualizer_Database_Sqlite_Result($result);
-            } else {
-                return $this->connection->changes();
+            // INSERT IGNOREは使えないため、INSERTに置換
+            if(stripos($query, "INSERT IGNORE ") === 0){
+                $query = str_ireplace("INSERT IGNORE", "INSERT", $query);
+            }
+            // SELECTで始まっているもののみ、結果を返すようにする。
+            if(stripos($query, "SELECT ") === 0){
+                $result = $this->connection->query($query);
+                if ($result === FALSE) {
+                    return FALSE;
+                } elseif ($result !== TRUE) {
+                    return new Vizualizer_Database_Sqlite_Result($result);
+                } else {
+                    return $this->connection->changes();
+                }
+            }else{
+                return $this->execute($query);
             }
         }
         return FALSE;

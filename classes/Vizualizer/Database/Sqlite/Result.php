@@ -108,7 +108,8 @@ class Vizualizer_Database_Sqlite_Result implements Vizualizer_Database_Result
     public function close()
     {
         if ($this->resource != null) {
-            $this->resource->finalize();
+            // finalizeが正常に処理されないため、コメントアウト
+            // $this->resource->finalize();
             $this->resource = null;
         }
     }
