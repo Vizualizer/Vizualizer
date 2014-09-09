@@ -203,6 +203,9 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
     public function execute($query)
     {
         if ($this->connection != null) {
+            if(preg_match("/`([^`]+)`\\./", $query, $params) > 0){
+                $query = str_replace("`".$params[1]."`.", "", $query);
+            }
             $this->connection->exec($query);
             return $this->connection->changes();
         }
