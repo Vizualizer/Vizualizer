@@ -89,17 +89,20 @@ class Vizualizer_Database_Factory
      */
     private static function getConnection($code = "default", $mode = self::MODE_WRITE)
     {
-        
+
         // DBのコネクションが設定されていない場合は接続する。
         if (!array_key_exists($code . "_" . $mode, self::$connections)) {
             $confs = Vizualizer_Database_Factory::getConfigure($code);
             $conf = $confs[$mode];
-            
+
             try {
                 // 設定に応じてDBに接続
                 switch ($conf["dbtype"]) {
                     case "mysql":
                         self::$connections[$code . "_" . $mode] = new Vizualizer_Database_Mysql_Connection($conf);
+                        break;
+                    case "sqlite":
+                        self::$connections[$code . "_" . $mode] = new Vizualizer_Database_Sqlite_Connection($conf);
                         break;
                 }
             } catch (PDOException $e) {
@@ -112,7 +115,7 @@ class Vizualizer_Database_Factory
 
     /**
      * トランザクションを開始して、書き込み用の接続を取得する。
-     * 
+     *
      * @param string $code
      * @return Vizualizer_Database_Connection boolean
      */
@@ -128,7 +131,7 @@ class Vizualizer_Database_Factory
 
     /**
      * 読み込み用の接続を取得する。
-     * 
+     *
      * @param unknown $code
      * @return Vizualizer_Database_Connection boolean
      */
@@ -143,7 +146,7 @@ class Vizualizer_Database_Factory
 
     /**
      * トランザクションをコミットする。
-     * 
+     *
      * @param Vizualizer_Database_Connection $connection
      */
     public static function commit($connection)
@@ -155,7 +158,7 @@ class Vizualizer_Database_Factory
 
     /**
      * トランザクションをロールバックする。
-     * 
+     *
      * @param Vizualizer_Database_Connection $connection
      */
     public static function rollback($connection)
