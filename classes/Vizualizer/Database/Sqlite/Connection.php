@@ -23,12 +23,12 @@
  */
 
 /**
- * MySQLのコネクションを管理するためのクラスです。
+ * SQLiteのコネクションを管理するためのクラスです。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connection
+class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Connection
 {
 
     private $connection;
@@ -42,12 +42,10 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function __construct($configure)
     {
-        if (!isset($configure["port"])) {
-            $configure["port"] = "3306";
+        if (substr($configure["file"], 0, 1) != DIRECTORY_SEPARATOR) {
+            $configure["file"] = VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . $configure["file"];
         }
-        $this->connection = mysqli_connect($configure["host"], $configure["user"], $configure["password"], $configure["database"], $configure["port"]);
-        mysqli_set_charset($this->connection, "UTF-8");
-        mysqli_query($this->connection, $configure["query"]);
+        $this->connection = new SQLite3($configure["file"]);
         $this->inTransaction = false;
     }
 
@@ -69,12 +67,31 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function columns($table)
     {
         // テーブルの定義を取得
-        if (($result = $this->query("SHOW COLUMNS FROM " . $table)) === FALSE) {
+        if (($result = $this->query("SELECT * FROM sqlite_master WHERE name = '" . $this->unescapeIdentifier($table)."' AND type = 'table'")) === FALSE) {
             throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
         }
         $columns = array();
-        while ($column = $result->fetch()) {
-            $columns[] = $column;
+        if(($data = $result->fetch()) === null){
+            throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
+        }
+        $createTable = str_replace("\n", "", $data["sql"]);
+        if(preg_match("/^create\\s+table\\s+".$table."\\s+\((.+)\)$/i", $createTable, $params) == 0){
+            throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
+        }
+        $columnDefinitions = explode(",", trim($params[1]));
+        foreach($columnDefinitions as $define){
+            if(preg_match("/^`(.+)`\\s+([a-z]+)(\\s+((primary key)|(not null)|(autoincrement)|(default\\s+(.+))))*$/i", trim($define), $params) > 0){
+                $column = array("Field" => $params[1], "Type" => $params[2]);
+                if(strtolower($params[5]) == "primary key"){
+                    $column["Key"] = "PRI";
+                }else{
+                    $column["Key"] = "";
+                }
+                // NullとExtraは実効としては使っていないため、空文字を設定
+                $column["Null"] = "";
+                $column["Extra"] = "";
+                $columns[] = $column;
+            }
         }
         $result->close();
         return $columns;
@@ -88,12 +105,13 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function keys($table)
     {
-        $result = $this->query("SHOW INDEXES FROM " . $table . " WHERE Key_name = 'PRIMARY'");
         $keys = array();
-        while ($key = $result->fetch()) {
-            $keys[] = $key["Column_name"];
+        $columns = $this->columns($table);
+        foreach($columns as $column){
+            if($column["Key"] == "PRI"){
+                $keys[] = $column["Field"];
+            }
         }
-        $result->close();
         return $keys;
     }
 
@@ -105,15 +123,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function indexes($table)
     {
-        $result = $this->query("SHOW INDEXES FROM " . $table);
         $indexes = array();
-        while ($index = $result->fetch()) {
-            if (!isset($indexes[$index["Key_name"]]) || !is_array($indexes[$index["Key_name"]])) {
-                $indexes[$index["Key_name"]] = array();
-            }
-            $indexes[$index["Key_name"]][] = $index["Column_name"];
-        }
-        $result->close();
         return $indexes;
     }
 
@@ -123,7 +133,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function begin()
     {
         if(!$this->inTransaction){
-            $this->query("BEGIN");
+            $this->execute("BEGIN TRANSACTION");
             $this->inTransaction = true;
         }
     }
@@ -134,7 +144,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function commit()
     {
         if($this->inTransaction){
-            $this->query("COMMIT");
+            $this->execute("COMMIT");
             $this->inTransaction = false;
         }
     }
@@ -145,7 +155,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function rollback()
     {
         if($this->inTransaction){
-            $this->query("ROLLBACK");
+            $this->execute("ROLLBACK");
             $this->inTransaction = false;
         }
     }
@@ -158,10 +168,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function escape($value)
     {
-        if ($this->connection != null) {
-            return mysqli_real_escape_string($this->connection, $value);
-        }
-        return null;
+        return $this->connection->escapeString($value);
     }
 
     /**
@@ -176,6 +183,35 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     }
 
     /**
+     * 識別子のエスケープ処理
+     *
+     * @param string $value エスケープする識別子
+     * @return string エスケープした識別子
+     */
+    public function unescapeIdentifier($identifier)
+    {
+        return substr($identifier, 1, -1);
+    }
+
+    /**
+     * クエリの実行
+     * 値の返却を行わないクエリを実行する。
+     *
+     * @param string $query 実行するクエリ
+     * @return Vizualizer_Database_Result 実行結果
+     */
+    public function execute($query)
+    {
+        if ($this->connection != null) {
+            if(preg_match("/`([^`]+)`\\./", $query, $params) > 0){
+                $query = str_replace("`".$params[1]."`.", "", $query);
+            }
+            $this->connection->exec($query);
+            return $this->connection->changes();
+        }
+    }
+
+    /**
      * クエリの実行
      *
      * @param string $query 実行するクエリ
@@ -184,14 +220,22 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function query($query)
     {
         if ($this->connection != null) {
-            mysqli_ping($this->connection);
-            $result = mysqli_query($this->connection, $query);
-            if ($result === FALSE) {
-                return FALSE;
-            } elseif ($result !== TRUE) {
-                return new Vizualizer_Database_Mysql_Result($result);
-            } else {
-                return mysqli_affected_rows($this->connection);
+            // INSERT IGNOREは使えないため、INSERTに置換
+            if(stripos($query, "INSERT IGNORE ") === 0){
+                $query = str_ireplace("INSERT IGNORE", "INSERT", $query);
+            }
+            // SELECTで始まっているもののみ、結果を返すようにする。
+            if(stripos($query, "SELECT ") === 0){
+                $result = $this->connection->query($query);
+                if ($result === FALSE) {
+                    return FALSE;
+                } elseif ($result !== TRUE) {
+                    return new Vizualizer_Database_Sqlite_Result($result);
+                } else {
+                    return $this->connection->changes();
+                }
+            }else{
+                return $this->execute($query);
             }
         }
         return FALSE;
@@ -204,7 +248,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function lastInsertId()
     {
-        return mysqli_insert_id($this->connection);
+        return $this->connection->lastInsertRowID();
     }
 
     /**
@@ -214,7 +258,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     {
         if ($this->connection != null) {
             $this->rollback();
-            mysqli_close($this->connection);
+            $this->connection->close();
             $this->connection = null;
         }
     }

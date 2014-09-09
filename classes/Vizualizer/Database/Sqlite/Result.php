@@ -23,13 +23,14 @@
  */
 
 /**
- * MySQLのクエリ実行結果を管理するためのクラスです。
+ * SQLiteのクエリ実行結果を管理するためのクラスです。
  *
  * @package Database
  * @author Naohisa Minagawa <info@clay-system.jp>
  */
-class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
+class Vizualizer_Database_Sqlite_Result implements Vizualizer_Database_Result
 {
+    private $count;
 
     private $resource;
 
@@ -41,6 +42,12 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
     public function __construct($resource)
     {
         $this->resource = $resource;
+        $this->count = 0;
+        $this->rewind();
+        while ($this->fetch()) {
+            $this->count ++;
+        }
+        $this->rewind();
     }
 
     /**
@@ -57,9 +64,8 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
      */
     public function fetch()
     {
-        if ($this->resource != null) {
-            $result = mysqli_fetch_assoc($this->resource);
-            return $result;
+        if (($data = $this->resource->fetchArray(SQLITE3_ASSOC)) !== FALSE) {
+            return $data;
         }
         return null;
     }
@@ -84,7 +90,7 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
     public function rewind()
     {
         if ($this->count() > 0) {
-            mysqli_data_seek($this->resource, 0);
+            $this->resource->reset();
         }
     }
 
@@ -93,7 +99,7 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
      */
     public function count()
     {
-        return mysqli_num_rows($this->resource);
+        return $this->count;
     }
 
     /**
@@ -102,7 +108,8 @@ class Vizualizer_Database_Mysql_Result implements Vizualizer_Database_Result
     public function close()
     {
         if ($this->resource != null) {
-            mysqli_free_result($this->resource);
+            // finalizeが正常に処理されないため、コメントアウト
+            // $this->resource->finalize();
             $this->resource = null;
         }
     }
