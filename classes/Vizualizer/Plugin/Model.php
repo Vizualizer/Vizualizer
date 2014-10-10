@@ -327,6 +327,12 @@ class Vizualizer_Plugin_Model
                 $keys[$index] = $this->access->$key;
             }
             $fullkey = "CONCAT(" . implode(", ", $keys) . ")";
+        } elseif (strpos($key, "*") > 0) {
+            $keys = explode("*", $key);
+            foreach ($keys as $index => $key) {
+                $keys[$index] = $this->access->$key;
+            }
+            $fullkey = "COALESCE(" . implode(", ", $keys) . ")";
         } else {
             $fullkey = $this->access->$key;
             if (isset($default) && $default != null) {
