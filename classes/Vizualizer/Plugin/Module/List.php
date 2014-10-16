@@ -88,7 +88,28 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
             if ($this->groupBy) {
                 $model->setGroupBy($this->groupBy);
             }
-            $models = $model->findAllBy($conditions);
+
+            // 並べ替え順序が指定されている場合に適用
+            $sortOrder = "";
+            $sortReverse = false;
+            if ($params->check("sort_key")) {
+                $sortOrder = $post[$params->get("sort_key")];
+                if ($this->isEmpty($sortOrder)) {
+                    $sortOrder = $defaultSortKey;
+                    $sortReverse = true;
+                } elseif (preg_match("/^rev@/", $sortOrder) > 0) {
+                    list ($dummy, $sortOrder) = explode("@", $sortOrder);
+                    $sortReverse = true;
+                }
+            } elseif ($params->check("sort")) {
+                $sortOrder = $params->check("sort");
+                if (preg_match("/^rev@/", $sortOrder) > 0) {
+                    list ($dummy, $sortOrder) = explode("@", $sortOrder);
+                    $sortReverse = true;
+                }
+            }
+
+            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse);
             if ($params->get("mode", "list") == "list") {
                 $attr[$result] = $models;
             } elseif ($params->get("mode", "list") == "select") {

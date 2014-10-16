@@ -101,6 +101,12 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                     list ($dummy, $sortOrder) = explode("@", $sortOrder);
                     $sortReverse = true;
                 }
+            } elseif ($params->check("sort")) {
+                $sortOrder = $params->check("sort");
+                if (preg_match("/^rev@/", $sortOrder) > 0) {
+                    list ($dummy, $sortOrder) = explode("@", $sortOrder);
+                    $sortReverse = true;
+                }
             }
 
             // 顧客データを検索する。
