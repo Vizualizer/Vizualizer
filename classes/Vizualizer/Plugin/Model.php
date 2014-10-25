@@ -211,7 +211,7 @@ class Vizualizer_Plugin_Model
     /**
      * レコードを特定のキーで検索する。
      */
-    public function findAllBy($values = array(), $order = "", $reverse = false, $callback = null)
+    public function findAllBy($values = array(), $order = "", $reverse = false, $forceOperator = false)
     {
         $select = new Vizualizer_Query_Select($this->access);
         $select->addColumn($this->access->_W);
@@ -228,7 +228,7 @@ class Vizualizer_Plugin_Model
                 // セッションからオペレータIDが取得できた場合のみ処理を実施
                 if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
                     // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
-                    if($operator["administrator_flg"] != "1" || $params->get("force_operator", "0") == "1") {
+                    if($operator["administrator_flg"] != "1" || $forceOperator == "1") {
                         $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
                     }
                 }
