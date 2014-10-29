@@ -211,7 +211,7 @@ class Vizualizer_Plugin_Model
     /**
      * レコードを特定のキーで検索する。
      */
-    public function findAllBy($values = array(), $order = "", $reverse = false, $callback = null)
+    public function findAllBy($values = array(), $order = "", $reverse = false, $forceOperator = false)
     {
         $select = new Vizualizer_Query_Select($this->access);
         $select->addColumn($this->access->_W);
@@ -222,10 +222,15 @@ class Vizualizer_Plugin_Model
         }
         // Adminパッケージを使っている場合で利用ユーザーが管理権限で無い場合は自分の作成したデータしか閲覧できない
         try{
-            if (class_exists("VizualizerAdmin")) {
+            // DBのカラムにoperator_idが存在し、Adminパッケージをインストールしている場合のみ有効
+            if (class_exists("VizualizerAdmin") && !empty($this->access->operator_id)) {
                 $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
-                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0 && $operator["administrator_flg"] != "1" && !empty($this->access->operator_id)) {
-                    $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
+                // セッションからオペレータIDが取得できた場合のみ処理を実施
+                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                    // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
+                    if($operator["administrator_flg"] != "1" || $forceOperator == "1") {
+                        $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
+                    }
                 }
             }
         }catch(Exception $e){

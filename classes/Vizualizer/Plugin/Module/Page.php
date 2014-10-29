@@ -108,6 +108,10 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                     $sortReverse = true;
                 }
             }
+            $forceOperator = false;
+            if ($params->get("force_operator", "0") == "1") {
+                $forceOperator = true;
+            }
 
             // 顧客データを検索する。
             $model = $loader->LoadModel($name);
@@ -120,7 +124,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                 $model->setGroupBy($this->groupBy);
             }
             $model->limit($pager->getPageSize(), $pager->getCurrentFirstOffset());
-            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse);
+            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse, $forceOperator);
 
             $attr = Vizualizer::attr();
             $attr[$result . "_pager"] = $pager;
