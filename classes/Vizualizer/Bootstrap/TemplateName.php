@@ -53,7 +53,6 @@ class Vizualizer_Bootstrap_TemplateName
             }
             if (is_writable(Vizualizer_Configure::get("site_home"))) {
                 if (!file_exists(Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile")) {
-                    echo Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "default => " . Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile";
                     symlink(Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "default", Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "mobile");
                 }
                 if (!file_exists(Vizualizer_Configure::get("site_home") . DIRECTORY_SEPARATOR . "sphone")) {
