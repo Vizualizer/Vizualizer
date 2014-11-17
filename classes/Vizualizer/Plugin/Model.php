@@ -30,6 +30,9 @@
  */
 class Vizualizer_Plugin_Model
 {
+    // ディスティンクトオプションのフラグ
+    protected $distinct;
+
     // ベースのデータベースアクセスオブジェクト
     protected $access;
 
@@ -66,6 +69,7 @@ class Vizualizer_Plugin_Model
      */
     public function __construct($accessTable, $values = array())
     {
+        $this->distinct = false;
         $this->access = $accessTable;
         $this->columns = array();
         $this->primary_keys = $this->access->getPrimaryKeys();
@@ -144,6 +148,11 @@ class Vizualizer_Plugin_Model
         $this->groupBy = $groupBy;
     }
 
+    public function setDistinct($distinct = true)
+    {
+        $this->distinct = $distinct;
+    }
+
     /**
      * 出力されるデータを制限する。
      */
@@ -214,6 +223,7 @@ class Vizualizer_Plugin_Model
     public function findAllBy($values = array(), $order = "", $reverse = false, $callback = null)
     {
         $select = new Vizualizer_Query_Select($this->access);
+        $select->distinct($this->distinct);
         $select->addColumn($this->access->_W);
         if (is_array($values)) {
             foreach ($values as $key => $value) {
