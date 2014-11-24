@@ -67,31 +67,21 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
     public function columns($table)
     {
         // テーブルの定義を取得
-        if (($result = $this->query("SELECT * FROM sqlite_master WHERE name = '" . $this->unescapeIdentifier($table)."' AND type = 'table'")) === FALSE) {
+        if (($result = $this->query("PRAGMA table_info(" . $this->unescapeIdentifier($table).")")) === FALSE) {
             throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
         }
         $columns = array();
-        if(($data = $result->fetch()) === null){
-            throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
-        }
-        $createTable = str_replace("\n", "", $data["sql"]);
-        if(preg_match("/^create\\s+table\\s+".$table."\\s+\((.+)\)$/i", $createTable, $params) == 0){
-            throw new Vizualizer_Exception_System("カラムの取得に失敗しました。");
-        }
-        $columnDefinitions = explode(",", trim($params[1]));
-        foreach($columnDefinitions as $define){
-            if(preg_match("/^`(.+)`\\s+([a-z]+)(\\s+((primary key)|(not null)|(autoincrement)|(default\\s+(.+))))*$/i", trim($define), $params) > 0){
-                $column = array("Field" => $params[1], "Type" => $params[2]);
-                if(strtolower($params[5]) == "primary key"){
-                    $column["Key"] = "PRI";
-                }else{
-                    $column["Key"] = "";
-                }
-                // NullとExtraは実効としては使っていないため、空文字を設定
-                $column["Null"] = "";
-                $column["Extra"] = "";
-                $columns[] = $column;
+        while(($data = $result->fetch()) !== null){
+            $column = array("Field" => $data["name"], "Type" => $data["type"]);
+            if($data["pk"] == "1"){
+                $column["Key"] = "PRI";
+            }else{
+                $column["Key"] = "";
             }
+            // NullとExtraは実効としては使っていないため、空文字を設定
+            $column["Null"] = "";
+            $column["Extra"] = "";
+            $columns[] = $column;
         }
         $result->close();
         return $columns;
@@ -224,8 +214,8 @@ class Vizualizer_Database_Sqlite_Connection implements Vizualizer_Database_Conne
             if(stripos($query, "INSERT IGNORE ") === 0){
                 $query = str_ireplace("INSERT IGNORE", "INSERT", $query);
             }
-            // SELECTで始まっているもののみ、結果を返すようにする。
-            if(stripos($query, "SELECT ") === 0){
+            // SELECTもしくはPRAGMAで始まっているもののみ、結果を返すようにする。
+            if(stripos($query, "SELECT ") === 0 || stripos($query, "PRAGMA ") === 0){
                 $result = $this->connection->query($query);
                 if ($result === FALSE) {
                     return FALSE;

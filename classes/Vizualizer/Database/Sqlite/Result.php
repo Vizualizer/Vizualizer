@@ -64,7 +64,7 @@ class Vizualizer_Database_Sqlite_Result implements Vizualizer_Database_Result
      */
     public function fetch()
     {
-        if (($data = $this->resource->fetchArray(SQLITE3_ASSOC)) !== FALSE) {
+        if (($data = @$this->resource->fetchArray(SQLITE3_ASSOC)) !== FALSE) {
             return $data;
         }
         return null;
