@@ -114,7 +114,16 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 fclose($fp);
             }
         } else {
-            $this->executeImpl($params);
+            if (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
+                if (!flock($fp, LOCK_EX | LOCK_NB)) {
+                    Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
+                    die("プログラムは既に実行中です。");
+                }
+
+                $this->executeImpl($params);
+
+                fclose($fp);
+            }
         }
         Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " End.");
     }
