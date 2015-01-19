@@ -58,6 +58,14 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
     public abstract function getFlows();
 
     /**
+     * unlockがあるか確認する
+     */
+    protected function isUnlocked()
+    {
+        return file_exists($this->getDaemonName() . ".unlock");
+    }
+
+    /**
      * デフォルト実行のメソッドになります。
      * このメソッド以外がモジュールとして呼ばれることはありません。
      *
