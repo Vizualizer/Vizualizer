@@ -55,7 +55,7 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     protected function connect()
     {
-        $this->connection = mysqli_connect($this->configure["host"], $this->configure["user"], $this->configure["password"], $this->configure["database"], $configure["port"]);
+        $this->connection = mysqli_connect($this->configure["host"], $this->configure["user"], $this->configure["password"], $this->configure["database"], $this->configure["port"]);
         mysqli_set_charset($this->connection, "UTF-8");
         mysqli_query($this->connection, $this->configure["query"]);
         $this->inTransaction = false;
