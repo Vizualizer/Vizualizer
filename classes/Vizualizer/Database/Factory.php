@@ -90,8 +90,11 @@ class Vizualizer_Database_Factory
     private static function getConnection($code = "default", $mode = self::MODE_WRITE)
     {
 
+        // プロセスIDを取得する。
+        $pid = getmypid();
+
         // DBのコネクションが設定されていない場合は接続する。
-        if (!array_key_exists($code . "_" . $mode, self::$connections)) {
+        if (!array_key_exists($pid . "_" . $code . "_" . $mode, self::$connections)) {
             $confs = Vizualizer_Database_Factory::getConfigure($code);
             $conf = $confs[$mode];
 
@@ -99,10 +102,10 @@ class Vizualizer_Database_Factory
                 // 設定に応じてDBに接続
                 switch ($conf["dbtype"]) {
                     case "mysql":
-                        self::$connections[$code . "_" . $mode] = new Vizualizer_Database_Mysql_Connection($conf);
+                        self::$connections[$pid . "_" . $code . "_" . $mode] = new Vizualizer_Database_Mysql_Connection($conf);
                         break;
                     case "sqlite":
-                        self::$connections[$code . "_" . $mode] = new Vizualizer_Database_Sqlite_Connection($conf);
+                        self::$connections[$pid . "_" . $code . "_" . $mode] = new Vizualizer_Database_Sqlite_Connection($conf);
                         break;
                 }
             } catch (PDOException $e) {
@@ -110,7 +113,7 @@ class Vizualizer_Database_Factory
                 throw new Vizualizer_Exception_Database($e);
             }
         }
-        return Vizualizer_Database_Factory::$connections[$code . "_" . $mode];
+        return Vizualizer_Database_Factory::$connections[$pid . "_" . $code . "_" . $mode];
     }
 
     /**
