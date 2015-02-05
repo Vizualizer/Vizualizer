@@ -86,7 +86,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 if (($fp = fopen($this->getDaemonName() . ".unlock", "w+")) !== FALSE) {
                     fclose($fp);
                 }
-            }elseif (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
+            }elseif (($fp = fopen($this->getDaemonName() . ".lock", "a+")) !== FALSE) {
                 if (!flock($fp, LOCK_EX | LOCK_NB)) {
                     list($time, $pid) = explode(",", file_get_contents($this->getDaemonName() . ".lock"));
                     // 12時間以上起動し続けている場合は再起動を実施
@@ -98,6 +98,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 }
 
                 // デーモンの起動時刻とプロセスIDをロックファイルに記述
+                ftruncate($fp, 0);
                 fwrite($fp, time().",".getmypid());
 
                 if ($this->isUnlocked()) {
