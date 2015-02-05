@@ -90,8 +90,8 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 if (!flock($fp, LOCK_EX | LOCK_NB)) {
                     list($time, $pid) = explode(",", file_get_contents($this->getDaemonName() . ".lock"));
                     // 12時間以上起動し続けている場合は再起動を実施
-                    if($time + 12 * 3600 < time()){
-                        system("kill -HUP ".$pid);
+                    if($time < time()){
+                        system("kill -KILL ".$pid);
                     }
                     Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
                     die("プログラムは既に実行中です。");
