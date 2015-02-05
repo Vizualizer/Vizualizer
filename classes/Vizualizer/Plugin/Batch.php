@@ -88,9 +88,17 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 }
             }elseif (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
                 if (!flock($fp, LOCK_EX | LOCK_NB)) {
+                    list($time, $pid) = explode(",", file_get_contents($this->getDaemonName() . ".lock"));
+                    // 12時間以上起動し続けている場合は再起動を実施
+                    if($time + 12 * 3600 < time()){
+                        system("kill -HUP ".$pid);
+                    }
                     Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
                     die("プログラムは既に実行中です。");
                 }
+
+                // デーモンの起動時刻とプロセスIDをロックファイルに記述
+                fwrite($fp, time().",".getmypid());
 
                 if ($this->isUnlocked()) {
                     // 実行前にunlockファイルがある場合は予め削除する。
