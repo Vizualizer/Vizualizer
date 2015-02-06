@@ -30,6 +30,7 @@
  */
 class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connection
 {
+    private $configure;
 
     private $connection;
 
@@ -42,12 +43,21 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
      */
     public function __construct($configure)
     {
-        if (!isset($configure["port"])) {
-            $configure["port"] = "3306";
+        $this->configure = $configure;
+        if (!isset($this->configure["port"])) {
+            $this->configure["port"] = "3306";
         }
-        $this->connection = mysqli_connect($configure["host"], $configure["user"], $configure["password"], $configure["database"], $configure["port"]);
+        $this->connect();
+    }
+
+    /**
+     * MySQLサーバーに接続する
+     */
+    protected function connect()
+    {
+        $this->connection = mysqli_connect($this->configure["host"], $this->configure["user"], $this->configure["password"], $this->configure["database"], $this->configure["port"]);
         mysqli_set_charset($this->connection, "UTF-8");
-        mysqli_query($this->connection, $configure["query"]);
+        mysqli_query($this->connection, $this->configure["query"]);
         $this->inTransaction = false;
     }
 
@@ -184,7 +194,9 @@ class Vizualizer_Database_Mysql_Connection implements Vizualizer_Database_Connec
     public function query($query)
     {
         if ($this->connection != null) {
-            mysqli_ping($this->connection);
+            if(!mysqli_ping($this->connection)){
+                $this->connect();
+            }
             $result = mysqli_query($this->connection, $query);
             if ($result === FALSE) {
                 return FALSE;
