@@ -470,7 +470,7 @@ class Vizualizer_Plugin_Model
      * また、モデル内のカラムがDBに無い場合はスキップする。
      * データ作成日／更新日は自動的に設定される。
      */
-    public function save()
+    public function save($ignoreOperator = false)
     {
         if (!empty($this->primary_keys)) {
             // 現在該当のデータが登録されているか調べる。
@@ -494,7 +494,7 @@ class Vizualizer_Plugin_Model
 
             // データ作成日／更新日は自動的に設定する。
             try{
-                if (class_exists("VizualizerAdmin")) {
+                if (!$ignoreOperator && class_exists("VizualizerAdmin")) {
                     $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
                     if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
                         if ($this->operator_id > 0) {
