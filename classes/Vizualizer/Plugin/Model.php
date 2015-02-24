@@ -338,10 +338,31 @@ class Vizualizer_Plugin_Model
         }
         if (strpos($key, "+") > 0) {
             $keys = explode("+", $key);
+            $isString = false;
             foreach ($keys as $index => $key) {
                 $keys[$index] = $this->access->$key;
+                switch ($this->access->$key->type) {
+                    case "char":
+                    case "varchar":
+                    case "binary":
+                    case "varbinary":
+                    case "text":
+                    case "tinytext":
+                    case "mediumtext":
+                    case "longtext":
+                    case "blob":
+                    case "tinyblob":
+                    case "mediumblob":
+                    case "longblob":
+                        $isString = true;
+                        break;
+                }
             }
-            $fullkey = "CONCAT(" . implode(", ", $keys) . ")";
+            if ($isString) {
+                $fullkey = "CONCAT(" . implode(", ", $keys) . ")";
+            } else {
+                $fullkey = implode(" + ", $keys);
+            }
         } elseif (strpos($key, "*") > 0) {
             $keys = explode("*", $key);
             foreach ($keys as $index => $key) {

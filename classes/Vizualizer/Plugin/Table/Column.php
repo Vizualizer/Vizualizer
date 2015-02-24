@@ -51,6 +51,12 @@ class Vizualizer_Plugin_Table_Column
 
     /**
      *
+     * @var string フィールドの型
+     */
+    private $type;
+
+    /**
+     *
      * @var boolean NULL可能かどうかのフラグ
      */
     private $canNull;
@@ -69,7 +75,7 @@ class Vizualizer_Plugin_Table_Column
 
     /**
      * データベースのフィールドインスタンスを生成する。
-     * 
+     *
      * @param Vizualizer_Plugin_Table $table フィールドを保有しているテーブルのインスタンス
      * @param string $column フィールドのカラム名
      */
@@ -78,6 +84,7 @@ class Vizualizer_Plugin_Table_Column
         $this->module = $table->getModuleName();
         $this->table = $table->_C;
         $this->field = $column["Field"];
+        $this->type = ((strpos($column["Type"], "(") > 0)?substr($column["Type"], 0, strpos($column["Type"], "(")):$column["Type"]);
         $this->canNull = (($column["Null"] == "YES") ? true : false);
         $this->isKey = (($column["Key"] == "PRI") ? true : false);
         $this->isAutoIncrement = (($column["Extra"] == "auto_increment") ? true : false);
@@ -85,7 +92,7 @@ class Vizualizer_Plugin_Table_Column
 
     /**
      * テーブルのカラムの詳細情報を取得
-     * 
+     *
      * @param string $name カラム種別
      * @return string カラム詳細
      */
@@ -99,14 +106,14 @@ class Vizualizer_Plugin_Table_Column
 
     /**
      * フィールドを文字列として扱った場合にフィールド名となるようにする。
-     * 
+     *
      * @return string クラスの文字列表現
      */
     public function __toString()
     {
         // DBの接続を取得する。
         $connection = Vizualizer_Database_Factory::conn($this->module);
-        
+
         // カラム名をエスケープする。
         return $this->table . "." . $connection->escapeIdentifier($this->field);
     }
