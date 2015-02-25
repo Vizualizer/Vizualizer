@@ -28,35 +28,30 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
+abstract class Vizualizer_Plugin_Module_Truncate extends Vizualizer_Plugin_Module
 {
 
     protected function executeImpl($type, $name, $key)
     {
         $post = Vizualizer::request();
-        if ($post["delete"]) {
+        if ($post["truncate"]) {
             // サイトデータを取得する。
             $loader = new Vizualizer_Plugin($type);
             $model = $loader->loadModel($name);
-            $model->findByPrimaryKey($post[$key]);
 
-            // データが検索された場合のみ削除処理を実施
-            if ($model->$key > 0) {
-                // トランザクションデータベースの取得
-                $connection = Vizualizer_Database_Factory::begin(strtolower($type));
+            // トランザクションデータベースの取得
+            $connection = Vizualizer_Database_Factory::begin(strtolower($type));
 
-                try {
-                    $model->delete();
+            try {
+                $model->truncate();
 
-                    // エラーが無かった場合、処理をコミットする。
-                    Vizualizer_Database_Factory::commit($connection);
+                // エラーが無かった場合、処理をコミットする。
+                Vizualizer_Database_Factory::commit($connection);
 
-                    $this->removeInput("delete");
-                    $this->removeInput($key);
-                } catch (Exception $e) {
-                    Vizualizer_Database_Factory::rollback($connection);
-                    throw new Vizualizer_Exception_Database($e);
-                }
+                $this->removeInput("truncate");
+            } catch (Exception $e) {
+                Vizualizer_Database_Factory::rollback($connection);
+                throw new Vizualizer_Exception_Database($e);
             }
         }
     }
