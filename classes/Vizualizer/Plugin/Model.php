@@ -416,6 +416,18 @@ class Vizualizer_Plugin_Model
                 case "le":
                     $select->addWhere($fullkey . " <= ?", array($value));
                     break;
+                case "ngt":
+                    $select->addWhere("(".$fullkey . " > ?) IS NOT TRUE", array($value));
+                    break;
+                case "nge":
+                    $select->addWhere("(".$fullkey . " >= ?) IS NOT TRUE", array($value));
+                    break;
+                case "nlt":
+                    $select->addWhere("(".$fullkey . " < ?) IS NOT TRUE", array($value));
+                    break;
+                case "nle":
+                    $select->addWhere("(".$fullkey . " <= ?) IS NOT TRUE", array($value));
+                    break;
                 case "like":
                     $select->addWhere($fullkey . " LIKE ?", array($value));
                     break;
