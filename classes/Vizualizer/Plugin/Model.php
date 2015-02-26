@@ -238,7 +238,7 @@ class Vizualizer_Plugin_Model
                 // セッションからオペレータIDが取得できた場合のみ処理を実施
                 if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
                     // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
-                    if($operator["administrator_flg"] != "1" || $forceOperator == "1") {
+                    if($operator["administrator_flg"] != "1" || $forceOperator) {
                         $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
                     }
                 }
