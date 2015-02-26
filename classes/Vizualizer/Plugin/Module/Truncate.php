@@ -31,7 +31,7 @@
 abstract class Vizualizer_Plugin_Module_Truncate extends Vizualizer_Plugin_Module
 {
 
-    protected function executeImpl($type, $name, $key)
+    protected function executeImpl($type, $name)
     {
         $post = Vizualizer::request();
         if ($post["truncate"]) {
