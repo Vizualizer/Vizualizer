@@ -617,6 +617,15 @@ class Vizualizer_Plugin_Model
     }
 
     /**
+     * 指定したトランザクション内にて主データのクリアを行う。
+     */
+    public function truncate()
+    {
+        $truncate = new Vizualizer_Query_Truncate($this->access);
+        $truncate->execute();
+    }
+
+    /**
      * モデルの配列表現を返す。
      */
     public function toArray()
