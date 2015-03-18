@@ -60,6 +60,12 @@ abstract class Vizualizer_Plugin_Module
         Vizualizer::request()->remove($key);
     }
 
+    protected function redirectMeta($url)
+    {
+        echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=".$url."\"></head><body></body></html>";
+        exit;
+    }
+
     protected function redirect($url)
     {
         header("Location: " . $url);
@@ -68,8 +74,7 @@ abstract class Vizualizer_Plugin_Module
 
     protected function redirectInside($url)
     {
-        header("Location: ". VIZUALIZER_SUBDIR . $url);
-        exit;
+        $this->redirect(VIZUALIZER_SUBDIR . $url);
     }
 
     protected function reload()
