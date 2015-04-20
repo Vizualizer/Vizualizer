@@ -33,14 +33,14 @@ class Vizualizer_Cache_Factory
 
     /**
      * ファクトリクラスを生成する。
-     * 
+     *
      * @param string $file
      * @param int $expires
      * @return Vizualizer_Cache_Memory Vizualizer_Cache_File
      */
     public static function create($file, $expires = 3600)
     {
-        if (class_exists("Memcache") && Vizualizer_Configure::get("memcache") !== null) {
+        if (class_exists("Memcache") && Vizualizer_Configure::get("memcache") !== "") {
             return new Vizualizer_Cache_Memory(Vizualizer_Configure::get("site_domain"), $file, $expires);
         } else {
             return new Vizualizer_Cache_File(Vizualizer_Configure::get("site_domain"), $file, $expires);
