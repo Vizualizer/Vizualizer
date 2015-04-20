@@ -103,7 +103,7 @@ class Vizualizer
         // キャッシュのベースディレクトリを設定
         if (!defined('VIZUALIZER_CACHE_ROOT')) {
             $cacheBase = realpath(".");
-            if(!is_writable($cacheBase)){
+            if (!is_writable($cacheBase)) {
                 $cacheBase = VIZUALIZER_ROOT;
                 while (!is_writable($cacheBase)) {
                     // ルートディレクトリまで書き込みできない場合はエラー終了。
@@ -122,7 +122,6 @@ class Vizualizer
 
         // 属性を初期化
         self::$attributes = null;
-
     }
 
     /**
@@ -204,8 +203,8 @@ class Vizualizer
         }
 
         $prefilters = Vizualizer_Configure::get("prefilters");
-        if(is_array($prefilters) && !empty($prefilters)){
-            foreach($prefilters as $prefilter){
+        if (is_array($prefilters) && !empty($prefilters)) {
+            foreach ($prefilters as $prefilter) {
                 $prefilter::prefilter();
             }
         }
@@ -272,8 +271,8 @@ class Vizualizer
                 break;
         }
         $postfilters = Vizualizer_Configure::get("postfilters");
-        if(is_array($postfilters) && !empty($postfilters)){
-            foreach($postfilters as $postfilter){
+        if (is_array($postfilters) && !empty($postfilters)) {
+            foreach ($postfilters as $postfilter) {
                 $postfilter::postfilter();
             }
         }
@@ -354,7 +353,8 @@ class Vizualizer
     /**
      * システムの起動時間（基準時）を取得します。
      */
-    public static function now(){
+    public static function now()
+    {
         return Vizualizer_Data_Calendar::get();
     }
 }
