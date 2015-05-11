@@ -236,7 +236,6 @@ class Vizualizer
                 $source = ob_get_contents();
                 ob_end_clean();
                 ob_start();
-                echo htmlspecialchars($source);
                 // テンプレートを生成
                 $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
                 $template = new $templateClass();

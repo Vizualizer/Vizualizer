@@ -47,7 +47,7 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
         $this->core = new Smarty();
 
         // 文字列用のリソースを追加
-        $smarty->register_resource("str", array(array(Vizualizer_Template_Smarty_StringResrouce, "get_template"),
+        $this->core->register_resource("str", array(array(Vizualizer_Template_Smarty_StringResrouce, "get_template"),
             array(Vizualizer_Template_Smarty_StringResrouce, "get_timestamp"),
             array(Vizualizer_Template_Smarty_StringResrouce, "db_get_secure"),
             array(Vizualizer_Template_Smarty_StringResrouce, "db_get_trusted")));
