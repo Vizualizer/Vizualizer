@@ -226,8 +226,8 @@ class Vizualizer
                 break;
             case "php":
                 echo Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]."<br>\r\n";
+                echo htmlspecialchars(file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]))."<br>\r\n";
                 eval(file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]));
-                echo file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])."<br>\r\n";
                 break;
             case "json":
                 if (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
