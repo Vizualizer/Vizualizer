@@ -246,6 +246,7 @@ class Vizualizer
                     $template->display("str:".$source);
                 }catch(Exception $e){
                     print_r($e);
+                    exit;
                 }
                 break;
             case "json":
