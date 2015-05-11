@@ -46,6 +46,12 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
         }
         $this->core = new Smarty();
 
+        // 文字列用のリソースを追加
+        $this->core->registerResource("str", array(array("Vizualizer_Template_Smarty_StringResrouce", "get_template"),
+            array("Vizualizer_Template_Smarty_StringResrouce", "get_timestamp"),
+            array("Vizualizer_Template_Smarty_StringResrouce", "db_get_secure"),
+            array("Vizualizer_Template_Smarty_StringResrouce", "db_get_trusted")));
+
         $attributes = Vizualizer::attr();
 
         // テンプレートのディレクトリとコンパイルのディレクトリをフレームワークのパス上に展開
@@ -86,14 +92,19 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
     public function fetch($template, $cache_id = null, $compile_id = null, $parent = null, $display = false)
     {
         $attributes = Vizualizer::attr();
-        if(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/" . $template)) {
+        // リソースの利用を判定
+        if(preg_match("/^([a-zA-Z0-9]+):/", $template, $p) > 0 && $p[1] != "file"){
             return $this->core->fetch($template, $cache_id, $compile_id, $parent, $display);
-        } elseif(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/err404.html")) {
-            return $this->core->fetch("err404.html", $cache_id, $compile_id, $parent, $display);
         }else{
-            header("HTTP/1.0 404 Not Found");
-            echo "ファイルが存在しません。";
-            exit;
+            if(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/" . $template)) {
+                return $this->core->fetch($template, $cache_id, $compile_id, $parent, $display);
+            } elseif(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/err404.html")) {
+                return $this->core->fetch("err404.html", $cache_id, $compile_id, $parent, $display);
+            }else{
+                header("HTTP/1.0 404 Not Found");
+                echo "ファイルが存在しません。";
+                exit;
+            }
         }
     }
 }
