@@ -237,12 +237,16 @@ class Vizualizer
                 ob_end_clean();
                 ob_start();
                 // テンプレートを生成
-                $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
-                $template = new $templateClass();
-                $template->assign("ERRORS", array());
-                // テンプレートを表示
-                $attr["template"] = $template;
-                $template->display("str:".$source);
+                try{
+                    $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                    $template = new $templateClass();
+                    $template->assign("ERRORS", array());
+                    // テンプレートを表示
+                    $attr["template"] = $template;
+                    $template->display("str:".$source);
+                }catch(Exception $e){
+                    print_r($e);
+                }
                 break;
             case "json":
                 if (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
