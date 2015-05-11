@@ -34,6 +34,7 @@ class Vizualizer_Template_Smarty_StringResrouce extends Vizualizer_Template
     public static function get_template ($template, &$tpl_source, &$smarty_obj)
     {
         // テンプレートのソースとして指定された文字列を指定
+        echo "CALLED STRING : ".$template."<br>\r\n";
         $tpl_source = $template;
         return true;
     }
