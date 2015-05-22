@@ -84,9 +84,6 @@ class Vizualizer_Bootstrap_Configure
         // memcacheのホスト設定
         Vizualizer_Configure::set("memcache", "");
 
-        // セッションマネージャー設定
-        Vizualizer_Configure::set("sessionManager", "");
-
         // JSONインターフェイス用キー設定
         Vizualizer_Configure::set("json_key", "");
 
@@ -100,15 +97,15 @@ class Vizualizer_Bootstrap_Configure
         Vizualizer_Configure::set("facebook_app_secret", "");
 
         // サイトコード
-        Vizualizer_Configure::set("site_code", "test");
+        Vizualizer_Configure::set("site_code", "default");
 
-        // FacebookのAPP Secret
-        Vizualizer_Configure::set("site_name", "テストサイト");
+        // サイト名
+        Vizualizer_Configure::set("site_name", "デフォルトサイト");
 
-        // FacebookのAPP Secret
+        // サイトドメイン
         Vizualizer_Configure::set("site_domain", $_SERVER["SERVER_NAME"]);
 
-        // デフォルトのテンプレート
+        // デフォルトのテンプレートエンジン
         Vizualizer_Configure::set("template", "Smarty");
 
         // 設定ファイルを読み込み
