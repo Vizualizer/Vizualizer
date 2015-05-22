@@ -338,10 +338,31 @@ class Vizualizer_Plugin_Model
         }
         if (strpos($key, "+") > 0) {
             $keys = explode("+", $key);
+            $isString = false;
             foreach ($keys as $index => $key) {
                 $keys[$index] = $this->access->$key;
+                switch ($this->access->$key->type) {
+                    case "char":
+                    case "varchar":
+                    case "binary":
+                    case "varbinary":
+                    case "text":
+                    case "tinytext":
+                    case "mediumtext":
+                    case "longtext":
+                    case "blob":
+                    case "tinyblob":
+                    case "mediumblob":
+                    case "longblob":
+                        $isString = true;
+                        break;
+                }
             }
-            $fullkey = "CONCAT(" . implode(", ", $keys) . ")";
+            if ($isString) {
+                $fullkey = "CONCAT(" . implode(", ", $keys) . ")";
+            } else {
+                $fullkey = implode(" + ", $keys);
+            }
         } elseif (strpos($key, "*") > 0) {
             $keys = explode("*", $key);
             foreach ($keys as $index => $key) {
@@ -394,6 +415,18 @@ class Vizualizer_Plugin_Model
                     break;
                 case "le":
                     $select->addWhere($fullkey . " <= ?", array($value));
+                    break;
+                case "ngt":
+                    $select->addWhere("(".$fullkey . " > ?) IS NOT TRUE", array($value));
+                    break;
+                case "nge":
+                    $select->addWhere("(".$fullkey . " >= ?) IS NOT TRUE", array($value));
+                    break;
+                case "nlt":
+                    $select->addWhere("(".$fullkey . " < ?) IS NOT TRUE", array($value));
+                    break;
+                case "nle":
+                    $select->addWhere("(".$fullkey . " <= ?) IS NOT TRUE", array($value));
                     break;
                 case "like":
                     $select->addWhere($fullkey . " LIKE ?", array($value));
@@ -470,7 +503,7 @@ class Vizualizer_Plugin_Model
      * また、モデル内のカラムがDBに無い場合はスキップする。
      * データ作成日／更新日は自動的に設定される。
      */
-    public function save()
+    public function save($ignoreOperator = false)
     {
         if (!empty($this->primary_keys)) {
             // 現在該当のデータが登録されているか調べる。
@@ -494,7 +527,7 @@ class Vizualizer_Plugin_Model
 
             // データ作成日／更新日は自動的に設定する。
             try{
-                if (class_exists("VizualizerAdmin")) {
+                if (!$ignoreOperator && class_exists("VizualizerAdmin")) {
                     $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
                     if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
                         if ($this->operator_id > 0) {
@@ -593,6 +626,15 @@ class Vizualizer_Plugin_Model
                 $delete->execute();
             }
         }
+    }
+
+    /**
+     * 指定したトランザクション内にて主データのクリアを行う。
+     */
+    public function truncate()
+    {
+        $truncate = new Vizualizer_Query_Truncate($this->access);
+        $truncate->execute();
     }
 
     /**

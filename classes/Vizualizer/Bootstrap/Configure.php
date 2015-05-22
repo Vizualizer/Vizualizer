@@ -84,9 +84,6 @@ class Vizualizer_Bootstrap_Configure
         // memcacheのホスト設定
         Vizualizer_Configure::set("memcache", "");
 
-        // セッションマネージャー設定
-        Vizualizer_Configure::set("sessionManager", "");
-
         // JSONインターフェイス用キー設定
         Vizualizer_Configure::set("json_key", "");
 
@@ -100,23 +97,30 @@ class Vizualizer_Bootstrap_Configure
         Vizualizer_Configure::set("facebook_app_secret", "");
 
         // サイトコード
-        Vizualizer_Configure::set("site_code", "test");
+        Vizualizer_Configure::set("site_code", "default");
 
-        // FacebookのAPP Secret
-        Vizualizer_Configure::set("site_name", "テストサイト");
+        // サイト名
+        Vizualizer_Configure::set("site_name", "デフォルトサイト");
 
-        // FacebookのAPP Secret
+        // サイトドメイン
         Vizualizer_Configure::set("site_domain", $_SERVER["SERVER_NAME"]);
 
-        // デフォルトのテンプレート
+        // デフォルトのテンプレートエンジン
         Vizualizer_Configure::set("template", "Smarty");
 
         // 設定ファイルを読み込み
-        if (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . Vizualizer_Configure::get("site_domain") . ".php")) {
-            require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . Vizualizer_Configure::get("site_domain") . ".php");
-        } elseif (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure.php")) {
-            // ホスト別の設定が無い場合はデフォルトの設定ファイルを使用する。
-            require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure.php");
+        $siteDomain = Vizualizer_Configure::get("site_domain");
+        if (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . $siteDomain . ".php")) {
+            require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . $siteDomain . ".php");
+        } else {
+            // 一つ上の階層の設定がある場合はそちらを見に行く。
+            list($dummy, $siteDomain) = explode(".", $siteDomain, 2);
+            if(!empty($siteDomain) && file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . $siteDomain . ".php")){
+                require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure_" . $siteDomain . ".php");
+            } elseif (file_exists(VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure.php")) {
+                // ホスト別の設定が無い場合はデフォルトの設定ファイルを使用する。
+                require (VIZUALIZER_SITE_ROOT . DIRECTORY_SEPARATOR . "_configure" . DIRECTORY_SEPARATOR . "configure.php");
+            }
         }
 
         // データベースを初期化する。
