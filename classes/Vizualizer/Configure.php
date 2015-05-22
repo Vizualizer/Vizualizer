@@ -34,6 +34,17 @@ class Vizualizer_Configure
     private static $configure = array();
 
     /**
+     * 指定されたキーのパラメータが存在するか取得する
+     *
+     * @param string $key 指定されたキー
+     * @return boolean キーが存在する場合はtrue、しない場合はfalse
+     */
+    public static function exists($key)
+    {
+        return array_key_exists($key, self::$configure);
+    }
+
+    /**
      * 指定されたキーのパラメータを取得する。
      *
      * @param string $key 指定されたキー
@@ -41,7 +52,7 @@ class Vizualizer_Configure
      */
     public static function get($key)
     {
-        if (array_key_exists($key, self::$configure)) {
+        if (self::exists($key)) {
             return self::$configure[$key];
         }
         return null;
