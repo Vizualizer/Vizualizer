@@ -45,6 +45,19 @@ abstract class Vizualizer_Plugin_Module
      */
     abstract function execute($params);
 
+    protected function executeSubModule($name, $params){
+        list ($namespace, $class) = explode(".", $name, 2);
+        $loader = new Vizualizer_Plugin($namespace);
+        $object = $loader->loadModule($class);
+        if (method_exists($object, "execute")) {
+            Vizualizer_Logger::writeDebug("=========== " . $name . " start ===========");
+            $object->execute($params);
+            Vizualizer_Logger::writeDebug("=========== " . $name . " end ===========");
+        } else {
+            Vizualizer_Logger::writeAlert($name . " is not plugin module.");
+        }
+    }
+
     protected function isEmpty($value)
     {
         return (!isset($value) || $value === FALSE || $value === null || $value === "");
