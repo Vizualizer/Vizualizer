@@ -24,4 +24,3 @@
 function smarty_function_define_module($params, $template)
 {
 }
-?>
