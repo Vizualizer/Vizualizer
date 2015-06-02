@@ -105,11 +105,7 @@ function smarty_prefilter_loadmodule($source, $smarty)
             }
         }
     }
-    // headの終了タグの直前にvizualizer.jsの読み込みを追加
-    $addScript = "";
-    $addScript .= "<script type=\"text/javascript\" src=\"".str_replace(VIZUALIZER_SITE_ROOT, VIZUALIZER_SUBDIR, VIZUALIZER_ROOT)."/js/jquery.min.js\"></script>";
-    $addScript .= "<script type=\"text/javascript\" src=\"".str_replace(VIZUALIZER_SITE_ROOT, VIZUALIZER_SUBDIR, VIZUALIZER_ROOT)."/js/vizualizer.js\"></script>";
-    $source = str_replace("</head>", $addScript."</head>", $source);
+    // 解析したテンプレートの処理を再構成する。
     $source = $definition . "<!--{start_session}-->\r\n" . $modules . "<!--{end_session}-->\r\n" . $redirect . $source . "\r\n";
     return $source;
 }
