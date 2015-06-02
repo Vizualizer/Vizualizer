@@ -225,6 +225,9 @@ class Vizualizer
                 $template->display(substr($attr["templateName"], 1));
                 break;
             case "php":
+                // PHPを実行する場合、インクルードパスの最優先をテンプレートのディレクトリに設定
+                ini_set("include_path", Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . PATH_SEPARATOR . ini_get("include_path") );
+
                 $source = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]);
                 // 先頭のPHPタグを除去
                 $source = "?>".$source;
