@@ -98,6 +98,8 @@ class Vizualizer_Bootstrap_TemplateName
                     $attributes["templateName"] .= "index.html";
                 } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.htm")) {
                     $attributes["templateName"] .= "index.htm";
+                } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.php")) {
+                    $attributes["templateName"] .= "index.php";
                 } elseif (file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . $attributes["templateName"] . "index.xml")) {
                     $attributes["templateName"] .= "index.xml";
                 } else {
