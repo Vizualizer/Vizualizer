@@ -33,9 +33,15 @@ class Vizualizer_Module_Input_AsArray extends Vizualizer_Plugin_Module
 
     function execute($params)
     {
-        $post = Vizualizer::request();
-        if(!is_array($post[$params->get("key")])){
-            $post->set($params->get("key"), array());
+        if($params->check("key")){
+            $post = Vizualizer::request();
+            if(!is_array($post[$params->get("key")])){
+                if($params->check("split") && !empty($post[$params->get("key")])){
+                    $post->set($params->get("key"), explode($params->get("split"), $post[$params->get("key")]));
+                }else{
+                    $post->set($params->get("key"), array());
+                }
+            }
         }
     }
 }
