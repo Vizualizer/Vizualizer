@@ -33,6 +33,7 @@ class Vizualizer_Module_Input_MergeArray extends Vizualizer_Plugin_Module
 
     function execute($params)
     {
+        $post = Vizualizer::request();
         if ($params->check("key") && is_array($post[$params->check("key")])) {
             $post->set($params->get("key"), implode($params->get("delimiter"), $post[$params->check("key")]));
         }
