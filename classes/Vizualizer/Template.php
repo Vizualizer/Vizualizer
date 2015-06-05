@@ -23,6 +23,26 @@
  */
 
 /**
+ * 年のセレクタ生成用のクラス
+ */
+class Vizualizer_YearSelector
+{
+    public function getSelector($from = null, $to = null){
+        if(empty($from)){
+            $from = date("Y");
+        }
+        if(empty($to)){
+            $to = date("Y");
+        }
+        $result = array();
+        for($i = $from; $i <= $to; $i ++){
+            $result[$i] = $i;
+        }
+        return $result;
+    }
+}
+
+/**
  * ページ表示用のテンプレートクラスです。
  *
  * @package Vizualizer
@@ -41,6 +61,9 @@ abstract class Vizualizer_Template
      */
     protected function initialAssign()
     {
+        // 年のセレクタのアサイン処理
+        $this->assign("SelectionYear", new Vizualizer_YearSelector());
+
         // 月のセレクタのアサイン処理
         $monthSelect = array();
         for ($i = 1; $i <= 12; $i ++) {
