@@ -52,4 +52,3 @@ class Vizualizer_Module_Input_Reset extends Vizualizer_Plugin_Module
         }
     }
 }
-?>
