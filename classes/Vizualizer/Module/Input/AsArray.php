@@ -45,4 +45,3 @@ class Vizualizer_Module_Input_AsArray extends Vizualizer_Plugin_Module
         }
     }
 }
-?>

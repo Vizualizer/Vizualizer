@@ -75,4 +75,3 @@ class Vizualizer_Module_Input_MergeDate extends Vizualizer_Plugin_Module
         }
     }
 }
-?>
