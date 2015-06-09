@@ -132,8 +132,32 @@ function smarty_function_loadmodule($params, $template)
             // errorパラメータが渡っている場合はスタックさせたエラーを全て出力してエラー画面へ
             $templateEngine->assign("ERRORS", $errorData);
             unset($attr[Vizualizer::ERROR_KEY]);
-            $templateEngine->display($error);
-            exit;
+            $info = pathinfo($error);
+            switch ($info["extension"]) {
+                case "php":
+                    // PHPを実行する場合、インクルードパスの最優先をテンプレートのディレクトリに設定
+                    ini_set("include_path", Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . PATH_SEPARATOR . ini_get("include_path") );
+
+                    $source = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . DIRECTORY_SEPARATOR . $error);
+                    // 先頭のPHPタグを除去
+                    $source = "?>".$source;
+                    // バッファを除去
+                    ob_end_clean();
+                    ob_start();
+                    eval($source);
+                    // 実行後のデータを取得し、バッファを再度除去
+                    $source = ob_get_contents();
+                    ob_end_clean();
+                    ob_start();
+                    // ソースデータをリソース化
+                    $source = "eval:" . $source;
+                    // テンプレートを表示
+                    $templateEngine->display($source);
+                    exit;
+                default:
+                    $templateEngine->display($error);
+                    exit;
+            }
         } else {
             $attr[Vizualizer::ERROR_KEY] = $errorData;
         }
