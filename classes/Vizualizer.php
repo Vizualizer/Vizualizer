@@ -211,6 +211,12 @@ class Vizualizer
 
         $attr = Vizualizer::attr();
         $info = pathinfo($attr["templateName"]);
+
+        // フレームとコンテンツタイプのオプションを指定
+        header("X-Frame-Options: SAMEORIGIN");
+        header("X-Content-Type-Options: nosniff");
+        header("X-XSS-Protection: 1; mode=block");
+
         switch ($info["extension"]) {
             case "html":
             case "htm":
