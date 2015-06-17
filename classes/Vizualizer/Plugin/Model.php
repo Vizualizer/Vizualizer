@@ -177,6 +177,8 @@ class Vizualizer_Plugin_Model
      */
     public function create()
     {
+        $this->updateRegisterInfo();
+
         $insert = new Vizualizer_Query_InsertIgnore($this->access);
         $sqlvals = array();
         $insertSet = false;
@@ -198,6 +200,47 @@ class Vizualizer_Plugin_Model
                     $this->values[$key] = $this->values_org[$key] = $insert->lastInsertId();
                 }
             }
+        }
+        return $this;
+    }
+
+    /**
+     * レコードが更新可能な場合に、レコードを更新します。
+     */
+    public function update()
+    {
+        $this->updateRegisterInfo();
+
+        $update = new Vizualizer_Query_Update($this->access);
+        $updateSet = false;
+        $updateWhere = false;
+        foreach ($this->columns as $column) {
+            if (in_array($column, $this->primary_keys)) {
+                // 主キーは更新条件
+                $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
+                $updateWhere = true;
+            } elseif ($column == "create_operator_id" && $column == "create_time") {
+                // 更新時は登録オペレータIDと登録日時は対象外
+                continue;
+            } elseif ($column == "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
+                // 更新時は元の値が設定されているか、更新値が設定されていないオペレータIDは対象外
+                continue;
+            } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
+                if(array_key_exists($column, $this->values) && (!empty($this->values[$column]) || is_numeric($this->values[$column])) || array_key_exists($column, $this->values_org) && (!empty($this->values_org[$column]) || is_numeric($this->values_org[$column]))){
+                    if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
+                        $update->addSets($this->access->$column . " = ?", array($this->values[$column]));
+                    } else {
+                        $update->addSets($this->access->$column . " = NULL", array());
+                    }
+                }
+                if($column != "update_time"){
+                    $updateSet = true;
+                }
+            }
+        }
+        // WHERE句とSET句の両方が設定されている場合のみ更新処理を実行
+        if ($updateSet && $updateWhere) {
+            $update->execute();
         }
         return $this;
     }
@@ -498,6 +541,28 @@ class Vizualizer_Plugin_Model
     }
 
     /**
+     * 登録日時や登録オペレータなどを設定する内部処理です。
+     */
+    protected function updateRegisterInfo($ignoreOperator = false){
+        // データ作成日／更新日は自動的に設定する。
+        try{
+            if (!$ignoreOperator && class_exists("VizualizerAdmin")) {
+                $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                    if ($this->operator_id > 0) {
+                        $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                    }else{
+                        $this->operator_id = $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                    }
+                }
+            }
+        }catch(Exception $e){
+            // Adminパッケージを使っていない場合は、登録者／更新者IDの設定をスキップする。
+        }
+        $this->create_time = $this->update_time = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
+    }
+
+    /**
      * 指定したトランザクション内にて主キーベースでデータの保存を行う。
      * 主キーが存在しない場合は何もしない。
      * また、モデル内のカラムがDBに無い場合はスキップする。
@@ -525,59 +590,12 @@ class Vizualizer_Plugin_Model
                 $result = array();
             }
 
-            // データ作成日／更新日は自動的に設定する。
-            try{
-                if (!$ignoreOperator && class_exists("VizualizerAdmin")) {
-                    $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
-                    if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
-                        if ($this->operator_id > 0) {
-                            $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
-                        }else{
-                            $this->operator_id = $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
-                        }
-                    }
-                }
-            }catch(Exception $e){
-                // Adminパッケージを使っていない場合は、登録者／更新者IDの設定をスキップする。
-            }
-            $this->create_time = $this->update_time = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
-
             if (!is_array($result) || empty($result)) {
                 // 主キーのデータが無かった場合はデータを作成する。
                 $this->create();
             } else {
-                // 主キーのデータがあった場合は更新する。
-                $update = new Vizualizer_Query_Update($this->access);
-                $updateSet = false;
-                $updateWhere = false;
-                foreach ($this->columns as $column) {
-                    if (in_array($column, $this->primary_keys)) {
-                        // 主キーは更新条件
-                        $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
-                        $updateWhere = true;
-                    } elseif ($column == "create_operator_id" && $column == "create_time") {
-                        // 更新時は登録オペレータIDと登録日時は対象外
-                        continue;
-                    } elseif ($column == "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
-                        // 更新時は元の値が設定されているか、更新値が設定されていないオペレータIDは対象外
-                        continue;
-                    } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
-                        if(array_key_exists($column, $this->values) && (!empty($this->values[$column]) || is_numeric($this->values[$column])) || array_key_exists($column, $this->values_org) && (!empty($this->values_org[$column]) || is_numeric($this->values_org[$column]))){
-                            if (array_key_exists($column, $this->values) && $this->values[$column] !== null) {
-                                $update->addSets($this->access->$column . " = ?", array($this->values[$column]));
-                            } else {
-                                $update->addSets($this->access->$column . " = NULL", array());
-                            }
-                        }
-                        if($column != "update_time"){
-                            $updateSet = true;
-                        }
-                    }
-                }
-                // WHERE句とSET句の両方が設定されている場合のみ更新処理を実行
-                if ($updateSet && $updateWhere) {
-                    $update->execute();
-                }
+                // 主キーのデータがあった場合はデータを更新する。
+                $this->update();
             }
         }
     }
