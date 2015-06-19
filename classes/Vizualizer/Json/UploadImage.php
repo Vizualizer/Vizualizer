@@ -14,11 +14,11 @@ class Vizualizer_Json_UploadImage
             if(!is_dir(Vizualizer_Configure::get("upload_root"))){
                 mkdir(Vizualizer_Configure::get("upload_root"));
             }
-            $destName = date("Y");
+            $destName = date("Ym");
             if(!is_dir(Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName)){
                 mkdir(Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName);
             }
-            $destName .= date("md");
+            $destName .= DIRECTORY_SEPARATOR . date("d");
             if(!is_dir(Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName)){
                 mkdir(Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName);
             }
