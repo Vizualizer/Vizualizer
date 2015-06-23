@@ -260,7 +260,14 @@ class Vizualizer
                     // バッファをクリアしてJSONの結果を出力する。
                     ob_end_clean();
                     header("Content-Type: application/json; charset=utf-8");
-                    echo file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]);
+                    // テンプレートを生成
+                    $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                    $template = new $templateClass();
+                    $template->assign("ERRORS", array());
+
+                    // テンプレートを表示
+                    $attr["template"] = $template;
+                    $template->display(substr($attr["templateName"], 1));
                 } elseif (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
                     Vizualizer_Parameter::$enableRefresh = false;
                     $post = Vizualizer::request();
