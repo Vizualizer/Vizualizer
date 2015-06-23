@@ -34,7 +34,11 @@ class Vizualizer_Module_Error_Check_Katakana extends Vizualizer_Plugin_Module
     function execute($params)
     {
         $post = Vizualizer::request();
-        if (!empty($post[$params->get("key")]) && preg_match("/^[ァ-ヶー]+$/u", $post[$params->get("key")]) == 0) {
+        $extra = "";
+        if($params->get("space", "0") == "1"){
+            $extra = " 　";
+        }
+        if (!empty($post[$params->get("key")]) && preg_match("/^[ァ-ヶー".$extra."]+$/u", $post[$params->get("key")]) == 0) {
             throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "はカタカナで入力してください。"));
         }
     }
