@@ -258,8 +258,6 @@ class Vizualizer
             case "json":
                 if (file_exists(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) {
                     // バッファをクリアしてJSONの結果を出力する。
-                    ob_end_clean();
-                    header("Content-Type: application/json; charset=utf-8");
                     // テンプレートを生成
                     $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
                     $template = new $templateClass();
@@ -267,6 +265,7 @@ class Vizualizer
 
                     // テンプレートを表示
                     $attr["template"] = $template;
+                    header("Content-Type: application/json; charset=utf-8");
                     $template->display(substr($attr["templateName"], 1));
                 } elseif (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
                     Vizualizer_Parameter::$enableRefresh = false;
