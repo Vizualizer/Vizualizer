@@ -104,8 +104,10 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         // input-imageによって渡されたパラメータを展開
         $inputImageKeys = array();
         foreach ($this->parameters[TEMPLATE_DIRECTORY] as $name => $value) {
-            if (preg_match("/^(.+)_([xy])$/", $name, $params) > 0) {
-                $inputImageKeys[$params[1]][$params[2]] = $value;
+            if (substr_compare($name, "_x", -2) === 0) {
+                $inputImageKeys[substr($name, 0, -2)]["x"] = $value;
+            } elseif (substr_compare($name, "_y", -2) === 0) {
+                $inputImageKeys[substr($name, 0, -2)]["y"] = $value;
             }
         }
         foreach ($inputImageKeys as $key => $inputImage) {

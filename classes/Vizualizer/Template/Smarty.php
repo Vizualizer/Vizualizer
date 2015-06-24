@@ -93,7 +93,8 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
     {
         $attributes = Vizualizer::attr();
         // リソースの利用を判定
-        if(preg_match("/^([a-zA-Z0-9]+):/", $template, $p) > 0 && $p[1] != "file"){
+        $prefix = substr($template, 0, strpos($template, ":"));
+        if(ctype_alpha($prefix) && $prefix != "file"){
             return $this->core->fetch($template, $cache_id, $compile_id, $parent, $display);
         }else{
             if(file_exists(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/" . $template)) {

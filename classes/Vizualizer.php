@@ -148,46 +148,46 @@ class Vizualizer
             // システム実行時の時間を記録するため、カレンダーを取得する。
             Vizualizer_Data_Calendar::get();
 
-            $class = $_SERVER["argv"][2];
-            if ($_SERVER["argv"][1] == "install") {
+            $class =& $_SERVER["argv"][2];
+            if ($_SERVER["argv"][1] === "install") {
                 try {
                     $class::install();
-                    echo "Package " . $_SERVER["argv"][2] . " installed successfully\r\n";
+                    echo "Package " . $class . " installed successfully\r\n";
                 } catch (Exception $e) {
-                    echo "Package " . $_SERVER["argv"][2] . " install failed\r\n";
+                    echo "Package " . $class . " install failed\r\n";
                 }
-            } elseif ($_SERVER["argv"][1] == "batch") {
+            } elseif ($_SERVER["argv"][1] === "batch") {
                 try {
                     $batch = new $class();
                     $batch->execute($_SERVER["argv"]);
-                    echo "Batch " . $_SERVER["argv"][2] . " executed successfully\r\n";
+                    echo "Batch " . $class . " executed successfully\r\n";
                 } catch (Exception $e) {
-                    echo "Batch " . $_SERVER["argv"][2] . " execution failed\r\n";
+                    echo "Batch " . $class . " execution failed\r\n";
                 }
             }
             exit();
         } else {
             // ドキュメントルートを調整
             $_SERVER["DOCUMENT_ROOT"] = realpath($_SERVER["DOCUMENT_ROOT"]);
-            if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
+            if (substr_compare($_SERVER["DOCUMENT_ROOT"], "/", -1)) {
                 $_SERVER["DOCUMENT_ROOT"] = substr($_SERVER["DOCUMENT_ROOT"], 0, -1);
             }
-            if (preg_match("@^" . $_SERVER["DOCUMENT_ROOT"] . "@", VIZUALIZER_SITE_ROOT) == 0) {
+            if (strpos(VIZUALIZER_SITE_ROOT, $_SERVER["DOCUMENT_ROOT"]) === 0) {
                 $_SERVER['DOCUMENT_ROOT'] = str_replace($_SERVER['SCRIPT_NAME'], "", $_SERVER['SCRIPT_FILENAME']);
             }
 
             // システムのルートURLへのサブディレクトリを設定
             if (!defined('VIZUALIZER_SUBDIR')) {
-                if (substr($_SERVER["DOCUMENT_ROOT"], -1) == "/") {
-                    define('VIZUALIZER_SUBDIR', str_replace(substr($_SERVER["DOCUMENT_ROOT"], 0, -1), "", VIZUALIZER_SITE_ROOT));
+                if (substr_compare($_SERVER["DOCUMENT_ROOT"], "/", -1) === 0) {
+                    define('VIZUALIZER_SUBDIR', substr(VIZUALIZER_SITE_ROOT, strlen($_SERVER["DOCUMENT_ROOT"]) - 1));
                 } else {
-                    define('VIZUALIZER_SUBDIR', str_replace($_SERVER["DOCUMENT_ROOT"], "", VIZUALIZER_SITE_ROOT));
+                    define('VIZUALIZER_SUBDIR', substr(VIZUALIZER_SITE_ROOT, strlen($_SERVER["DOCUMENT_ROOT"])));
                 }
             }
 
             // システムのルートURLを設定
             if (!defined('VIZUALIZER_URL')) {
-                define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
+                define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
             }
             // Bootstrapを実行する。
             Vizualizer_Bootstrap::register(10, "PhpVersion");
@@ -217,47 +217,11 @@ class Vizualizer
         header("X-Content-Type-Options: nosniff");
         header("X-XSS-Protection: 1; mode=block");
 
-        switch ($info["extension"]) {
-            case "html":
-            case "htm":
-            case "xml":
-                // テンプレートを生成
-                $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
-                $template = new $templateClass();
-                $template->assign("ERRORS", array());
-
-                // テンプレートを表示
-                $attr["template"] = $template;
-                $template->display(substr($attr["templateName"], 1));
-                break;
-            case "php":
-                // PHPを実行する場合、インクルードパスの最優先をテンプレートのディレクトリに設定
-                ini_set("include_path", Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . PATH_SEPARATOR . ini_get("include_path") );
-
-                $source = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]);
-                // 先頭のPHPタグを除去
-                $source = "?>".$source;
-                // バッファを除去
-                ob_end_clean();
-                ob_start();
-                eval($source);
-                // 実行後のデータを取得し、バッファを再度除去
-                $source = ob_get_contents();
-                ob_end_clean();
-                ob_start();
-                // テンプレートを生成
-                $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
-                $template = new $templateClass();
-                $template->assign("ERRORS", array());
-                // ソースデータをリソース化
-                $source = "eval:" . $source;
-                // テンプレートを表示
-                $attr["template"] = $template;
-                $template->display($source);
-                break;
-            case "json":
-                if (file_exists(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) {
-                    // バッファをクリアしてJSONの結果を出力する。
+        try{
+            switch ($info["extension"]) {
+                case "html":
+                case "htm":
+                case "xml":
                     // テンプレートを生成
                     $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
                     $template = new $templateClass();
@@ -265,49 +229,91 @@ class Vizualizer
 
                     // テンプレートを表示
                     $attr["template"] = $template;
-                    header("Content-Type: application/json; charset=utf-8");
                     $template->display(substr($attr["templateName"], 1));
-                } elseif (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
-                    Vizualizer_Parameter::$enableRefresh = false;
-                    $post = Vizualizer::request();
-                    // コールバックを取得
-                    $callback = "";
-                    if (!empty($post["callback"])) {
-                        $callback = $post["callback"];
-                        $post->remove("callback");
-                    }
-                    $post->remove("_");
+                    break;
+                case "php":
+                    // PHPを実行する場合、インクルードパスの最優先をテンプレートのディレクトリに設定
+                    ini_set("include_path", Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . PATH_SEPARATOR . ini_get("include_path") );
 
-                    // JSONモジュールを実行する。
-                    $loader = new Vizualizer_Plugin(substr($info["dirname"], 1));
-                    $json = $loader->loadJson($info["filename"]);
-                    $result = json_encode($json->execute());
-
-                    // バッファをクリアしてJSONの結果を出力する。
+                    $source = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]);
+                    // 先頭のPHPタグを除去
+                    $source = "?>".$source;
+                    // バッファを除去
                     ob_end_clean();
-                    header("Content-Type: application/json; charset=utf-8");
-                    if (!empty($callback)) {
-                        echo $callback . "(" . $result . ");";
+                    ob_start();
+                    eval($source);
+                    // 実行後のデータを取得し、バッファを再度除去
+                    $source = ob_get_contents();
+                    ob_end_clean();
+                    ob_start();
+                    // テンプレートを生成
+                    $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                    $template = new $templateClass();
+                    $template->assign("ERRORS", array());
+                    // ソースデータをリソース化
+                    $source = "eval:" . $source;
+                    // テンプレートを表示
+                    $attr["template"] = $template;
+                    $template->display($source);
+                    break;
+                case "json":
+                    if (file_exists(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) {
+                        // バッファをクリアしてJSONの結果を出力する。
+                        // テンプレートを生成
+                        $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                        $template = new $templateClass();
+                        $template->assign("ERRORS", array());
+
+                        // テンプレートを表示
+                        $attr["template"] = $template;
+                        header("Content-Type: application/json; charset=utf-8");
+                        Vizualizer_Parameter::$enableRefresh = false;
+                        $template->display(substr($attr["templateName"], 1));
+                    } elseif (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
+                        Vizualizer_Parameter::$enableRefresh = false;
+                        $post = Vizualizer::request();
+                        // コールバックを取得
+                        $callback = "";
+                        if (!empty($post["callback"])) {
+                            $callback = $post["callback"];
+                            $post->remove("callback");
+                        }
+                        $post->remove("_");
+
+                        // JSONモジュールを実行する。
+                        $loader = new Vizualizer_Plugin(substr($info["dirname"], 1));
+                        $json = $loader->loadJson($info["filename"]);
+                        $result = json_encode($json->execute());
+
+                        // バッファをクリアしてJSONの結果を出力する。
+                        ob_end_clean();
+                        header("Content-Type: application/json; charset=utf-8");
+                        if (!empty($callback)) {
+                            echo $callback . "(" . $result . ");";
+                        } else {
+                            echo $result;
+                        }
                     } else {
-                        echo $result;
+                        header("HTTP/1.0 404 Not Found");
+                        exit();
                     }
-                } else {
-                    header("HTTP/1.0 404 Not Found");
-                    exit();
-                }
-                break;
-            default:
-                // 特別にヘッダを渡す必要のあるものはここに記載
-                $headers = array("css" => "text/css", "js" => "text/javascript");
-                if (array_key_exists($info["extension"], $headers)) {
-                    header("Content-Type: " . $headers[$info["extension"]]);
-                }
-                if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
-                    while ($buffer = fread($fp, 8192)) {
-                        echo $buffer;
+                    break;
+                default:
+                    // 特別にヘッダを渡す必要のあるものはここに記載
+                    $headers = array("css" => "text/css", "js" => "text/javascript");
+                    if (array_key_exists($info["extension"], $headers)) {
+                        header("Content-Type: " . $headers[$info["extension"]]);
                     }
-                }
-                break;
+                    if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
+                        while ($buffer = fread($fp, 8192)) {
+                            echo $buffer;
+                        }
+                    }
+                    break;
+            }
+        } catch(Exception $e) {
+            Vizualizer_Logger::writeError("Uncaught Exeception was throwed.", $e);
+            throw $e;
         }
         $postfilters = Vizualizer_Configure::get("postfilters");
         if (is_array($postfilters) && !empty($postfilters)) {
