@@ -21,6 +21,21 @@
  * @since PHP 5.3
  * @version   1.0.0
  */
-function smarty_function_define_module($params, $template)
+
+/**
+ * 入力内容の一致のチェックを行う。
+ *
+ * @package Vizualizer
+ * @author Naohisa Minagawa <info@vizualizer.jp>
+ */
+class Vizualizer_Module_Error_Check_Match extends Vizualizer_Plugin_Module
 {
+
+    function execute($params)
+    {
+        $post = Vizualizer::request();
+        if ($post[$params->get("key")] != $post[$params->get("key2")]) {
+            throw new Vizualizer_Exception_Invalid($params->get("key"), $params->get("value") . $params->get("suffix", "の入力内容が一致しません。"));
+        }
+    }
 }

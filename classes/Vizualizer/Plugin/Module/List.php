@@ -83,6 +83,30 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
             if ($params->check("wkey")) {
                 $conditions[$params->check("wkey")] = $params->check("wvalue");
             }
+            if ($params->check("wkey2")) {
+                $conditions[$params->check("wkey2")] = $params->check("wvalue2");
+            }
+            if ($params->check("wkey3")) {
+                $conditions[$params->check("wkey3")] = $params->check("wvalue3");
+            }
+            if ($params->check("wkey4")) {
+                $conditions[$params->check("wkey4")] = $params->check("wvalue4");
+            }
+            if ($params->check("wkey5")) {
+                $conditions[$params->check("wkey5")] = $params->check("wvalue5");
+            }
+            if ($params->check("wkey6")) {
+                $conditions[$params->check("wkey6")] = $params->check("wvalue6");
+            }
+            if ($params->check("wkey7")) {
+                $conditions[$params->check("wkey7")] = $params->check("wvalue7");
+            }
+            if ($params->check("wkey8")) {
+                $conditions[$params->check("wkey8")] = $params->check("wvalue8");
+            }
+            if ($params->check("wkey9")) {
+                $conditions[$params->check("wkey9")] = $params->check("wvalue9");
+            }
 
             $attr = Vizualizer::attr();
             if ($this->groupBy) {

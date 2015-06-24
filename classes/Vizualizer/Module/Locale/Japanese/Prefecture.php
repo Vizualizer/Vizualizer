@@ -23,32 +23,36 @@
  */
 
 /**
- * 検索条件以外の入力をクリアする。
+ * 日本の都道府県用のプルダウンを作成するモジュール。
  *
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Module_Input_Reset extends Vizualizer_Plugin_Module
+class Vizualizer_Module_Locale_Japanese_Prefecture extends Vizualizer_Plugin_Module
 {
 
     function execute($params)
     {
-        $post = Vizualizer::request();
-        $keys = explode(",", $params->get("except", ""));
-        // searchとpageIDは常にリセット対象外とする。
-        $keys[] = "search";
-        $keys[] = "pageID";
-        $values = array();
-        foreach($keys as $key){
-            if(isset($post[$key])){
-                $values[$key] = $post[$key];
+        if($params->check("key")){
+            $attr = Vizualizer::attr();
+            $prefBase = Vizualizer_Locale_Japanese_Prefecture::getSelection();
+            $prefs = array();
+            // 空の項目を追加する場合に設定
+            if($params->check("empty")){
+                $prefs[""] = $params->get("empty");
             }
-        }
-        $post->clear();
-        foreach($keys as $key){
-            if(array_key_exists($key, $values)){
-                $post->set($key, $values[$key]);
+            // 基本の47都道府県を追加
+            foreach($prefBase as $base){
+                $prefs[$base] = $base;
             }
+            // 追加で項目を入れる場合
+            if($params->check("append")){
+                $appends = explode(",", $params->get("append"));
+                foreach($appends as $append){
+                    $prefs[trim($append)] = trim($append);
+                }
+            }
+            $attr[$params->get("key")] = $prefs;
         }
     }
 }

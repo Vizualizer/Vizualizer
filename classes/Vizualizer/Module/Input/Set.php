@@ -21,6 +21,21 @@
  * @since PHP 5.3
  * @version   1.0.0
  */
-function smarty_function_define_module($params, $template)
+
+/**
+ * カラムの値を設定するクラスです。
+ *
+ * @package Vizualizer
+ * @author Naohisa Minagawa <info@vizualizer.jp>
+ */
+class Vizualizer_Module_Input_Set extends Vizualizer_Plugin_Module
 {
+
+    function execute($params)
+    {
+        if ($params->check("value") && $params->check("key")) {
+            $post = Vizualizer::request();
+            $post->set($params->get("key"), $params->get("value"));
+        }
+    }
 }

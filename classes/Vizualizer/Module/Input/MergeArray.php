@@ -21,6 +21,21 @@
  * @since PHP 5.3
  * @version   1.0.0
  */
-function smarty_function_define_module($params, $template)
+
+/**
+ * カラムを結合するクラスです。
+ *
+ * @package Vizualizer
+ * @author Naohisa Minagawa <info@vizualizer.jp>
+ */
+class Vizualizer_Module_Input_MergeArray extends Vizualizer_Plugin_Module
 {
+
+    function execute($params)
+    {
+        $post = Vizualizer::request();
+        if ($params->check("key") && is_array($post[$params->check("key")])) {
+            $post->set($params->get("key"), implode($params->get("delimiter"), $post[$params->check("key")]));
+        }
+    }
 }

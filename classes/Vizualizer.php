@@ -211,6 +211,12 @@ class Vizualizer
 
         $attr = Vizualizer::attr();
         $info = pathinfo($attr["templateName"]);
+
+        // フレームとコンテンツタイプのオプションを指定
+        header("X-Frame-Options: SAMEORIGIN");
+        header("X-Content-Type-Options: nosniff");
+        header("X-XSS-Protection: 1; mode=block");
+
         switch ($info["extension"]) {
             case "html":
             case "htm":
@@ -225,6 +231,9 @@ class Vizualizer
                 $template->display(substr($attr["templateName"], 1));
                 break;
             case "php":
+                // PHPを実行する場合、インクルードパスの最優先をテンプレートのディレクトリに設定
+                ini_set("include_path", Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . PATH_SEPARATOR . ini_get("include_path") );
+
                 $source = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]);
                 // 先頭のPHPタグを除去
                 $source = "?>".$source;
@@ -247,7 +256,18 @@ class Vizualizer
                 $template->display($source);
                 break;
             case "json":
-                if (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
+                if (file_exists(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) {
+                    // バッファをクリアしてJSONの結果を出力する。
+                    // テンプレートを生成
+                    $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                    $template = new $templateClass();
+                    $template->assign("ERRORS", array());
+
+                    // テンプレートを表示
+                    $attr["template"] = $template;
+                    header("Content-Type: application/json; charset=utf-8");
+                    $template->display(substr($attr["templateName"], 1));
+                } elseif (Vizualizer_Configure::get("json_api_key") == "" || isset($_POST["k"]) && Vizualizer_Configure::get("json_api_key") == $_POST["k"]) {
                     Vizualizer_Parameter::$enableRefresh = false;
                     $post = Vizualizer::request();
                     // コールバックを取得
