@@ -92,6 +92,16 @@ abstract class Vizualizer_Cache_Base
     }
 
     /**
+     * キャッシュの値をエクスポートする。
+     *
+     * @return array
+     */
+    public function export()
+    {
+        return $this->values;
+    }
+
+    /**
      * キャッシュの値を設定する。
      *
      * @param string $key

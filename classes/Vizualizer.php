@@ -304,9 +304,28 @@ class Vizualizer
                     if (array_key_exists($info["extension"], $headers)) {
                         header("Content-Type: " . $headers[$info["extension"]]);
                     }
-                    if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
-                        while ($buffer = fread($fp, 8192)) {
-                            echo $buffer;
+
+                    if (class_exists("Memcache") && Vizualizer_Configure::get("memcache_contents") && Vizualizer_Configure::get("memcache") !== "") {
+                        // memcacheの場合は静的コンテンツをmemcacheにキャッシュする。
+                        $contents = Vizualizer_Cache_Factory::create("content_" . $attr["userTemplate"] . $attr["templateName"]);
+                        $data = $contents->export();
+                        if (empty($data)) {
+                            if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
+                                $index = 0;
+                                while ($buffer = fread($fp, 8192)) {
+                                    $contents->set($index++, $buffer);
+                                }
+                                $data = $contents->export();
+                            }
+                        }
+                        foreach($data as $content){
+                            echo $content;
+                        }
+                    } else {
+                        if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
+                            while ($buffer = fread($fp, 8192)) {
+                                echo $buffer;
+                            }
                         }
                     }
                     break;
