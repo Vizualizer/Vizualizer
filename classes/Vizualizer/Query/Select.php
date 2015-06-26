@@ -115,7 +115,7 @@ class Vizualizer_Query_Select
         $this->module = $table->getModuleName();
         $this->distinct = false;
         $this->columns = array();
-        if ($from == null) {
+        if ($from === null) {
             $this->tables = $table->_T;
         } else {
             $this->tables = $from;

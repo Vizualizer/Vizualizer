@@ -219,10 +219,10 @@ class Vizualizer_Plugin_Model
                 // 主キーは更新条件
                 $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
                 $updateWhere = true;
-            } elseif ($column == "create_operator_id" && $column == "create_time") {
+            } elseif ($column === "create_operator_id" && $column === "create_time") {
                 // 更新時は登録オペレータIDと登録日時は対象外
                 continue;
-            } elseif ($column == "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
+            } elseif ($column === "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
                 // 更新時は元の値が設定されているか、更新値が設定されていないオペレータIDは対象外
                 continue;
             } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
@@ -233,7 +233,7 @@ class Vizualizer_Plugin_Model
                         $update->addSets($this->access->$column . " = NULL", array());
                     }
                 }
-                if($column != "update_time"){
+                if($column !== "update_time"){
                     $updateSet = true;
                 }
             }
@@ -415,7 +415,7 @@ class Vizualizer_Plugin_Model
         } else {
             $fullkey = $this->access->$key;
             if (isset($default) && $default != null) {
-                if (is_numeric($default) && (substr($default, 0, 1) != "0" || strlen($default) == 1)) {
+                if (is_numeric($default) && (substr($default, 0, 1) != "0" || strlen($default) === 1)) {
                     // 全て数字で先頭が0でない、もしくは1桁のみの場合は数値データとして扱う
                     $fullkey = "COALESCE(" . $fullkey . ", " . $default . ")";
                 } else {
@@ -423,7 +423,7 @@ class Vizualizer_Plugin_Model
                 }
             }
         }
-        if ($op != "in" && $op != "nin" && is_array($value)) {
+        if ($op !== "in" && $op !== "nin" && is_array($value)) {
             foreach ($value as $item) {
                 if (empty($item)) {
                     return $select;
