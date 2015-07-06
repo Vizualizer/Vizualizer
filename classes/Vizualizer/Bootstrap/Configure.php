@@ -84,6 +84,9 @@ class Vizualizer_Bootstrap_Configure
         // memcacheのホスト設定
         Vizualizer_Configure::set("memcache", "");
 
+        // コンテンツのmemcache利用設定
+        Vizualizer_Configure::set("memcache_contents", false);
+
         // JSONインターフェイス用キー設定
         Vizualizer_Configure::set("json_key", "");
 

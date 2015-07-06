@@ -301,12 +301,38 @@ class Vizualizer
                 default:
                     // 特別にヘッダを渡す必要のあるものはここに記載
                     $headers = array("css" => "text/css", "js" => "text/javascript");
+                    $suppression = false;
                     if (array_key_exists($info["extension"], $headers)) {
                         header("Content-Type: " . $headers[$info["extension"]]);
+                        $suppression = true;
                     }
-                    if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
-                        while ($buffer = fread($fp, 8192)) {
-                            echo $buffer;
+
+                    if (class_exists("Memcache") && Vizualizer_Configure::get("memcache_contents") && Vizualizer_Configure::get("memcache") !== "") {
+                        // memcacheの場合は静的コンテンツをmemcacheにキャッシュする。
+                        $contents = Vizualizer_Cache_Factory::create("content_" . $attr["userTemplate"] . $attr["templateName"]);
+                        $data = $contents->export();
+                        if (empty($data)) {
+                            if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
+                                $index = 0;
+                                while ($buffer = fread($fp, 8192)) {
+                                   $contents->set($index++, $buffer);
+                                }
+                            }
+                            $data = $contents->export();
+                        }
+                        foreach($data as $content){
+                            echo $content;
+                        }
+                    } else {
+                        if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
+                            while ($buffer = fread($fp, 8192)) {
+                                /*
+                                if ($suppression) {
+                                    $buffer = str_replace(array(" ", "\n", "\t", "\r\n"), "", $buffer);
+                                }
+                                */
+                                echo $buffer;
+                            }
                         }
                     }
                     break;

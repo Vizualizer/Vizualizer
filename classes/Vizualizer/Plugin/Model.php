@@ -30,6 +30,9 @@
  */
 class Vizualizer_Plugin_Model
 {
+    // オペレータIDで制限をかけるかどうかのフラグ
+    public static $limitedOperator = true;
+
     // ディスティンクトオプションのフラグ
     protected $distinct;
 
@@ -219,10 +222,10 @@ class Vizualizer_Plugin_Model
                 // 主キーは更新条件
                 $update->addWhere($this->access->$column . " = ?", array($this->values[$column]));
                 $updateWhere = true;
-            } elseif ($column == "create_operator_id" && $column == "create_time") {
+            } elseif ($column === "create_operator_id" && $column === "create_time") {
                 // 更新時は登録オペレータIDと登録日時は対象外
                 continue;
-            } elseif ($column == "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
+            } elseif ($column === "operator_id" && (array_key_exists($column, $this->values_org) && $this->values_org[$column] > 0 || !array_key_exists($column, $this->values) || !($this->values[$column] > 0))) {
                 // 更新時は元の値が設定されているか、更新値が設定されていないオペレータIDは対象外
                 continue;
             } elseif (array_key_exists($column, $this->values) && (!array_key_exists($column, $this->values_org) || $this->values[$column] != $this->values_org[$column])) {
@@ -233,7 +236,7 @@ class Vizualizer_Plugin_Model
                         $update->addSets($this->access->$column . " = NULL", array());
                     }
                 }
-                if($column != "update_time"){
+                if($column !== "update_time"){
                     $updateSet = true;
                 }
             }
@@ -263,7 +266,7 @@ class Vizualizer_Plugin_Model
     /**
      * レコードを特定のキーで検索する。
      */
-    public function findAllBy($values = array(), $order = "", $reverse = false, $forceOperator = false)
+    public function findAllBy($values = array(), $order = "", $reverse = false)
     {
         $select = new Vizualizer_Query_Select($this->access);
         $select->distinct($this->distinct);
@@ -281,7 +284,7 @@ class Vizualizer_Plugin_Model
                 // セッションからオペレータIDが取得できた場合のみ処理を実施
                 if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
                     // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
-                    if($operator["administrator_flg"] != "1" || $forceOperator) {
+                    if(self::$limitedOperator) {
                         $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
                     }
                 }
@@ -415,7 +418,7 @@ class Vizualizer_Plugin_Model
         } else {
             $fullkey = $this->access->$key;
             if (isset($default) && $default != null) {
-                if (is_numeric($default) && (substr($default, 0, 1) != "0" || strlen($default) == 1)) {
+                if (is_numeric($default) && (substr($default, 0, 1) != "0" || strlen($default) === 1)) {
                     // 全て数字で先頭が0でない、もしくは1桁のみの場合は数値データとして扱う
                     $fullkey = "COALESCE(" . $fullkey . ", " . $default . ")";
                 } else {
@@ -423,7 +426,7 @@ class Vizualizer_Plugin_Model
                 }
             }
         }
-        if ($op != "in" && $op != "nin" && is_array($value)) {
+        if ($op !== "in" && $op !== "nin" && is_array($value)) {
             foreach ($value as $item) {
                 if (empty($item)) {
                     return $select;

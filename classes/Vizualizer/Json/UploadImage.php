@@ -27,6 +27,19 @@ class Vizualizer_Json_UploadImage
             $fileName = $path["filename"]."_".date("His").".".$path["extension"];
             $result["dest_file"] = $fileName;
             if (move_uploaded_file($tmpName, Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName.DIRECTORY_SEPARATOR.$fileName)) {
+                switch($path["extension"]){
+                    case "jpg":
+                    case "jpeg":
+                        if(Vizualizer_Configure::get("jpegoptim") !== null){
+                            exec(Vizualizer_Configure::get("jpegoptim")." -m100 -o -p --strip-all ".Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName.DIRECTORY_SEPARATOR.$fileName);
+                        }
+                        break;
+                    case "png":
+                        if(Vizualizer_Configure::get("optipng") !== null){
+                            exec(Vizualizer_Configure::get("optipng")." ".Vizualizer_Configure::get("upload_root").DIRECTORY_SEPARATOR.$destName.DIRECTORY_SEPARATOR.$fileName);
+                        }
+                        break;
+                }
                 $result["filename"] = $destName.DIRECTORY_SEPARATOR.$fileName;
             }else{
                 $result["error"] = "Upload Failed.";
