@@ -34,10 +34,8 @@ class Vizualizer_Bootstrap_Timezone
     public static function start()
     {
         // デフォルトのタイムゾーンを設定する。
-        if (Vizualizer_Configure::get("timezone") != "") {
+        if (Vizualizer_Configure::get("timezone") !== "") {
             date_default_timezone_set(Vizualizer_Configure::get("timezone"));
-        }else{
-            date_default_timezone_set("Asia/Tokyo");
         }
     }
 
