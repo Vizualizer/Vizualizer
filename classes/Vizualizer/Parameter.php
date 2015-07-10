@@ -81,6 +81,9 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         if (is_array($_GET)) {
             foreach ($_GET as $name => $value) {
                 if (is_array($value)) {
+                    if (!is_array($this->parameters[TEMPLATE_DIRECTORY][$name])) {
+                        $this->parameters[TEMPLATE_DIRECTORY][$name] = array();
+                    }
                     foreach ($value as $name2 => $value2) {
                         $this->parameters[TEMPLATE_DIRECTORY][$name][$name2] = $value2;
                     }
@@ -92,6 +95,9 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         if (is_array($_POST)) {
             foreach ($_POST as $name => $value) {
                 if (is_array($value)) {
+                    if (!is_array($this->parameters[TEMPLATE_DIRECTORY][$name])) {
+                        $this->parameters[TEMPLATE_DIRECTORY][$name] = array();
+                    }
                     foreach ($value as $name2 => $value2) {
                         $this->parameters[TEMPLATE_DIRECTORY][$name][$name2] = $value2;
                     }
