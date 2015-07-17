@@ -60,7 +60,7 @@ class Vizualizer_Mobile_Docomo extends Vizualizer_Mobile
         if (isset($_SERVER["HTTP_X_DCMGUID"])) {
             $this->mobileId = $_SERVER["HTTP_X_DCMGUID"];
         } else {
-            if ($_SERVER["REQUEST_METHOD"] == "GET" && preg_match("/guid=on/", $_SERVER["QUERY_STRING"]) == 0) {
+            if ($_SERVER["REQUEST_METHOD"] == "GET" && strpos($_SERVER["QUERY_STRING"], "guid=on") !== false) {
                 if (strpos($_SERVER["REQUEST_URI"], "?") !== FALSE) {
                     header("Location: " . $_SERVER["REQUEST_URI"] . "&guid=on");
                 } else {
