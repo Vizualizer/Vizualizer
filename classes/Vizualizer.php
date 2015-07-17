@@ -90,9 +90,19 @@ class Vizualizer
         }
         ob_start();
 
+        // IISの場合、HTTPSでなく、SSLがonに設定されるため、パラメータを転記する。
+        if (array_key_exists("SSL", $_SERVER) && $_SERVER["SSL"] === "on") {
+            $_SERVER["HTTPS"] = 'on';
+        }
+
         // LBやRPを介している場合、HTTPSのパラメータが正常に取れないため、パラメータを転記する。
-        if ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
-            $_SERVER['HTTPS']='on';
+        if (array_key_exists("X_FORWARDED_PROTO", $_SERVER) && $_SERVER["X_FORWARDED_PROTO"] === "https") {
+            $_SERVER["HTTPS"] = "on";
+        }
+        if (array_key_exists("HTTP_X_FORWARDED_PROTO", $_SERVER) && $_SERVER["HTTP_X_FORWARDED_PROTO"] === "https") {
+            $_SERVER["HTTPS"] = "on";
+        }
+
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
