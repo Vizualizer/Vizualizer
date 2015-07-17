@@ -90,6 +90,9 @@ class Vizualizer
         }
         ob_start();
 
+        // LBやRPを介している場合、HTTPSのパラメータが正常に取れないため、パラメータを転記する。
+        if ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
+            $_SERVER['HTTPS']='on';
         // システムのルートディレクトリを設定
         if (!defined('VIZUALIZER_ROOT')) {
             define('VIZUALIZER_ROOT', realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."));
@@ -298,43 +301,16 @@ class Vizualizer
                         exit();
                     }
                     break;
+                case "css":
+                    header("Content-Type: text/css");
+                    echo self::getStaticContents();
+                    break;
+                case "javascript":
+                    header("Content-Type: text/javascript");
+                    echo self::getStaticContents();
+                    break;
                 default:
-                    // 特別にヘッダを渡す必要のあるものはここに記載
-                    $headers = array("css" => "text/css", "js" => "text/javascript");
-                    $suppression = false;
-                    if (array_key_exists($info["extension"], $headers)) {
-                        header("Content-Type: " . $headers[$info["extension"]]);
-                        $suppression = true;
-                    }
-
-                    if (class_exists("Memcache") && Vizualizer_Configure::get("memcache_contents") && Vizualizer_Configure::get("memcache") !== "") {
-                        // memcacheの場合は静的コンテンツをmemcacheにキャッシュする。
-                        $contents = Vizualizer_Cache_Factory::create("content_" . $attr["userTemplate"] . $attr["templateName"]);
-                        $data = $contents->export();
-                        if (empty($data)) {
-                            if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
-                                $index = 0;
-                                while ($buffer = fread($fp, 8192)) {
-                                   $contents->set($index++, $buffer);
-                                }
-                            }
-                            $data = $contents->export();
-                        }
-                        foreach($data as $content){
-                            echo $content;
-                        }
-                    } else {
-                        if (($fp = fopen(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"], "r")) !== FALSE) {
-                            while ($buffer = fread($fp, 8192)) {
-                                /*
-                                if ($suppression) {
-                                    $buffer = str_replace(array(" ", "\n", "\t", "\r\n"), "", $buffer);
-                                }
-                                */
-                                echo $buffer;
-                            }
-                        }
-                    }
+                    echo self::getStaticContents();
                     break;
             }
         } catch(Exception $e) {
@@ -347,6 +323,29 @@ class Vizualizer
                 $postfilter::postfilter();
             }
         }
+    }
+
+    /**
+     * 静的コンテンツを取得する。
+     */
+    protected static function getStaticContents($filter = null)
+    {
+        $attr = Vizualizer::attr();
+
+        // 静的コンテンツをキャッシュする。
+        $contents = Vizualizer_Cache_Factory::create("content" . strtr($attr["userTemplate"] . $attr["templateName"], array("/" => "_")));
+        $data = $contents->export();
+        if (empty($data)) {
+            if (($buffer = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) !== FALSE) {
+                if ($filter !== null) {
+                    $contents->set("data", $filter($buffer));
+                } else {
+                    $contents->set("data", $buffer);
+                }
+            }
+            $data = $contents->export();
+        }
+        return $data["data"];
     }
 
     /**
@@ -428,4 +427,5 @@ class Vizualizer
     {
         return Vizualizer_Data_Calendar::get();
     }
+
 }
