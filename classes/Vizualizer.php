@@ -70,6 +70,21 @@ class Vizualizer
     const ERROR_TYPE_UNKNOWN = "UNKNOWN";
 
     /**
+     * 実行時間計測の名称
+     */
+    private static $timerName;
+
+    /**
+     * 実行時間計測の基準時間
+     */
+    private static $baseTimer;
+
+    /**
+     * 実行時間計測の直前時間
+     */
+    private static $preTimer;
+
+    /**
      * リクエストパラメータのインスタンス用
      */
     private static $parameters;
@@ -202,6 +217,7 @@ class Vizualizer
             if (!defined('VIZUALIZER_URL')) {
                 define('VIZUALIZER_URL', "http" . ((isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on") ? "s" : "") . "://" . $_SERVER["SERVER_NAME"] . VIZUALIZER_SUBDIR);
             }
+
             // Bootstrapを実行する。
             Vizualizer_Bootstrap::register(10, "PhpVersion");
             Vizualizer_Bootstrap::register(20, "Configure");
@@ -235,6 +251,9 @@ class Vizualizer
                 case "html":
                 case "htm":
                 case "xml":
+                    // 実行時間を出力
+                    self::resetTimer($attr["templateName"]);
+
                     // テンプレートを生成
                     $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
                     $template = new $templateClass();
@@ -243,8 +262,15 @@ class Vizualizer
                     // テンプレートを表示
                     $attr["template"] = $template;
                     $template->display(substr($attr["templateName"], 1));
+
+                    // 実行時間を出力
+                    self::printTimer();
+
                     break;
                 case "php":
+                    // 実行時間を出力
+                    self::resetTimer($attr["templateName"]);
+
                     // PHPを実行する場合、インクルードパスの最優先をテンプレートのディレクトリに設定
                     ini_set("include_path", Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . PATH_SEPARATOR . ini_get("include_path") );
 
@@ -258,6 +284,10 @@ class Vizualizer
                     // 実行後のデータを取得し、バッファを再度除去
                     $source = ob_get_contents();
                     ob_end_clean();
+
+                    // 実行時間を出力
+                    self::printTimer();
+
                     ob_start();
                     // テンプレートを生成
                     $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
@@ -268,17 +298,25 @@ class Vizualizer
                     // テンプレートを表示
                     $attr["template"] = $template;
                     $template->display($source);
+
+                    // 実行時間を出力
+                    self::printTimer();
+
                     break;
                 case "json":
+                    // 実行時間を出力
+                    self::resetTimer($attr["templateName"]);
+
+                    // テンプレートを生成
+                    $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
+                    $template = new $templateClass();
+                    $template->assign("ERRORS", array());
+
+                    // テンプレートを属性に設定
+                    $attr["template"] = $template;
+
                     if (file_exists(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) {
                         // バッファをクリアしてJSONの結果を出力する。
-                        // テンプレートを生成
-                        $templateClass = "Vizualizer_Template_" . Vizualizer_Configure::get("template");
-                        $template = new $templateClass();
-                        $template->assign("ERRORS", array());
-
-                        // テンプレートを表示
-                        $attr["template"] = $template;
                         header("Content-Type: application/json; charset=utf-8");
                         Vizualizer_Parameter::$enableRefresh = false;
                         $template->display(substr($attr["templateName"], 1));
@@ -310,12 +348,16 @@ class Vizualizer
                         header("HTTP/1.0 404 Not Found");
                         exit();
                     }
+
+                    // 実行時間を出力
+                    self::printTimer();
+
                     break;
                 case "css":
                     header("Content-Type: text/css");
                     echo self::getStaticContents();
                     break;
-                case "javascript":
+                case "js":
                     header("Content-Type: text/javascript");
                     echo self::getStaticContents();
                     break;
@@ -347,6 +389,8 @@ class Vizualizer
         $data = $contents->export();
         if (empty($data)) {
             if (($buffer = file_get_contents(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"])) !== FALSE) {
+                $mtime = filemtime(Vizualizer_Configure::get("site_home") . $attr["userTemplate"] . $attr["templateName"]);
+                $contents->set("modified", date ("F d Y H:i:s.", $mtime));
                 if ($filter !== null) {
                     $contents->set("data", $filter($buffer));
                 } else {
@@ -355,6 +399,8 @@ class Vizualizer
             }
             $data = $contents->export();
         }
+        header("Cache-Control: public");
+        header("Last-Modified: ".$data["modified"]);
         return $data["data"];
     }
 
@@ -436,6 +482,26 @@ class Vizualizer
     public static function now()
     {
         return Vizualizer_Data_Calendar::get();
+    }
+
+    /**
+     * 実行時間計測用のタイマーをリセットする。
+     */
+    public static function resetTimer($name = "Default")
+    {
+        self::$timerName = $name;
+        self::$baseTimer = self::$preTimer = microtime(TRUE) * 1000;
+        Vizualizer_Logger::writeDebug("【Timer】【" . self::$timerName . "】Start");
+    }
+
+    /**
+     * 実行時間計測用のタイマーをリセットする。
+     */
+    public static function printTimer()
+    {
+        $time = microtime(TRUE) * 1000;
+        Vizualizer_Logger::writeDebug("【Timer】【" . self::$timerName . "】" . round($time - self::$preTimer, 2) . "msec（" . round($time - self::$baseTimer, 2) . "msec）");
+        self::$preTimer = $time;
     }
 
 }
