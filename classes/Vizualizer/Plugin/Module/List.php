@@ -121,13 +121,13 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
                 if ($this->isEmpty($sortOrder)) {
                     $sortOrder = $defaultSortKey;
                     $sortReverse = true;
-                } elseif (preg_match("/^rev@/", $sortOrder) > 0) {
+                } elseif (strpos($sortOrder, "rev@") === 0) {
                     list ($dummy, $sortOrder) = explode("@", $sortOrder);
                     $sortReverse = true;
                 }
             } elseif ($params->check("sort")) {
                 $sortOrder = $params->check("sort");
-                if (preg_match("/^rev@/", $sortOrder) > 0) {
+                if (strpos($sortOrder, "rev@") === 0) {
                     list ($dummy, $sortOrder) = explode("@", $sortOrder);
                     $sortReverse = true;
                 }

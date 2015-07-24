@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,7 +44,7 @@ class Vizualizer_Mobile_Docomo extends Vizualizer_Mobile
     public static function create($info)
     {
         if ($info == null) {
-            if (preg_match("/^DoCoMo/i", $_SERVER["HTTP_USER_AGENT"]) > 0) {
+            if (stripos($_SERVER["HTTP_USER_AGENT"], "DoCoMo") === 0) {
                 return new Vizualizer_Mobile_Docomo();
             }
         }
@@ -60,7 +60,7 @@ class Vizualizer_Mobile_Docomo extends Vizualizer_Mobile
         if (isset($_SERVER["HTTP_X_DCMGUID"])) {
             $this->mobileId = $_SERVER["HTTP_X_DCMGUID"];
         } else {
-            if ($_SERVER["REQUEST_METHOD"] == "GET" && preg_match("/guid=on/", $_SERVER["QUERY_STRING"]) == 0) {
+            if ($_SERVER["REQUEST_METHOD"] == "GET" && strpos($_SERVER["QUERY_STRING"], "guid=on") !== false) {
                 if (strpos($_SERVER["REQUEST_URI"], "?") !== FALSE) {
                     header("Location: " . $_SERVER["REQUEST_URI"] . "&guid=on");
                 } else {
@@ -73,4 +73,3 @@ class Vizualizer_Mobile_Docomo extends Vizualizer_Mobile
         $this->screenHeight = 0;
     }
 }
- 

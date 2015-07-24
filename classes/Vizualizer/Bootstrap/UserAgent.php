@@ -39,7 +39,7 @@ class Vizualizer_Bootstrap_UserAgent
         }
 
         // カスタムクライアントのユーザーエージェントを補正
-        if (substr_compare($_SERVER["HTTP_USER_AGENT"], "VIZUALIZER-", 0, 11) === 0) {
+        if (strpos($_SERVER["HTTP_USER_AGENT"], "VIZUALIZER-") === 0) {
             if (preg_match("/^VIZUALIZER-(.+)-CLIENT\\[(.+)\\]$/", $_SERVER["HTTP_USER_AGENT"], $params) > 0) {
                 $_SERVER["HTTP_USER_AGENT"] = "Mozilla/5.0 (Linux; U; Android 1.6; ja-jp; VIZUALIZER-ANDROID-CLIENT)";
                 $_SERVER["USER_TEMPLATE"] = "/" . strtolower($params[1]);
