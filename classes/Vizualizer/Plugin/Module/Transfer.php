@@ -62,7 +62,7 @@ abstract class Vizualizer_Plugin_Module_Transfer extends Vizualizer_Plugin_Modul
                 if ($this->isEmpty($sortOrder)) {
                     $sortOrder = $defaultSortKey;
                     $sortReverse = true;
-                } elseif (preg_match("/^rev@/", $sortOrder) > 0) {
+                } elseif (strpos($sortOrder, "rev@") === 0) {
                     list ($dummy, $sortOrder) = explode("@", $sortOrder);
                     $sortReverse = true;
                 }

@@ -178,9 +178,9 @@ class Vizualizer_Plugin_Model
     /**
      * レコードが作成可能な場合に、レコードを作成します。
      */
-    public function create()
+    public function create($ignoreOperator = false)
     {
-        $this->updateRegisterInfo();
+        $this->updateRegisterInfo($ignoreOperator);
 
         $insert = new Vizualizer_Query_InsertIgnore($this->access);
         $sqlvals = array();
@@ -210,9 +210,9 @@ class Vizualizer_Plugin_Model
     /**
      * レコードが更新可能な場合に、レコードを更新します。
      */
-    public function update()
+    public function update($ignoreOperator = false)
     {
-        $this->updateRegisterInfo();
+        $this->updateRegisterInfo($ignoreOperator);
 
         $update = new Vizualizer_Query_Update($this->access);
         $updateSet = false;
@@ -595,10 +595,10 @@ class Vizualizer_Plugin_Model
 
             if (!is_array($result) || empty($result)) {
                 // 主キーのデータが無かった場合はデータを作成する。
-                $this->create();
+                $this->create($ignoreOperator);
             } else {
                 // 主キーのデータがあった場合はデータを更新する。
-                $this->update();
+                $this->update($ignoreOperator);
             }
         }
     }

@@ -65,33 +65,16 @@ abstract class Vizualizer_Template
         $this->assign("SelectionYear", new Vizualizer_YearSelector());
 
         // 月のセレクタのアサイン処理
-        $monthSelect = array();
-        for ($i = 1; $i <= 12; $i ++) {
-            $monthSelect[sprintf("%02d", $i)] = $i . "月";
-        }
-        $this->assign("SelectionMonth", $monthSelect);
+        $this->assign("SelectionMonth", Vizualizer_Configure::get("select_month"));
 
         // 日のセレクタのアサイン処理
-        $daySelect = array();
-        for ($i = 1; $i <= 31; $i ++) {
-            $daySelect[sprintf("%02d", $i)] = $i . "日";
-        }
-        $this->assign("SelectionDay", $daySelect);
+        $this->assign("SelectionDay", Vizualizer_Configure::get("select_day"));
 
         // 時間のセレクタのアサイン処理
-        $hourSelect = array();
-        for ($i = 0; $i <= 23; $i ++) {
-            $hourSelect[sprintf("%02d", $i) . ":00"] = $i . ":00";
-        }
-        $this->assign("SelectionHour", $hourSelect);
+        $this->assign("SelectionHour", Vizualizer_Configure::get("select_hour"));
 
         // 30分単位時間のセレクタのアサイン処理
-        $halfHourSelect = array();
-        for ($i = 0; $i <= 23; $i ++) {
-            $halfHourSelect[sprintf("%02d", $i) . ":00"] = $i . ":00";
-            $halfHourSelect[sprintf("%02d", $i) . ":30"] = $i . ":30";
-        }
-        $this->assign("HalfSelectionHour", $halfHourSelect);
+        $this->assign("HalfSelectionHour", Vizualizer_Configure::get("select_half_hour"));
     }
 
     /**
