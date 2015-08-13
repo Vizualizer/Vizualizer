@@ -39,7 +39,7 @@ function smarty_function_inline_css($params, $template)
 {
     $attr = Vizualizer::attr();
     $script = "";
-    if (!empty($params["src"])) {
+    if (!empty($params["href"])) {
         $script .= "<style";
         if (!empty($params["type"])) {
             $script .= " type=\"".$params["type"]."\"";
@@ -52,26 +52,26 @@ function smarty_function_inline_css($params, $template)
             $script .= " media=\"all\"";
         }
         $script .= ">\r\n";
-        if (substr($params["src"], 0, 7) !== "http://" && substr($params["src"], 0, 8) !== "https://") {
-            if (substr($params["src"], 0, 1) !== "/") {
+        if (substr($params["href"], 0, 7) !== "http://" && substr($params["href"], 0, 8) !== "https://") {
+            if (substr($params["href"], 0, 1) !== "/") {
                 $info = pathinfo($attr["templateName"]);
-                $params["src"] = $info["dirname"] . "/" . $params["src"];
+                $params["href"] = $info["dirname"] . "/" . $params["href"];
             }
-            $params["src"] = VIZUALIZER_URL . $params["src"];
+            $params["href"] = VIZUALIZER_URL . $params["href"];
         }
         if (class_exists("Memcache") && Vizualizer_Configure::get("memcache_contents") && Vizualizer_Configure::get("memcache") !== "") {
             // memcacheの場合は静的コンテンツをmemcacheにキャッシュする。
-            $contents = Vizualizer_Cache_Factory::create("inlineCss_" . urlencode($params["src"]));
+            $contents = Vizualizer_Cache_Factory::create("inlineCss_" . urlencode($params["href"]));
             $data = $contents->export();
             if (empty($data)) {
-                if (($buffer = file_get_contents($params["src"])) !== FALSE) {
+                if (($buffer = file_get_contents($params["href"])) !== FALSE) {
                     $contents->set("content", $buffer);
                 }
                 $data = $contents->export();
             }
             $script .= $data["content"];
         } else {
-            if (($buffer = file_get_contents($params["src"])) !== FALSE) {
+            if (($buffer = file_get_contents($params["href"])) !== FALSE) {
                 $script .= $buffer;
             }
         }
