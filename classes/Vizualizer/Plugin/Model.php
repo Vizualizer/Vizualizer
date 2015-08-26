@@ -385,4 +385,168 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
         $truncate = new Vizualizer_Query_Truncate($this->access);
         $truncate->execute();
     }
+
+    /**
+     * パラメータの値により、WHERE句を構築する。
+     *
+     * @param $select SELECTオブジェクト
+     * @param $key 追加するキー
+     * @param $value 追加する値
+     * @return SELECTオブジェクト
+     */
+    protected function appendWhere($select, $key, $value)
+    {
+        if (strpos($key, ":") > 0) {
+            if (count(explode(":", $key, 3)) > 2) {
+                list ($op, $key, $default) = explode(":", $key, 3);
+            } else {
+                list ($op, $key) = explode(":", $key, 3);
+                $default = null;
+            }
+        } else {
+            $op = "eq";
+        }
+        if (strpos($key, "+") > 0) {
+            $keys = explode("+", $key);
+            $isString = false;
+            foreach ($keys as $index => $key) {
+                $keys[$index] = $this->access->$key;
+                switch ($this->access->$key->type) {
+                    case "char":
+                    case "varchar":
+                    case "binary":
+                    case "varbinary":
+                    case "text":
+                    case "tinytext":
+                    case "mediumtext":
+                    case "longtext":
+                    case "blob":
+                    case "tinyblob":
+                    case "mediumblob":
+                    case "longblob":
+                        $isString = true;
+                        break;
+                }
+            }
+            if ($isString) {
+                $fullkey = "CONCAT(" . implode(", ", $keys) . ")";
+            } else {
+                $fullkey = implode(" + ", $keys);
+            }
+        } elseif (strpos($key, "*") > 0) {
+            $keys = explode("*", $key);
+            foreach ($keys as $index => $key) {
+                $keys[$index] = $this->access->$key;
+            }
+            $fullkey = "COALESCE(" . implode(", ", $keys) . ")";
+        } else {
+            $fullkey = $this->access->$key;
+            if (isset($default) && $default != null) {
+                if (is_numeric($default) && (substr($default, 0, 1) != "0" || strlen($default) === 1)) {
+                    // 全て数字で先頭が0でない、もしくは1桁のみの場合は数値データとして扱う
+                    $fullkey = "COALESCE(" . $fullkey . ", " . $default . ")";
+                } else {
+                    $fullkey = "COALESCE(" . $fullkey . ", '" . $default . "')";
+                }
+            }
+        }
+        if ($op !== "in" && $op !== "nin" && is_array($value)) {
+            foreach ($value as $item) {
+                if (empty($item)) {
+                    return $select;
+                }
+            }
+            $value = implode("-", $value);
+        }
+        if (in_array($key, $this->columns)) {
+            switch ($op) {
+                case "eq":
+                    if ($value === null) {
+                        $select->addWhere($fullkey . " IS NULL");
+                    } else {
+                        $select->addWhere($fullkey . " = ?", array($value));
+                    }
+                    break;
+                case "ne":
+                    if ($value === null) {
+                        $select->addWhere($fullkey . " IS NOT NULL");
+                    } else {
+                        $select->addWhere($fullkey . " != ?", array($value));
+                    }
+                    break;
+                case "gt":
+                    $select->addWhere($fullkey . " > ?", array($value));
+                    break;
+                case "ge":
+                    $select->addWhere($fullkey . " >= ?", array($value));
+                    break;
+                case "lt":
+                    $select->addWhere($fullkey . " < ?", array($value));
+                    break;
+                case "le":
+                    $select->addWhere($fullkey . " <= ?", array($value));
+                    break;
+                case "ngt":
+                    $select->addWhere("(".$fullkey . " > ?) IS NOT TRUE", array($value));
+                    break;
+                case "nge":
+                    $select->addWhere("(".$fullkey . " >= ?) IS NOT TRUE", array($value));
+                    break;
+                case "nlt":
+                    $select->addWhere("(".$fullkey . " < ?) IS NOT TRUE", array($value));
+                    break;
+                case "nle":
+                    $select->addWhere("(".$fullkey . " <= ?) IS NOT TRUE", array($value));
+                    break;
+                case "like":
+                    $select->addWhere($fullkey . " LIKE ?", array($value));
+                    break;
+                case "part":
+                    $select->addWhere($fullkey . " LIKE ?", array("%" . $value . "%"));
+                    break;
+                case "for":
+                    $select->addWhere($fullkey . " LIKE ?", array("%" . $value));
+                    break;
+                case "back":
+                    $select->addWhere($fullkey . " LIKE ?", array($value . "%"));
+                    break;
+                case "nlike":
+                    $select->addWhere($fullkey . " NOT LIKE ?", array($value));
+                    break;
+                case "in":
+                    if (!is_array($value)) {
+                        $value = array($value);
+                    }
+                    $placeholders = "";
+                    if(!empty($value)){
+                        foreach ($value as $v) {
+                            if (!empty($placeholders)) {
+                                $placeholders .= ",";
+                            }
+                            $placeholders .= "?";
+                        }
+                        $select->addWhere($fullkey . " in (" . $placeholders . ")", $value);
+                    }
+                    break;
+                case "nin":
+                    if (!is_array($value)) {
+                        $value = array($value);
+                    }
+                    $placeholders = "";
+                    if(!empty($value)){
+                        foreach ($value as $v) {
+                            if (!empty($placeholders)) {
+                                $placeholders .= ",";
+                            }
+                            $placeholders .= "?";
+                        }
+                        $select->addWhere($fullkey . " NOT IN (" . $placeholders . ")", $value);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return $select;
+    }
 }
