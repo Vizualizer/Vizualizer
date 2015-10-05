@@ -61,9 +61,13 @@ class Vizualizer_Cache_File extends Vizualizer_Cache_Base
     public function init($server, $file, $expires)
     {
         parent::init($server, $file, $expires);
-        $filename = $this->cacheRoot . DIRECTORY_SEPARATOR . $this->server . DIRECTORY_SEPARATOR . $this->file . ".php";
-        if (file_exists($filename) && time() < fileatime($filename) + $this->expires) {
-            require_once ($filename);
+        if (Vizualizer_Configure::get("cache")) {
+            $filename = $this->cacheRoot . DIRECTORY_SEPARATOR . $this->server . DIRECTORY_SEPARATOR . $this->file . ".php";
+            if (file_exists($filename) && time() < fileatime($filename) + $this->expires) {
+                require_once ($filename);
+            }
+        } else {
+            $this->values = array();
         }
     }
 
@@ -72,21 +76,23 @@ class Vizualizer_Cache_File extends Vizualizer_Cache_Base
      */
     protected function save()
     {
-        if (!is_dir($this->cacheRoot)) {
-            mkdir($this->cacheRoot);
-            chmod($this->cacheRoot, 0777);
-        }
-        if (!is_dir($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server)) {
-            mkdir($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server);
-            chmod($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server, 0777);
-        }
-        if (($fp = fopen($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server . DIRECTORY_SEPARATOR . $this->file . ".php", "w+")) !== FALSE) {
-            fwrite($fp, "<" . "?php\r\n");
-            foreach ($this->values as $key => $value) {
-                fwrite($fp, '$this->values["' . $key . '"] = ' . var_export($value, TRUE) . ";\r\n");
+        if (Vizualizer_Configure::set("cache")) {
+            if (!is_dir($this->cacheRoot)) {
+                mkdir($this->cacheRoot);
+                chmod($this->cacheRoot, 0777);
             }
-            fclose($fp);
-            chmod($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server . DIRECTORY_SEPARATOR . $this->file . ".php", 0666);
+            if (!is_dir($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server)) {
+                mkdir($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server);
+                chmod($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server, 0777);
+            }
+            if (($fp = fopen($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server . DIRECTORY_SEPARATOR . $this->file . ".php", "w+")) !== FALSE) {
+                fwrite($fp, "<" . "?php\r\n");
+                foreach ($this->values as $key => $value) {
+                    fwrite($fp, '$this->values["' . $key . '"] = ' . var_export($value, TRUE) . ";\r\n");
+                }
+                fclose($fp);
+                chmod($this->cacheRoot . DIRECTORY_SEPARATOR . $this->server . DIRECTORY_SEPARATOR . $this->file . ".php", 0666);
+            }
         }
     }
 }

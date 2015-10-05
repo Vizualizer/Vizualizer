@@ -60,18 +60,22 @@ class Vizualizer_Cache_Memory extends Vizualizer_Cache_Base
     public function init($server, $file, $expires = 3600)
     {
         parent::init($server, $file, $expires);
-        $this->mem = new Memcache();
-        if (strpos(Vizualizer_Configure::get("memcache"), ":") > 0) {
-            list ($host, $port) = explode(":", Vizualizer_Configure::get("memcache"));
+        if (Vizualizer_Configure::get("cache")) {
+            $this->mem = new Memcache();
+            if (strpos(Vizualizer_Configure::get("memcache"), ":") > 0) {
+                list ($host, $port) = explode(":", Vizualizer_Configure::get("memcache"));
+            } else {
+                $host = Vizualizer_Configure::get("memcache");
+                $port = 0;
+            }
+            if (!($port > 0)) {
+                $port = 11211;
+            }
+            $this->mem->connect($host, $port);
+            $this->values = unserialize($this->mem->get($server . ":" . $file));
         } else {
-            $host = Vizualizer_Configure::get("memcache");
-            $port = 0;
+            $this->values = array();
         }
-        if (!($port > 0)) {
-            $port = 11211;
-        }
-        $this->mem->connect($host, $port);
-        $this->values = unserialize($this->mem->get($server . ":" . $file));
     }
 
     /**
@@ -79,6 +83,8 @@ class Vizualizer_Cache_Memory extends Vizualizer_Cache_Base
      */
     public function save()
     {
-        $this->mem->set($this->server . ":" . $this->file, serialize($this->values), 0, $this->expires);
+        if (Vizualizer_Configure::get("cache")) {
+            $this->mem->set($this->server . ":" . $this->file, serialize($this->values), 0, $this->expires);
+        }
     }
 }
