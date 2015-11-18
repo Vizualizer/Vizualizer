@@ -80,10 +80,16 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
             }
             $result = $model->findAllBy($conditions, $sortOrder, $sortReverse);
 
+            if ($params->check("columns")) {
+                $columns = explode(",", $params->get("columns"));
+            } else {
+                $columns = $model->columns();
+            }
             if($params->check("titles")){
                 $titles = explode(",", $params->get("titles"));
+            } else {
+                $titles = $columns;
             }
-            $columns = explode(",", $params->get("columns"));
 
             // ヘッダを送信
             header("Content-Type: application/csv");
@@ -95,9 +101,7 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
 
             // CSVヘッダを出力
             $out = fopen("php://output", "w");
-            if($params->check("titles")){
-                fputcsv($out, $titles);
-            }
+            fputcsv($out, $titles);
 
             foreach ($result as $data) {
 
