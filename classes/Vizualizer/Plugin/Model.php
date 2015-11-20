@@ -659,6 +659,14 @@ class Vizualizer_Plugin_Model
     }
 
     /**
+     * モデルのカラムリストを返す
+     */
+    public function columns()
+    {
+        return $this->columns;
+    }
+
+    /**
      * モデルの配列表現を返す。
      */
     public function toArray()

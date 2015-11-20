@@ -197,10 +197,10 @@ class Vizualizer
         } else {
             // ドキュメントルートを調整
             $_SERVER["DOCUMENT_ROOT"] = realpath($_SERVER["DOCUMENT_ROOT"]);
-            if (substr_compare($_SERVER["DOCUMENT_ROOT"], "/", -1)) {
+            if (!substr_compare($_SERVER["DOCUMENT_ROOT"], "/", -1)) {
                 $_SERVER["DOCUMENT_ROOT"] = substr($_SERVER["DOCUMENT_ROOT"], 0, -1);
             }
-            if (strpos(VIZUALIZER_SITE_ROOT, $_SERVER["DOCUMENT_ROOT"]) === 0) {
+            if (strpos(VIZUALIZER_SITE_ROOT, $_SERVER["DOCUMENT_ROOT"]) !== 0) {
                 $_SERVER['DOCUMENT_ROOT'] = str_replace($_SERVER['SCRIPT_NAME'], "", $_SERVER['SCRIPT_FILENAME']);
             }
 
