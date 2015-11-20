@@ -55,7 +55,7 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
         $attributes = Vizualizer::attr();
 
         // テンプレートのディレクトリとコンパイルのディレクトリをフレームワークのパス上に展開
-        $this->template_dir = $this->core->template_dir = array(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/");
+        $this->core->setTemplateDir($this->template_dir = array(Vizualizer_Configure::get("site_home") . $attributes["userTemplate"] . "/"));
         if (!is_dir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty")) {
             mkdir(VIZUALIZER_CACHE_ROOT . DIRECTORY_SEPARATOR . "_cache_smarty");
         }
