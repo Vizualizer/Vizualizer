@@ -81,13 +81,30 @@ class Vizualizer_Plugin_Table_Column
      */
     public function __construct($table, $column)
     {
-        $this->module = $table->getModuleName();
-        $this->table = $table->_C;
-        $this->field = $column["Field"];
-        $this->type = ((strpos($column["Type"], "(") > 0)?substr($column["Type"], 0, strpos($column["Type"], "(")):$column["Type"]);
-        $this->canNull = (($column["Null"] == "YES") ? true : false);
-        $this->isKey = (($column["Key"] == "PRI") ? true : false);
-        $this->isAutoIncrement = (($column["Extra"] == "auto_increment") ? true : false);
+        if ($table != null) {
+            $this->module = $table->getModuleName();
+            $this->table = $table->_C;
+        }
+        if ($column != null) {
+            $this->field = $column["Field"];
+            $this->type = ((strpos($column["Type"], "(") > 0)?substr($column["Type"], 0, strpos($column["Type"], "(")):$column["Type"]);
+            $this->canNull = (($column["Null"] == "YES") ? true : false);
+            $this->isKey = (($column["Key"] == "PRI") ? true : false);
+            $this->isAutoIncrement = (($column["Extra"] == "auto_increment") ? true : false);
+        }
+    }
+
+    /**
+     * プロパティを復元する。
+     */
+    public static function __set_state($props){
+        $class = get_called_class();
+        $object = new $class(null, null);
+        foreach($props as $key => $val){
+            //__setでなく可変変数でセットするのが楽
+            $object->$key = $val;
+        }
+        return $object;
     }
 
     /**
