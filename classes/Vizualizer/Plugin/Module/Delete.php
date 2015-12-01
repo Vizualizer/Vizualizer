@@ -31,7 +31,7 @@
 abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
 {
 
-    protected function executeImpl($type, $name, $key)
+    protected function executeImpl($type, $name, $key, $continue = false)
     {
         $post = Vizualizer::request();
         if ($post["delete"]) {
@@ -53,6 +53,11 @@ abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
 
                     $this->removeInput("delete");
                     $this->removeInput($key);
+
+                    // 画面をリロードする。
+                    if (!$continue) {
+                        $this->reload();
+                    }
                 } catch (Exception $e) {
                     Vizualizer_Database_Factory::rollback($connection);
                     throw new Vizualizer_Exception_Database($e);
