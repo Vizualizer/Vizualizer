@@ -76,7 +76,7 @@ class Vizualizer_Cache_File extends Vizualizer_Cache_Base
      */
     protected function save()
     {
-        if (Vizualizer_Configure::set("cache")) {
+        if (Vizualizer_Configure::get("cache")) {
             if (!is_dir($this->cacheRoot)) {
                 mkdir($this->cacheRoot);
                 chmod($this->cacheRoot, 0777);
