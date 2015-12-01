@@ -316,12 +316,13 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
                 $pkset = true;
             }
             if ($pkset) {
-                $result = $select->execute();
+                $resultCount = $select->count();
             } else {
-                $result = array();
+                $resultCount = 0;
             }
 
-            if (!is_array($result) || empty($result)) {
+            Vizualizer_Logger::writeDebug("CheckCount for save : ".$resultCount);
+            if ($resultCount == 0) {
                 // 主キーのデータが無かった場合はデータを作成する。
                 $this->create();
             } else {
