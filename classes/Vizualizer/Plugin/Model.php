@@ -28,7 +28,7 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Plugin_Model
+class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
 {
     // オペレータIDで制限をかけるかどうかのフラグ
     public static $limitedOperator = true;
@@ -39,17 +39,8 @@ class Vizualizer_Plugin_Model
     // ベースのデータベースアクセスオブジェクト
     protected $access;
 
-    // カラムリスト
-    protected $columns;
-
     // 主キーのリスト
     protected $primary_keys;
-
-    // 元設定値リスト
-    protected $values_org;
-
-    // 設定値リスト
-    protected $values;
 
     // 結果のグループ化
     protected $groupBy;
@@ -75,9 +66,9 @@ class Vizualizer_Plugin_Model
      */
     public function __construct($accessTable, $values = array())
     {
+        parent::__construct($accessTable->getColumns(), $values);
         $this->distinct = false;
         $this->access = $accessTable;
-        $this->columns = array();
         $this->primary_keys = $this->access->getPrimaryKeys();
         $this->values_org = array();
         $this->values = array();
@@ -102,52 +93,6 @@ class Vizualizer_Plugin_Model
         $this->groupBy = "";
         $this->limit = "";
         $this->offset = "";
-    }
-
-    /**
-     * データベースのカラムのデータを取得する。
-     */
-    public function __get($name)
-    {
-        if (isset($this->values[$name])) {
-            return $this->values[$name];
-        }
-        return null;
-    }
-
-    /**
-     * データベースのカラムを主キー以外についてのみ登録する。
-     * また、レコード作成日は未設定の場合のみ設定可能。
-     */
-    public function __set($name, $value)
-    {
-        // 主キー以外のカラムとして存在した場合は変更を行う。
-        if (!in_array($name, $this->primary_keys)) {
-            if ($name == "create_role_id" || $name == "create_operator_id" || $name == "create_time") {
-                if (empty($this->values[$name])) {
-                    // データ登録日は未設定の場合のみ設定する。
-                    $this->values[$name] = $value;
-                }
-            } else {
-                $this->values[$name] = $value;
-            }
-        }
-    }
-
-    /**
-     * そのカラムが設定されているかどうかをチェックする。
-     */
-    public function __isset($name)
-    {
-        return isset($this->values[$name]);
-    }
-
-    /**
-     * オブジェクトを文字列として出力する。
-     */
-    public function __toString()
-    {
-        return var_export($this->values, true);
     }
 
     public function setGroupBy($groupBy = null)

@@ -126,12 +126,34 @@ class Vizualizer_Logger
     }
 
     /**
+     * エラーログを出力する。
+     *
+     * @param s string $message エラーメッセージ
+     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     */
+    public static function error($message, $exception = null)
+    {
+        self::writeMessage(self::LOG_ERROR, $message, $exception);
+    }
+
+    /**
      * 警告ログを出力する。
      *
      * @param s string $message エラーメッセージ
      * @param s Exception $exception エラーの原因となった例外オブジェクト
      */
     public static function writeAlert($message)
+    {
+        self::writeMessage(self::LOG_ALERT, $message);
+    }
+
+    /**
+     * 警告ログを出力する。
+     *
+     * @param s string $message エラーメッセージ
+     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     */
+    public static function alert($message)
     {
         self::writeMessage(self::LOG_ALERT, $message);
     }
@@ -148,12 +170,36 @@ class Vizualizer_Logger
     }
 
     /**
+     * 情報ログを出力する。
+     *
+     * @param s string $message エラーメッセージ
+     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     */
+    public static function info($message)
+    {
+        self::writeMessage(self::LOG_INFO, $message);
+    }
+
+    /**
      * デバッグログを出力する。
      *
      * @param s string $message エラーメッセージ
      * @param s Exception $exception エラーの原因となった例外オブジェクト
      */
     public static function writeDebug($message)
+    {
+        if (Vizualizer_Configure::get("debug")) {
+            self::writeMessage(self::LOG_DEBUG, $message);
+        }
+    }
+
+    /**
+     * デバッグログを出力する。
+     *
+     * @param s string $message エラーメッセージ
+     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     */
+    public static function debug($message)
     {
         if (Vizualizer_Configure::get("debug")) {
             self::writeMessage(self::LOG_DEBUG, $message);

@@ -163,6 +163,19 @@ class Vizualizer_Plugin_Table
     }
 
     /**
+     * プロパティを復元する。
+     */
+    public static function __set_state($props){
+        $class = get_called_class();
+        $object = new $class($props["tableName"], $props["module"]);
+        foreach($props as $key=>$val){
+            //__setでなく可変変数でセットするのが楽
+            $object->$key = $val;
+        }
+        return $object;
+    }
+
+    /**
      * テーブルのカラム情報を取得
      *
      * @param string $name カラム情報
