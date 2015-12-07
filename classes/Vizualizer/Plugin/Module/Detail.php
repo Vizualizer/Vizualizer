@@ -36,6 +36,7 @@ abstract class Vizualizer_Plugin_Module_Detail extends Vizualizer_Plugin_Module
         // サイトデータを取得する。
         $loader = new Vizualizer_Plugin($type);
         $model = $loader->loadModel($name);
+        $model->setIgnoreOperator(true);
         $model->findByPrimaryKey($value);
 
         $attr = Vizualizer::attr();

@@ -59,6 +59,9 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
             $connection = Vizualizer_Database_Factory::begin(strtolower($type));
 
             try {
+//                 if ($params->get("ignore_operator", "0") == "1") {
+//                     $model->setIgnoreOperator(true);
+//                 }
                 $model->save();
                 if (!empty($this->key_prefix)) {
                     $post->set($this->key_prefix . $primary_key, $model->$primary_key);

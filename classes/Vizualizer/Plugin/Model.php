@@ -60,6 +60,9 @@ class Vizualizer_Plugin_Model
     // 出力レコードオフセット
     protected $offset;
 
+    // 自動的にオペレータ検索条件を無視するフラグを設定
+    private $ignoreOperator;
+
     // キャッシュの有効時間
     private static $cachedTime;
 
@@ -78,6 +81,7 @@ class Vizualizer_Plugin_Model
         $this->primary_keys = $this->access->getPrimaryKeys();
         $this->values_org = array();
         $this->values = array();
+        $this->ignoreOperator = false;
         foreach ($this->access->getColumns() as $column) {
             $this->columns[] = $column;
             $this->values_org[$column] = "";
@@ -176,11 +180,19 @@ class Vizualizer_Plugin_Model
     }
 
     /**
+     * 自動オペレータ検索条件を無視するフラグを設定
+     */
+    public function setIgnoreOperator($ignoreOperator) {
+        $this->ignoreOperator = $ignoreOperator;
+        return $this;
+    }
+
+    /**
      * レコードが作成可能な場合に、レコードを作成します。
      */
-    public function create($ignoreOperator = false)
+    public function create()
     {
-        $this->updateRegisterInfo($ignoreOperator);
+        $this->updateRegisterInfo();
 
         $insert = new Vizualizer_Query_InsertIgnore($this->access);
         $sqlvals = array();
@@ -210,9 +222,9 @@ class Vizualizer_Plugin_Model
     /**
      * レコードが更新可能な場合に、レコードを更新します。
      */
-    public function update($ignoreOperator = false)
+    public function update()
     {
-        $this->updateRegisterInfo($ignoreOperator);
+        $this->updateRegisterInfo();
 
         $update = new Vizualizer_Query_Update($this->access);
         $updateSet = false;
@@ -278,14 +290,16 @@ class Vizualizer_Plugin_Model
         }
         // Adminパッケージを使っている場合で利用ユーザーが管理権限で無い場合は自分の作成したデータしか閲覧できない
         try{
-            // DBのカラムにoperator_idが存在し、Adminパッケージをインストールしている場合のみ有効
-            if (class_exists("VizualizerAdmin") && !empty($this->access->operator_id)) {
-                $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
-                // セッションからオペレータIDが取得できた場合のみ処理を実施
-                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
-                    // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
-                    if(self::$limitedOperator) {
-                        $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
+            if (!$this->ignoreOperator) {
+                // DBのカラムにoperator_idが存在し、Adminパッケージをインストールしている場合のみ有効
+                if (class_exists("VizualizerAdmin") && !empty($this->access->operator_id)) {
+                    $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+                    // セッションからオペレータIDが取得できた場合のみ処理を実施
+                    if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                        // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
+                        if(self::$limitedOperator) {
+                            $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
+                        }
                     }
                 }
             }
@@ -546,10 +560,10 @@ class Vizualizer_Plugin_Model
     /**
      * 登録日時や登録オペレータなどを設定する内部処理です。
      */
-    protected function updateRegisterInfo($ignoreOperator = false){
+    protected function updateRegisterInfo(){
         // データ作成日／更新日は自動的に設定する。
         try{
-            if (!$ignoreOperator && class_exists("VizualizerAdmin")) {
+            if (!$this->ignoreOperator && class_exists("VizualizerAdmin")) {
                 $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
                 if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
                     if ($this->operator_id > 0) {
@@ -571,7 +585,7 @@ class Vizualizer_Plugin_Model
      * また、モデル内のカラムがDBに無い場合はスキップする。
      * データ作成日／更新日は自動的に設定される。
      */
-    public function save($ignoreOperator = false)
+    public function save()
     {
         if (!empty($this->primary_keys)) {
             // 現在該当のデータが登録されているか調べる。
@@ -595,10 +609,10 @@ class Vizualizer_Plugin_Model
 
             if (!is_array($result) || empty($result)) {
                 // 主キーのデータが無かった場合はデータを作成する。
-                $this->create($ignoreOperator);
+                $this->create();
             } else {
                 // 主キーのデータがあった場合はデータを更新する。
-                $this->update($ignoreOperator);
+                $this->update();
             }
         }
     }
