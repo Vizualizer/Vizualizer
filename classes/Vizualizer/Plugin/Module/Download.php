@@ -78,6 +78,9 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
             if ($this->groupBy) {
                 $model->setGroupBy($this->groupBy);
             }
+            if ($params->get("force_operator", "0") == "1") {
+                $model->setIgnoreOperator(true);
+            }
             $result = $model->findAllBy($conditions, $sortOrder, $sortReverse);
 
             if ($params->check("columns")) {

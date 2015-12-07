@@ -132,13 +132,12 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                     $sortReverse = true;
                 }
             }
-            $forceOperator = false;
+            $model = $loader->LoadModel($name);
             if ($params->get("force_operator", "0") == "1") {
-                $forceOperator = true;
+                $model->setIgnoreOperator(true);
             }
 
             // 顧客データを検索する。
-            $model = $loader->LoadModel($name);
             if (!$this->isEmpty($this->countColumn)) {
                 $pager->setDataSize($model->countBy($conditions, $this->countColumn));
             } else {
@@ -148,7 +147,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
                 $model->setGroupBy($this->groupBy);
             }
             $model->limit($pager->getPageSize(), $pager->getCurrentFirstOffset());
-            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse, $forceOperator);
+            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse);
 
             $attr = Vizualizer::attr();
             $attr[$result . "_pager"] = $pager;

@@ -132,11 +132,10 @@ abstract class Vizualizer_Plugin_Module_List extends Vizualizer_Plugin_Module
                     $sortReverse = true;
                 }
             }
-            $forceOperator = false;
             if ($params->get("force_operator", "0") == "1") {
-                $forceOperator = true;
+                $model->setIgnoreOperator(true);
             }
-            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse, $forceOperator);
+            $models = $model->findAllBy($conditions, $sortOrder, $sortReverse);
             if ($params->get("mode", "list") == "list") {
                 $attr[$result] = $models;
             } elseif ($params->get("mode", "list") == "select") {
