@@ -51,6 +51,15 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
     // 出力レコードオフセット
     protected $offset;
 
+    // 自動的にオペレータ検索条件を無視するフラグを設定
+    private $ignoreOperator;
+
+    // キャッシュの有効時間
+    private static $cachedTime;
+
+    // モデルで利用するキャッシュ用の変数
+    private static $cached;
+
     /**
      * データベースモデルを初期化する。
      * 初期の値を配列で渡すことで、その値でモデルを構築する。
@@ -61,6 +70,15 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
         $this->distinct = false;
         $this->access = $accessTable;
         $this->primary_keys = $this->access->getPrimaryKeys();
+        $this->values_org = array();
+        $this->values = array();
+        $this->ignoreOperator = false;
+        foreach ($this->access->getColumns() as $column) {
+            $this->columns[] = $column;
+            $this->values_org[$column] = "";
+            $this->values[$column] = "";
+        }
+        $this->setValues($values);
         $this->setGroupBy();
         $this->limit();
     }
@@ -103,6 +121,14 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
     public function offset($offset = null)
     {
         $this->offset = $offset;
+        return $this;
+    }
+
+    /**
+     * 自動オペレータ検索条件を無視するフラグを設定
+     */
+    public function setIgnoreOperator($ignoreOperator) {
+        $this->ignoreOperator = $ignoreOperator;
         return $this;
     }
 
@@ -209,14 +235,16 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
         }
         // Adminパッケージを使っている場合で利用ユーザーが管理権限で無い場合は自分の作成したデータしか閲覧できない
         try{
-            // DBのカラムにoperator_idが存在し、Adminパッケージをインストールしている場合のみ有効
-            if (class_exists("VizualizerAdmin") && !empty($this->access->operator_id)) {
-                $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
-                // セッションからオペレータIDが取得できた場合のみ処理を実施
-                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
-                    // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
-                    if(self::$limitedOperator) {
-                        $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
+            if (!$this->ignoreOperator) {
+                // DBのカラムにoperator_idが存在し、Adminパッケージをインストールしている場合のみ有効
+                if (class_exists("VizualizerAdmin") && !empty($this->access->operator_id)) {
+                    $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+                    // セッションからオペレータIDが取得できた場合のみ処理を実施
+                    if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                        // 管理者以外もしくは強制的にオペレータ適用のフラグを設定した場合のみオペレータIDの制限を付ける。
+                        if(self::$limitedOperator) {
+                            $select = $this->appendWhere($select, "operator_id", $operator["operator_id"]);
+                        }
                     }
                 }
             }
@@ -549,5 +577,186 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
             }
         }
         return $select;
+    }
+
+    /**
+     * 配列になっているデータを一括でモデルに設定する。
+     * 元データも設定しなおすため、実質的にデータの初期化処理と同じ扱いとなる。
+     */
+    public function setValues($values)
+    {
+        $this->values_org = array();
+        $this->values = array();
+        if ($values instanceof Vizualizer_Plugin_Model) {
+            $values = $values->values;
+        } elseif (is_array($values)) {
+            foreach ($values as $key => $value) {
+                $this->values[$key] = $this->values_org[$key] = $value;
+            }
+        }
+    }
+
+    /**
+     * 登録日時や登録オペレータなどを設定する内部処理です。
+     */
+    protected function updateRegisterInfo(){
+        // データ作成日／更新日は自動的に設定する。
+        try{
+            if (!$this->ignoreOperator && class_exists("VizualizerAdmin")) {
+                $operator = Vizualizer_Session::get(VizualizerAdmin::SESSION_KEY);
+                if (is_array($operator) && array_key_exists("operator_id", $operator) && $operator["operator_id"] > 0) {
+                    if ($this->operator_id > 0) {
+                        $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                    }else{
+                        $this->operator_id = $this->create_operator_id = $this->update_operator_id = $operator["operator_id"];
+                    }
+                }
+            }
+        }catch(Exception $e){
+            // Adminパッケージを使っていない場合は、登録者／更新者IDの設定をスキップする。
+        }
+        $this->create_time = $this->update_time = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
+    }
+
+    /**
+     * 指定したトランザクション内にて主キーベースでデータの保存を行う。
+     * 主キーが存在しない場合は何もしない。
+     * また、モデル内のカラムがDBに無い場合はスキップする。
+     * データ作成日／更新日は自動的に設定される。
+     */
+    public function save()
+    {
+        if (!empty($this->primary_keys)) {
+            // 現在該当のデータが登録されているか調べる。
+            $pkset = false;
+            $select = new Vizualizer_Query_Select($this->access);
+            $select->addColumn($this->access->_W);
+            foreach ($this->primary_keys as $key) {
+                if (isset($this->values[$key])) {
+                    $select->addWhere($this->access->$key . " = ?", array($this->values[$key]));
+                } else {
+                    $pkset = false;
+                    break;
+                }
+                $pkset = true;
+            }
+            if ($pkset) {
+                $result = $select->execute();
+            } else {
+                $result = array();
+            }
+
+            if (!is_array($result) || empty($result)) {
+                // 主キーのデータが無かった場合はデータを作成する。
+                $this->create();
+            } else {
+                // 主キーのデータがあった場合はデータを更新する。
+                $this->update();
+            }
+        }
+    }
+
+    /**
+     * 指定したトランザクション内にて主キーベースでデータの保存を行う。
+     * 主キーが存在しない場合は何もしない。
+     * また、モデル内のカラムがDBに無い場合はスキップする。
+     * データ作成日／更新日は自動的に設定される。
+     */
+    public function saveAll($list)
+    {
+        // 主キーのデータが無かった場合はInsert
+        $insert = new Vizualizer_Query_InsertIgnore($this->access);
+        foreach ($list as $index => $data) {
+            // データ作成日／更新日は自動的に設定する。
+            $data["create_time"] = $data["update_time"] = Vizualizer_Data_Calendar::now()->date("Y-m-d H:i:s");
+            $insert->execute($data);
+            foreach ($this->primary_keys as $key) {
+                if (empty($data[$key])) {
+                    $list[$index][$key] = $insert->lastInsertId();
+                }
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * 指定したトランザクション内にて主キーベースでデータの削除を行う。
+     * 主キーが存在しない場合は何もしない。
+     */
+    public function delete()
+    {
+        if (!empty($this->primary_keys)) {
+            $delete = new Vizualizer_Query_Delete($this->access);
+            $deleteWhere = false;
+            foreach ($this->columns as $column) {
+                if (in_array($column, $this->primary_keys)) {
+                    // 主キーは削除条件
+                    $delete->addWhere($this->access->$column . " = ?", array($this->values[$column]));
+                    $deleteWhere = true;
+                }
+            }
+            // WHERE句が設定されている場合のみ削除処理を実行
+            if ($deleteWhere) {
+                $delete->execute();
+            }
+        }
+    }
+
+    /**
+     * 指定したトランザクション内にて主データのクリアを行う。
+     */
+    public function truncate()
+    {
+        $truncate = new Vizualizer_Query_Truncate($this->access);
+        $truncate->execute();
+    }
+
+    /**
+     * モデルのカラムリストを返す
+     */
+    public function columns()
+    {
+        return $this->columns;
+    }
+
+    /**
+     * モデルの配列表現を返す。
+     */
+    public function toArray()
+    {
+        return $this->values;
+    }
+
+    /**
+     * インスタンスのコピーを新規作成する。
+     */
+    public function copy()
+    {
+        $thisClass = get_class($this);
+        $copy = new $thisClass(array());
+        foreach ($this->values as $key => $value) {
+            $copy->$key = $value;
+        }
+        return $copy;
+    }
+
+    /**
+     * キャッシュを利用するためのメソッド
+     */
+    protected static function cacheData($key, $value = null){
+        if(!self::$cached || self::$cachedTime != Vizualizer::now()->date("YmdHis")){
+            // キャッシュデータが無いか、キャッシュ時間が更新されている場合は初期化
+            self::$cachedTime = Vizualizer::now()->date("YmdHis");
+            self::$cached = array();
+        }
+        if($value !== null){
+            // 値が設定されている場合にはキーに対応する値に設定
+            self::$cached[$key] = $value;
+        }
+        // キャッシュが存在する場合には値を返し、存在しない場合にはnullを返す。
+        if(array_key_exists($key, self::$cached)){
+            return self::$cached[$key];
+        }
+        return null;
     }
 }
