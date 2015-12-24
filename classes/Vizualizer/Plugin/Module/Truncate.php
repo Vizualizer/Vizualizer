@@ -31,7 +31,7 @@
 abstract class Vizualizer_Plugin_Module_Truncate extends Vizualizer_Plugin_Module
 {
 
-    protected function executeImpl($type, $name, $continue = false)
+    protected function executeImpl($type, $name)
     {
         $post = Vizualizer::request();
         if ($post["truncate"]) {
@@ -49,7 +49,7 @@ abstract class Vizualizer_Plugin_Module_Truncate extends Vizualizer_Plugin_Modul
                 Vizualizer_Database_Factory::commit($connection);
 
                 // 画面をリロードする。
-                if (!$continue) {
+                if (!$this->continue) {
                     // 登録に使用したキーを無効化
                     $this->removeInput("truncate");
 

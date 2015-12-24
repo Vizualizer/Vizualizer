@@ -31,7 +31,7 @@
 abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
 {
 
-    protected function executeImpl($type, $name, $primary_key, $continue = false)
+    protected function executeImpl($type, $name, $primary_key)
     {
         $post = Vizualizer::request();
         if ($post["add"] || $post["save"]) {
@@ -59,9 +59,6 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
             $connection = Vizualizer_Database_Factory::begin(strtolower($type));
 
             try {
-//                 if ($params->get("ignore_operator", "0") == "1") {
-//                     $model->setIgnoreOperator(true);
-//                 }
                 $model->save();
                 if (!empty($this->key_prefix)) {
                     $post->set($this->key_prefix . $primary_key, $model->$primary_key);
@@ -73,7 +70,7 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
                 Vizualizer_Database_Factory::commit($connection);
 
                 // 画面をリロードする。
-                if (!$continue) {
+                if (!$this->continue) {
                     // 登録に使用したキーを無効化
                     $this->removeInput("add");
                     $this->removeInput("save");

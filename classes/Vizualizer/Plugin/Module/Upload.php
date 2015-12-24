@@ -62,7 +62,7 @@ abstract class Vizualizer_Plugin_Module_Upload extends Vizualizer_Plugin_Module
         return $data;
     }
 
-    protected function executeImpl($params, $type, $name, $key, $continue = false)
+    protected function executeImpl($params, $type, $name, $key)
     {
         if (!$params->check("upload") || isset($_POST[$params->get("upload")])) {
             $loader = new Vizualizer_Plugin($type);
@@ -93,7 +93,7 @@ abstract class Vizualizer_Plugin_Module_Upload extends Vizualizer_Plugin_Module
                             Vizualizer_Database_Factory::commit($connection);
 
                             // 画面をリロードする。
-                            if (!$continue) {
+                            if (!$this->continue) {
                                 // 登録に使用したキーを無効化
                                 $this->removeInput("upload");
 
