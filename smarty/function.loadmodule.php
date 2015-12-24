@@ -70,7 +70,7 @@ function smarty_function_loadmodule($params, $template)
         list ($namespace, $class) = explode(".", $name, 2);
         $loader = new Vizualizer_Plugin($namespace);
         $object = $loader->loadModule($class);
-        if (method_exists($object, "execute")) {
+        if (method_exists($object, "start")) {
             Vizualizer_Logger::writeDebug("=========== " . $name . " start ===========");
             // 検索条件と並べ替えキー以外を無効化する。
             if (isset($params["clear"]) && $params["clear"] == "1") {

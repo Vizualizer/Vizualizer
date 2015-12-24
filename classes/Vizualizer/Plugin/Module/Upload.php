@@ -62,7 +62,7 @@ abstract class Vizualizer_Plugin_Module_Upload extends Vizualizer_Plugin_Module
         return $data;
     }
 
-    protected function executeImpl($params, $type, $name, $key)
+    protected function executeImpl($params, $type, $name, $key, $continue = false)
     {
         if (!$params->check("upload") || isset($_POST[$params->get("upload")])) {
             $loader = new Vizualizer_Plugin($type);
@@ -91,6 +91,14 @@ abstract class Vizualizer_Plugin_Module_Upload extends Vizualizer_Plugin_Module
                             }
                             // エラーが無かった場合、処理をコミットする。
                             Vizualizer_Database_Factory::commit($connection);
+
+                            // 画面をリロードする。
+                            if (!$continue) {
+                                // 登録に使用したキーを無効化
+                                $this->removeInput("upload");
+
+                                $this->reload();
+                            }
                         } catch (Exception $e) {
                             Vizualizer_Database_Factory::rollback($connection);
                             throw new Vizualizer_Exception_Database($e);
