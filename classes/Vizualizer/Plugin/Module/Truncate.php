@@ -48,7 +48,13 @@ abstract class Vizualizer_Plugin_Module_Truncate extends Vizualizer_Plugin_Modul
                 // エラーが無かった場合、処理をコミットする。
                 Vizualizer_Database_Factory::commit($connection);
 
-                $this->removeInput("truncate");
+                // 画面をリロードする。
+                if (!$this->continue) {
+                    // 登録に使用したキーを無効化
+                    $this->removeInput("truncate");
+
+                    $this->reload();
+                }
             } catch (Exception $e) {
                 Vizualizer_Database_Factory::rollback($connection);
                 throw new Vizualizer_Exception_Database($e);

@@ -61,7 +61,7 @@ abstract class Vizualizer_Plugin_Module_Page extends Vizualizer_Plugin_Module
             // ページャの初期化
             $pagerMode = $params->get("_pager_mode", Vizualizer_Pager::PAGE_SLIDE);
             $pagerDisplay = $params->get("_pager_dispmode", Vizualizer_Pager::DISPLAY_ATTR);
-            if ($params->check("_pager_per_page_key")) {
+            if ($params->check("_pager_per_page_key") && $post[$params->get("_pager_per_page_key")] > 0) {
                 $pagerCount = $post[$params->get("_pager_per_page_key")];
             } else {
                 $pagerCount = $params->get("_pager_per_page", 20);

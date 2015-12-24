@@ -82,6 +82,14 @@ abstract class Vizualizer_Plugin_Module_UploadExcel extends Vizualizer_Plugin_Mo
                     }
                     // エラーが無かった場合、処理をコミットする。
                     Vizualizer_Database_Factory::commit($connection);
+
+                    // 画面をリロードする。
+                    if (!$this->continue) {
+                        // 登録に使用したキーを無効化
+                        $this->removeInput("upload");
+
+                        $this->reload();
+                    }
                 } catch (Exception $e) {
                     Vizualizer_Database_Factory::rollback($connection);
                     throw new Vizualizer_Exception_Database($e);

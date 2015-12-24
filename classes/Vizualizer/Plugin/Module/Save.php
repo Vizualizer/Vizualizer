@@ -59,9 +59,6 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
             $connection = Vizualizer_Database_Factory::begin(strtolower($type));
 
             try {
-//                 if ($params->get("ignore_operator", "0") == "1") {
-//                     $model->setIgnoreOperator(true);
-//                 }
                 $model->save();
                 if (!empty($this->key_prefix)) {
                     $post->set($this->key_prefix . $primary_key, $model->$primary_key);
@@ -71,6 +68,15 @@ abstract class Vizualizer_Plugin_Module_Save extends Vizualizer_Plugin_Module
 
                 // エラーが無かった場合、処理をコミットする。
                 Vizualizer_Database_Factory::commit($connection);
+
+                // 画面をリロードする。
+                if (!$this->continue) {
+                    // 登録に使用したキーを無効化
+                    $this->removeInput("add");
+                    $this->removeInput("save");
+
+                    $this->reload();
+                }
             } catch (Exception $e) {
                 Vizualizer_Database_Factory::rollback($connection);
                 throw new Vizualizer_Exception_Database($e);
