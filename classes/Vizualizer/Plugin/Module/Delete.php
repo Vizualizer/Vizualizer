@@ -31,7 +31,7 @@
 abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
 {
 
-    protected function executeImpl($type, $name, $key, $continue = false)
+    protected function executeImpl($type, $name, $key)
     {
         $post = Vizualizer::request();
         if ($post["delete"]) {
@@ -51,11 +51,12 @@ abstract class Vizualizer_Plugin_Module_Delete extends Vizualizer_Plugin_Module
                     // エラーが無かった場合、処理をコミットする。
                     Vizualizer_Database_Factory::commit($connection);
 
-                    $this->removeInput("delete");
-                    $this->removeInput($key);
-
                     // 画面をリロードする。
-                    if (!$continue) {
+                    if (!$this->continue) {
+                        // 登録に使ったキーを無効化
+                        $this->removeInput("delete");
+                        $this->removeInput($key);
+
                         $this->reload();
                     }
                 } catch (Exception $e) {

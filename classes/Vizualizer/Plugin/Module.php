@@ -37,6 +37,39 @@ abstract class Vizualizer_Plugin_Module
     public $continue;
 
     /**
+     * 実際にモジュールの呼び出されるメソッドです。
+     * このモジュールが内部的にexecuteなどの処理を呼び出します。
+     */
+    public function start($params)
+    {
+        $this->prefilter($params);
+        // データの登録に複数のモジュールを使用する場合のパラメータを処理する。
+        if ($params->check("continue") && $params->get("continue")) {
+            $this->continue = true;
+        }
+        $this->execute($params);
+        $this->postfilter($params);
+    }
+
+    /**
+     * 前処理用のメソッドです。
+     * 共通処理がある場合、その前に実行される処理を記述します。
+     */
+    public function prefilter($params)
+    {
+
+    }
+
+    /**
+     * 後処理用のメソッドです。
+     * 共通処理がある場合、その後に実行される処理を記述します。
+     */
+    public function postfilter($params)
+    {
+
+    }
+
+    /**
      * デフォルト実行のメソッドになります。
      * このメソッド以外がモジュールとして呼ばれることはありません。
      *
