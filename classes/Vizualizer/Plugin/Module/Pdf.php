@@ -146,7 +146,7 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module
     protected function boxtext($x, $y, $width, $height, $size, $text, $border = false, $align = "left"){
         if($this->page){
             $this->page->beginText();
-            $text = str_replace("\r\n", "\n", str_replace("\r", "\n", $text));
+            $text = str_replace("\r", "\n", str_replace("\r\n", "\n", $text));
             $this->page->setFontAndSize($this->font, $size);
             $this->page->setTextLeading(ceil($size * 0.55));
             switch($align){
