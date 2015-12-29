@@ -28,7 +28,7 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module
+abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_List
 {
     /**
      * PDFドキュメント
@@ -60,7 +60,43 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module
         // 日本語用のフォントとエンコーディングを読み込み
         $this->document->useJPFonts();
         $this->document->useJPEncodings();
-        $this->font = $this->document->getFont('MS-PGothic','90msp-RKSJ-H');
+    }
+
+    protected function setFontByTTF($fontPath)
+    {
+        if (file_exists($fontPath)) {
+            $fontName = $this->document->loadTTF($fontPath, true);
+            return $this->setFontByName($fontName);
+        }
+        die("TTF Font not found : ".$fontPath);
+    }
+
+    protected function setFontByTTC($fontPath, $index)
+    {
+        if (file_exists($fontPath)) {
+            $fontName = $this->document->loadTTC($fontPath, $index, true);
+            return $this->setFontByName($fontName);
+        }
+        die("TTC Font not found : ".$fontPath);
+    }
+
+    protected function setFontByType1($fontPath)
+    {
+        if (file_exists($fontPath)) {
+            $fontName = $this->document->loadType1($fontPath, true);
+            return $this->setFontByName($fontName);
+        }
+        die("Type1 Font not found : ".$fontPath);
+    }
+
+    protected function setFontByName($fontName)
+    {
+        return $this->setFont($this->document->getFont($fontName,'90msp-RKSJ-H'));
+    }
+
+    protected function setFont($font)
+    {
+        return $this->font = $font;
     }
 
     protected function startPage(){
@@ -146,7 +182,7 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module
     protected function boxtext($x, $y, $width, $height, $size, $text, $border = false, $align = "left"){
         if($this->page){
             $this->page->beginText();
-            $text = str_replace("\r\n", "\n", str_replace("\r", "\n", $text));
+            $text = str_replace("\r", "\n", str_replace("\r\n", "\n", $text));
             $this->page->setFontAndSize($this->font, $size);
             $this->page->setTextLeading(ceil($size * 0.55));
             switch($align){
@@ -160,10 +196,13 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module
                     $pAlign = HaruPage::TALIGN_LEFT;
                     break;
             }
-            $this->page->textRect($x, $this->pdfy($y), $x + $width, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
-            $this->page->endText();
             if($border){
-                $this->rect($x - 2, $y - 2, $width + 4, $height + 4, floor($size / 20));
+                $this->page->textRect($x + 2, $this->pdfy($y + ($height - $size * 1.5) / 2), $x + $width - 4, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
+                $this->page->endText();
+                $this->rect($x, $y, $width, $height, floor($size / 20));
+            } else {
+                $this->page->textRect($x, $this->pdfy($y), $x + $width, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
+                $this->page->endText();
             }
         }
     }
