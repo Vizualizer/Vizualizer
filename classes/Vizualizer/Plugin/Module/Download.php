@@ -110,8 +110,9 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
 
                 // データが０件以上の場合は繰り返し
                 $output = array();
+                $data = $this->filterData($data);
                 foreach ($columns as $index => $column) {
-                    $output[] = $this->filterData($data->$column);
+                    $output[] = $data->$column;
                 }
                 fputcsv($out, $output);
             }
