@@ -239,12 +239,16 @@ class Vizualizer
         }
 
         $attr = Vizualizer::attr();
-        $info = pathinfo($attr["templateName"]);
 
         // フレームとコンテンツタイプのオプションを指定
         header("X-Frame-Options: SAMEORIGIN");
         header("X-Content-Type-Options: nosniff");
         header("X-XSS-Protection: 1; mode=block");
+
+        // Featureモジュールが存在する場合は実行し、結果としてのAttributesを再取得する。
+        Vizualizer_FeatureMap::execute($attr["templateName"]);
+        $attr = Vizualizer::attr();
+        $info = pathinfo($attr["templateName"]);
 
         try{
             switch ($info["extension"]) {
