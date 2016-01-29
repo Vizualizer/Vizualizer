@@ -166,7 +166,7 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_Lis
             $lines = explode("\r\n", $text);
             foreach($lines as $index => $line){
                 if($index > 0){
-                    $this->page->showTextNewLine(mb_convert_encoding($line,"SJIS-win", "UTF-8"));
+                    $this->page->showTextNextLine(mb_convert_encoding($line,"SJIS-win", "UTF-8"));
                 }else{
                     $this->page->showText(mb_convert_encoding($line,"SJIS-win", "UTF-8"));
                 }
@@ -207,13 +207,15 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_Lis
         }
     }
 
-    protected function line($sx, $sy, $ex, $ey, $size){
+    protected function line($sx, $sy, $ex, $ey, $size, $dash = null){
         if($this->page){
+            $this->page->setDash($dash, 0);
             $this->page->setLineWidth($size);
             $this->page->setRGBStroke(0,0,0);
             $this->page->moveTo($sx, $this->pdfy($sy));
             $this->page->lineTo($ex, $this->pdfy($ey));
             $this->page->stroke();
+            $this->page->setDash(null, 0);
         }
     }
 
