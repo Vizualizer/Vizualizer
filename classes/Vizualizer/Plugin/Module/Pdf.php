@@ -229,7 +229,11 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_Lis
     }
 
     protected function image($x, $y, $imageFilename, $width = 0, $height = 0){
-        $filename = str_replace(VIZUALIZER_SUBDIR, VIZUALIZER_SITE_ROOT, $imageFilename);
+        if (VIZUALIZER_SUBDIR != "") {
+            $filename = str_replace(VIZUALIZER_SUBDIR, VIZUALIZER_SITE_ROOT, $imageFilename);
+        } else {
+            $filename = VIZUALIZER_SITE_ROOT.$imageFilename;
+        }
         $size = getimagesize($filename);
         if($width > 0 && $size[0] > $width){
             $size[1] = floor($size[1] * $width / $size[0]);
