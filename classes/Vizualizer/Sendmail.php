@@ -52,6 +52,16 @@ class Vizualizer_Sendmail
     protected $toAddress;
 
     /**
+     * メールのカーボンコピーのアドレス
+     */
+    protected $cc;
+
+    /**
+     * メールのブラインディッドカーボンコピーのアドレス
+     */
+    protected $bcc;
+
+    /**
      * メールのタイトル
      */
     protected $subject;
@@ -121,6 +131,28 @@ class Vizualizer_Sendmail
         } else {
             $this->to = $address;
         }
+    }
+
+    /**
+     * メールのコピー先のアドレスを設定します。
+     *
+     * @param s string $address 送信先のメールアドレス
+     * @access public
+     */
+    public function setCc($address)
+    {
+        $this->cc = $address;
+    }
+
+    /**
+     * メールの秘匿コピー先のアドレスを設定します。
+     *
+     * @param s string $address 送信先のメールアドレス
+     * @access public
+     */
+    public function setBcc($address)
+    {
+        $this->bcc = $address;
     }
 
     /**
@@ -254,14 +286,20 @@ class Vizualizer_Sendmail
             $body = mb_convert_encoding($this->body . $suffix, "JIS", "UTF-8");
         }
         // メールヘッダを作成
-        $this->sendRaw($this->from, $this->fromAddress, $this->to, $this->subject, $body, $contentType, $transferEncoding);
+        $this->sendRaw($this->from, $this->fromAddress, $this->to, $this->subject, $body, $contentType, $transferEncoding, $this->cc, $this->bcc);
     }
 
-    public function sendRaw($from, $fromAddress, $to, $subject, $body, $contentType = "text/plain", $transferEncoding = "7bit")
+    public function sendRaw($from, $fromAddress, $to, $subject, $body, $contentType = "text/plain", $transferEncoding = "7bit", $cc = "", $bcc = "")
     {
         // メールヘッダを作成
         $header = "";
         $header .= "From: " . $from . "\n";
+        if (!empty($cc)) {
+            $header .= "Cc: " . $cc . "\n";
+        }
+        if (!empty($bcc)) {
+            $header .= "Bcc: " . $bcc . "\n";
+        }
         $header .= "Reply-To: " . $from . "\n";
         $header .= "MIME-Version: 1.0\n";
         $header .= "Content-Type: " . $contentType . "\n";

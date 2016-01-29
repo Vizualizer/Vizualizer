@@ -99,7 +99,11 @@ class Vizualizer_Plugin
      */
     function loadModel($name, $params = array())
     {
-        return $this->load("Model", $name, $params);
+        $model = $this->load("Model", $name, $params);
+        if ($model === null) {
+            return new Vizualizer_Plugin_Model($this->loadTable($name), $params);
+        }
+        return $model;
     }
 
     /**
