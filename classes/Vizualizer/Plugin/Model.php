@@ -322,6 +322,27 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
     }
 
     /**
+     * レコードの合計値を取得する。
+     */
+    public function summeryBy($column, $values = array())
+    {
+        $select = new Vizualizer_Query_Select($this->access);
+        $select->addColumn("SUM(" . $column . ") AS summery");
+        if (is_array($values)) {
+            foreach ($values as $key => $value) {
+                $select = $this->appendWhere($select, $key, $value);
+            }
+        }
+        $result = $select->execute();
+
+        if (count($result) > 0) {
+            return $result[0]["summery"];
+        } else {
+            return "0";
+        }
+    }
+
+    /**
      * パラメータの値により、WHERE句を構築する。
      *
      * @param $select SELECTオブジェクト
