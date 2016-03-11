@@ -440,9 +440,11 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
                     $select->addWhere($fullkey . " LIKE ?", array("%" . $value . "%"));
                     break;
                 case "for":
+                case "post":
                     $select->addWhere($fullkey . " LIKE ?", array("%" . $value));
                     break;
                 case "back":
+                case "pre":
                     $select->addWhere($fullkey . " LIKE ?", array($value . "%"));
                     break;
                 case "nlike":
