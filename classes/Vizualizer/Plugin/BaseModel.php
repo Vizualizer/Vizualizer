@@ -28,7 +28,7 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Plugin_BaseModel
+class Vizualizer_Plugin_BaseModel extends Vizualizer_Plugin_Object
 {
     // カラムリスト
     protected $columns;

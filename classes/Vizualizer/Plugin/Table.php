@@ -28,7 +28,7 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class Vizualizer_Plugin_Table
+class Vizualizer_Plugin_Table extends Vizualizer_Plugin_Object
 {
 
     /**
