@@ -140,7 +140,6 @@ class Vizualizer_Logger
      * 警告ログを出力する。
      *
      * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
      */
     public static function writeAlert($message)
     {
@@ -151,7 +150,6 @@ class Vizualizer_Logger
      * 警告ログを出力する。
      *
      * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
      */
     public static function alert($message)
     {
@@ -162,7 +160,6 @@ class Vizualizer_Logger
      * 情報ログを出力する。
      *
      * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
      */
     public static function writeInfo($message)
     {
@@ -173,7 +170,6 @@ class Vizualizer_Logger
      * 情報ログを出力する。
      *
      * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
      */
     public static function info($message)
     {
@@ -184,12 +180,15 @@ class Vizualizer_Logger
      * デバッグログを出力する。
      *
      * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     * @param int $level 出力するデバッグレベル（最大99）
      */
-    public static function writeDebug($message)
+    public static function writeDebug($message, $level = 1)
     {
         if (Vizualizer_Configure::get("debug")) {
-            self::writeMessage(self::LOG_DEBUG, $message);
+            $debugLevel = Vizualizer_Configure::get("debug_level");
+            if ($debugLevel >= 99 || $level <= $debugLevel) {
+                self::writeMessage(self::LOG_DEBUG, $message);
+            }
         }
     }
 
@@ -197,12 +196,15 @@ class Vizualizer_Logger
      * デバッグログを出力する。
      *
      * @param s string $message エラーメッセージ
-     * @param s Exception $exception エラーの原因となった例外オブジェクト
+     * @param int $level 出力するデバッグレベル（最大99）
      */
-    public static function debug($message)
+    public static function debug($message, $level = 1)
     {
         if (Vizualizer_Configure::get("debug")) {
-            self::writeMessage(self::LOG_DEBUG, $message);
+            $debugLevel = Vizualizer_Configure::get("debug_level");
+            if ($debugLevel >= 99 || $level <= $debugLevel) {
+                self::writeMessage(self::LOG_DEBUG, $message);
+            }
         }
     }
 }

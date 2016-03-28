@@ -88,6 +88,12 @@ abstract class Vizualizer_Template
     public abstract function fetch($template, $cache_id = null, $compile_id = null, $parent = null, $display = false);
 
     /**
+     * テンプレートに割り当てた変数を取得する。
+     * @param string $varname 取得する変数のキー名、省略した場合は、全ての変数を取得する。
+     */
+    public abstract function getVars($varname = "");
+
+    /**
      * ページ出力用のメソッドをオーバーライドしています。
      * 携帯のページについて、SJISに変換し、カナを半角にしています。
      *
@@ -113,12 +119,12 @@ abstract class Vizualizer_Template
         $templateEngine->assign("configure", Vizualizer_Configure::values());
         $templateEngine->assign("post", Vizualizer::request());
         $templateEngine->assign("attr", $attr);
+        $templateEngine->assign("session", Vizualizer_Session::values());
         $templateEngine->assign("sessionName", session_name());
         $templateEngine->assign("sessionId", session_id());
 
         // display template
         Vizualizer_Logger::writeDebug("Template Dir : " . var_export($this->template_dir, true));
-        Vizualizer_Logger::writeDebug("Template Name : " . $template);
         if (Vizualizer_Configure::get("device")->isFuturePhone()) {
             // モバイルの時は出力するHTMLをデータとして取得
             $content = trim($this->core->fetch($template, $cache_id, $compile_id, $parent));

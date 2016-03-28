@@ -291,4 +291,11 @@ class Vizualizer_Parameter implements Iterator, ArrayAccess
         }
         return $value;
     }
+
+    /**
+     * パラメータのリストを取得
+     */
+    public function values() {
+        return $this->parameters;
+    }
 }

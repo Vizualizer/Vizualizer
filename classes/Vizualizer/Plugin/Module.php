@@ -29,7 +29,7 @@
  * @package Vizualizer
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-abstract class Vizualizer_Plugin_Module
+abstract class Vizualizer_Plugin_Module extends Vizualizer_Plugin_Object
 {
 
     public $key_prefix;
@@ -89,36 +89,12 @@ abstract class Vizualizer_Plugin_Module
         $loader = new Vizualizer_Plugin($namespace);
         $object = $loader->loadModule($class);
         if (method_exists($object, "execute")) {
-            Vizualizer_Logger::writeDebug("=========== " . $name . " start ===========");
+            $this->debug("=========== " . $name . " start ===========");
             $object->execute($params);
-            Vizualizer_Logger::writeDebug("=========== " . $name . " end ===========");
+            $this->debug("=========== " . $name . " end ===========");
         } else {
-            Vizualizer_Logger::writeAlert($name . " is not plugin module.");
+            $this->debug($name . " is not plugin module.");
         }
-    }
-
-    /**
-     * 値が空であることを調べる。
-     * empty関数が数字の0に対してtrueを返すため、数字の0を空として扱わないようにするために利用する。
-     *
-     * @param mixed $value 対象の変数
-     * @return boolean データが空の場合はtrue、そうでない場合はfalse
-     */
-    protected function isEmpty($value)
-    {
-        return (!isset($value) || $value === FALSE || $value === null || $value === "");
-    }
-
-    /**
-     * パスワードを暗号化するためのメソッドです。
-     * 暗号化処理の整合性を保つため、暗号化する場合は必ずこのメソッドを利用して行うこと。
-     *
-     * @param string $login_id ログインID
-     * @param string $plain_password パスワード
-     */
-    protected function encryptPassword($login_id, $plain_password)
-    {
-        return sha1($login_id . ":" . $plain_password);
     }
 
     /**
@@ -174,17 +150,4 @@ abstract class Vizualizer_Plugin_Module
         $this->redirectInside($attr["templateName"]);
     }
 
-    /**
-     * 全角スペースを含んだ形でtrimするためのメソッドです。
-     *
-     * @param string $str 対象文字列
-     * @return string trimした文字列
-     */
-    protected function trim($str){
-        // 先頭の半角、全角スペースを、空文字に置き換える
-        $str = preg_replace('/^[　]+/u', '', $str);
-        // 最後の半角、全角スペースを、空文字に置き換える
-        $str = preg_replace('/[　]+$/u', '', $str);
-        return trim($str);
-    }
 }

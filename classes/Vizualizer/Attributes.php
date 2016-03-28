@@ -147,4 +147,11 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
             unset($this->attributes[$offset]);
         }
     }
+
+    /**
+     * 属性のリストを取得
+     */
+    public function values() {
+        return $this->attributes;
+    }
 }

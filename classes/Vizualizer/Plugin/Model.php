@@ -468,6 +468,15 @@ class Vizualizer_Plugin_Model extends Vizualizer_Plugin_BaseModel
                 case "pre":
                     $select->addWhere($fullkey . " LIKE ?", array($value . "%"));
                     break;
+                case "inpart":
+                    $select->addWhere("? LIKE CONCAT('%', " . $fullkey . ", '%')", array($value));
+                    break;
+                case "inpre":
+                    $select->addWhere("? LIKE CONCAT(" . $fullkey . ", '%')", array($value));
+                    break;
+                case "inpost":
+                    $select->addWhere("? LIKE CONCAT('%', " . $fullkey . ")", array($value));
+                    break;
                 case "nlike":
                     $select->addWhere($fullkey . " NOT LIKE ?", array($value));
                     break;
