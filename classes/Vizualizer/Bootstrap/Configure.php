@@ -92,6 +92,7 @@ class Vizualizer_Bootstrap_Configure
         ));
 
         Vizualizer_Configure::set("debug", true);
+        Vizualizer_Configure::set("debug_level", 99);
         Vizualizer_Configure::set("display_error", "On");
         Vizualizer_Configure::set("session_manager", "");
 

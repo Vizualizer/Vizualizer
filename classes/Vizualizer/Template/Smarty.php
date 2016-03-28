@@ -108,4 +108,18 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
             }
         }
     }
+
+    /**
+     * テンプレートに割り当てた変数を取得する。
+     * @param string $varname 取得する変数のキー名、省略した場合は、全ての変数を取得する。
+     */
+    public function getVars($varname = "")
+    {
+        if (!empty($varname)) {
+            return $this->core->tpl_vars[$varname]->value;
+        } else {
+            return $this->core->tpl_vars;
+        }
+    }
+
 }

@@ -80,7 +80,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
 
         Vizualizer_Logger::$logFilePrefix = "batch_";
         Vizualizer_Logger::$logOutputStandard = true;
-        Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " Start.");
+        $this->info("Batch " . $this->getName() . " Start.");
         if ($this->getDaemonName() != "") {
             if (count($params) > 3 && $params[3] == "stop") {
                 if (($fp = fopen($this->getDaemonName() . ".unlock", "w+")) !== FALSE) {
@@ -93,7 +93,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                     if($time + 12 * 3600 < time()){
                         system("kill -KILL ".$pid);
                     }
-                    Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
+                    $this->info("Batch " . $this->getName() . " was already running.");
                     die("プログラムは既に実行中です。");
                 }
 
@@ -109,11 +109,11 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 while (true) {
                     Vizualizer::now()->reset();
 
-                    Vizualizer_Logger::writeInfo("==== START ".$this->getName()." ROUTINE ======");
+                    $this->info("==== START ".$this->getName()." ROUTINE ======");
 
                     $this->executeImpl($params);
 
-                    Vizualizer_Logger::writeInfo("==== END ".$this->getName()." ROUTINE ======");
+                    $this->info("==== END ".$this->getName()." ROUTINE ======");
 
                     if (file_exists($this->getDaemonName() . ".unlock")) {
                         // unlockファイルがある場合はループを終了
@@ -133,7 +133,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
         } else {
             if (($fp = fopen($this->getDaemonName() . ".lock", "w+")) !== FALSE) {
                 if (!flock($fp, LOCK_EX | LOCK_NB)) {
-                    Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " was already running.");
+                    $this->info("Batch " . $this->getName() . " was already running.");
                     die("プログラムは既に実行中です。");
                 }
 
@@ -142,7 +142,7 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
                 fclose($fp);
             }
         }
-        Vizualizer_Logger::writeInfo("Batch " . $this->getName() . " End.");
+        $this->info("Batch " . $this->getName() . " End.");
     }
 
     /**
@@ -156,17 +156,17 @@ abstract class Vizualizer_Plugin_Batch extends Vizualizer_Plugin_Module
         $data = array();
         foreach ($this->getFlows() as $flow) {
             if (method_exists($this, $flow)) {
-                Vizualizer_Logger::writeInfo("Execute Module : " . $flow);
+                $this->info("Execute Module : " . $flow);
                 try {
                     $data = $this->$flow($params, $data);
                 } catch (Exception $e) {
                     // 例外発生時にはエラーログを出力し、バッチ自体を終了させる。
-                    Vizualizer_Logger::writeError("Batch failed in " . $flow . ".", $e);
+                    $this->error("Batch failed in " . $flow . ".", $e);
                     break;
                 }
             } else {
                 // 必要なモジュールが無かった場合はエラーログを出力し、終了させる。
-                Vizualizer_Logger::writeAlert("Module " . $flow . " was not found.");
+                $this->alert("Module " . $flow . " was not found.");
                 break;
             }
         }
