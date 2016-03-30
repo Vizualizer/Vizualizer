@@ -92,6 +92,16 @@ class Vizualizer_Template_Smarty extends Vizualizer_Template
     public function fetch($template, $cache_id = null, $compile_id = null, $parent = null, $display = false)
     {
         $attributes = Vizualizer::attr();
+
+        // 標準で使用できるパラメータを登録
+        $templateEngine = $attributes["template"];
+        $templateEngine->assign("configure", Vizualizer_Configure::values());
+        $templateEngine->assign("post", Vizualizer::request());
+        $templateEngine->assign("attr", $attributes);
+        $templateEngine->assign("session", Vizualizer_Session::values());
+        $templateEngine->assign("sessionName", session_name());
+        $templateEngine->assign("sessionId", session_id());
+
         // リソースの利用を判定
         $prefix = substr($template, 0, strpos($template, ":"));
         if(ctype_alpha($prefix) && $prefix != "file"){
