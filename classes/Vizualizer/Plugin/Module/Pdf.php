@@ -125,10 +125,10 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_Lis
      * @param $name モデルクラスの名前
      * @param $result 出力したファイルのパスを格納するキー
      */
-    protected function output($name, $result)
+    protected function output($name = "", $result = "")
     {
         // 結果のPDFを出力する。
-        if(!empty($result)){
+        if(!empty($name) && !empty($result)){
             // 出力するPDFファイル名を生成
             $saveDir = Vizualizer_Configure::get("upload_root") . "/pdf/" . sha1("site" . Vizualizer_Configure::get("site_id")) . "/".$name."/";
             if (!file_exists($saveDir)) {
