@@ -42,6 +42,10 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
         return $data;
     }
 
+    protected function postprocess(){
+
+    }
+
     protected function executeImpl($params, $type, $name, $result, $defaultSortKey = "create_time")
     {
         if (!$params->check("search") || isset($_POST[$params->get("search")])) {
@@ -118,6 +122,9 @@ abstract class Vizualizer_Plugin_Module_Download extends Vizualizer_Plugin_Modul
             }
             fclose($out);
             echo mb_convert_encoding(ob_get_clean(), "Shift_JIS", "UTF-8");
+
+            $this->postprocess();
+
             exit();
         }
     }
