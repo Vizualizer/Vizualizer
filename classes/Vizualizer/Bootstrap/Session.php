@@ -58,6 +58,7 @@ class Vizualizer_Bootstrap_Session
                 Vizualizer_Session_Manager::create(new $manager());
                 break;
         }
+        session_cache_limiter('must-revalidate');
         session_start();
         Vizualizer_Session::startup();
     }
