@@ -27,8 +27,24 @@ Vizualizer::initialize();
 
 // エラー時に例外をスローするようにコールバック関数を登録
 set_error_handler(function($errno, $errstr, $errfile, $errline){
-    Vizualizer_Logger::debug($errno . " : " . $errstr . " in " . $errfile . "(". $errline.")");
-    throw new Vizualizer_Exception_System($errstr);
+    switch ($errno) {
+        case E_ERROR:
+            Vizualizer_Logger::error($errstr . " in " . $errfile . "(". $errline.")");
+            throw new Vizualizer_Exception_System($errstr);
+            break;
+        case E_WARNING:
+            Vizualizer_Logger::alert($errstr . " in " . $errfile . "(". $errline.")");
+            break;
+        case E_NOTICE:
+            Vizualizer_Logger::info("【NOTICE】" . $errstr . " in " . $errfile . "(". $errline.")");
+            break;
+        case E_STRICT:
+            Vizualizer_Logger::info("【STRICT】" . $errstr . " in " . $errfile . "(". $errline.")");
+            break;
+        case E_DEPRECATED:
+            Vizualizer_Logger::info("【DEPRECATED】" . $errstr . " in " . $errfile . "(". $errline.")");
+            break;
+    }
 });
 
 
