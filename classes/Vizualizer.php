@@ -25,6 +25,13 @@
 // Vizualizerの初期化
 Vizualizer::initialize();
 
+// エラー時に例外をスローするようにコールバック関数を登録
+set_error_handler(function($errno, $errstr, $errfile, $errline){
+    Vizualizer_Logger::debug($errno . " : " . $errstr . " in " . $errfile . "(". $errline.")");
+    throw new SystemException($errstr);
+});
+
+
 /**
  * フレームワークの起点となるクラス
  *
