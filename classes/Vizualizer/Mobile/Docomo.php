@@ -41,7 +41,7 @@ class Vizualizer_Mobile_Docomo extends Vizualizer_Mobile
     /**
      * モバイルの端末情報取得クラスを作成する。
      */
-    public static function create($info)
+    public static function create($info = null)
     {
         if ($info == null) {
             if (stripos($_SERVER["HTTP_USER_AGENT"], "DoCoMo") === 0) {

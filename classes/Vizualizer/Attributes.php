@@ -59,7 +59,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function current()
     {
-        return $this->attributes[$this->key()];
+        return self::$attributes[$this->key()];
     }
 
     /**
@@ -69,7 +69,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function key()
     {
-        return $this->keys[$this->index];
+        return self::$keys[self::$index];
     }
 
     /**
@@ -77,7 +77,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function next()
     {
-        $this->index ++;
+        self::$index ++;
         return $this->current();
     }
 
@@ -86,8 +86,8 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function rewind()
     {
-        $this->index = 0;
-        $this->keys = array_keys($this->attributes);
+        self::$index = 0;
+        self::$keys = array_keys(self::$attributes);
     }
 
     /**
@@ -97,7 +97,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function valid()
     {
-        return isset($this->keys[$this->index]);
+        return isset(self::$keys[self::$index]);
     }
 
     /**
@@ -108,7 +108,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->attributes);
+        return array_key_exists($offset, self::$attributes);
     }
 
     /**
@@ -120,7 +120,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
-            return $this->attributes[$offset];
+            return self::$attributes[$offset];
         }
         return false;
     }
@@ -133,7 +133,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->attributes[$offset] = $value;
+        self::$attributes[$offset] = $value;
     }
 
     /**
@@ -144,7 +144,7 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
     public function offsetUnset($offset)
     {
         if ($this->offsetExists($offset)) {
-            unset($this->attributes[$offset]);
+            unset(self::$attributes[$offset]);
         }
     }
 
@@ -152,6 +152,6 @@ class Vizualizer_Attributes implements Iterator, ArrayAccess
      * 属性のリストを取得
      */
     public function values() {
-        return $this->attributes;
+        return self::$attributes;
     }
 }

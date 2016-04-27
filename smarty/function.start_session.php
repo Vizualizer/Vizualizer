@@ -37,12 +37,6 @@
  */
 function smarty_function_start_session($params, $template)
 {
-    // セッションをスタートし、とりあえず成功のヘッダを送信する
-    session_cache_limiter('must-revalidate');
-    @session_start();
-    header("HTTP/1.1 200 OK");
-    Vizualizer_Session::startup();
-
     // POSTにINPUT=NEWが渡った場合は、入力をクリアする。
     $post = Vizualizer::request();
     /*

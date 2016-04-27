@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2012 Vizualizer All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,10 +48,8 @@ class Vizualizer_Mobile
     /**
      * モバイルの端末情報取得クラスを作成する。
      */
-    public static function create()
+    public static function create($info = null)
     {
-        $info = null;
-        
         // 各端末のインスタンス作成処理を行う。
         $info = Vizualizer_Mobile_Docomo::create($info);
         $info = Vizualizer_Mobile_Ezweb::create($info);
@@ -62,7 +60,7 @@ class Vizualizer_Mobile
         $info = Vizualizer_Mobile_Android::create($info);
         $info = Vizualizer_Mobile_WindowsMobile::create($info);
         $info = Vizualizer_Mobile_BlackBerry::create($info);
-        
+
         // いずれにも該当しない場合にはこのクラスのインスタンスをPC用として作成
         if ($info == null) {
             $info = new Vizualizer_Mobile();
@@ -117,4 +115,3 @@ class Vizualizer_Mobile
         return $this->screenHeight;
     }
 }
- 
