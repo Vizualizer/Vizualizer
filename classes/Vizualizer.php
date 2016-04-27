@@ -28,7 +28,7 @@ Vizualizer::initialize();
 // エラー時に例外をスローするようにコールバック関数を登録
 set_error_handler(function($errno, $errstr, $errfile, $errline){
     Vizualizer_Logger::debug($errno . " : " . $errstr . " in " . $errfile . "(". $errline.")");
-    throw new SystemException($errstr);
+    throw new Vizualizer_Exception_System($errstr);
 });
 
 
