@@ -184,7 +184,7 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_Lis
             $this->page->beginText();
             $text = str_replace("\r", "\n", str_replace("\r\n", "\n", $text));
             $this->page->setFontAndSize($this->font, $size);
-            $this->page->setTextLeading(ceil($size * 0.55));
+            $this->page->setTextLeading(ceil($size * (0.5 + 25 / ($size * $size))));
             switch($align){
                 case "center":
                     $pAlign = HaruPage::TALIGN_CENTER;
@@ -197,11 +197,15 @@ abstract class Vizualizer_Plugin_Module_Pdf extends Vizualizer_Plugin_Module_Lis
                     break;
             }
             if($border){
-                $this->page->textRect($x + 2, $this->pdfy($y + ($height - $size * 1.5) / 2), $x + $width - 4, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
+                try {
+                    $this->page->textRect($x + 2, $this->pdfy($y + ($height - $size * 1.5) / 2), $x + $width - 4, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
+                } catch (Exception $e) {}
                 $this->page->endText();
                 $this->rect($x, $y, $width, $height, floor($size / 20));
             } else {
-                $this->page->textRect($x, $this->pdfy($y), $x + $width, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
+                try {
+                    $this->page->textRect($x, $this->pdfy($y), $x + $width, $this->pdfy($y + $height), mb_convert_encoding($text,"SJIS-win", "UTF-8"), $pAlign);
+                } catch (Exception $e) {}
                 $this->page->endText();
             }
         }
